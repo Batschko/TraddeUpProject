@@ -158,6 +158,7 @@ public class SkinUtils {
      * @param time                   the time for median
      * @param percent20InsteadOfPlus use %20 instead of plus in url
      */
+    @Deprecated
     public static void setSkinPrices(int limit, int time, boolean percent20InsteadOfPlus) {
         List<SkinFullName> skins = QRCS2Skin.getSkinsWithoutPrice(limit, false);
         for(SkinFullName skin: skins){
@@ -171,6 +172,7 @@ public class SkinUtils {
      * @param time                   the time for median
      * @param percent20InsteadOfPlus use %20 instead of plus in url
      */
+    @Deprecated
     public static void setSkinPricesSpecialChars(int time, boolean percent20InsteadOfPlus) {
         List<SkinFullName> skins = QRCS2Skin.getSkinsWithoutPrice(Integer.MAX_VALUE, true);
         for(SkinFullName skin: skins){
@@ -187,6 +189,7 @@ public class SkinUtils {
      * @param time                   the time for median
      * @param percent20InsteadOfPlus use %20 instead of plus in url
      */
+    @Deprecated
     public static void setSkinPrice(SkinFullName skin, boolean withSpecialChars, int time, boolean percent20InsteadOfPlus) {
         double medianPrice = -1;
         int amountSold = 0;
