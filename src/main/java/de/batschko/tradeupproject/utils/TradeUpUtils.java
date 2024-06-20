@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.jooq.Record4;
 import org.jooq.Result;
 
-import java.util.HashMap;
 import java.util.List;
 
 @Slf4j
@@ -19,7 +18,7 @@ public class TradeUpUtils {
      * Calculates all trade ups using CSMoney price.
      * <p>Gets all TradeUps which are not calculated from db and calculates them</p>
      */
-    public static void calculateAllTradeUpsCSMoneyPrice(){
+    public static void calculateAllTradeUps(){
         List<TradeUpCustom> tradeUps = QRTradeUp.getTradeUpsToCalculate();
         for(TradeUpCustom tup : tradeUps){
             tup.setCalculation(true);
