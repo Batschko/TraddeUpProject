@@ -5,7 +5,7 @@ import de.batschko.tradeupproject.db.query.QRTradeUp;
 import de.batschko.tradeupproject.tradeup.Generator;
 import de.batschko.tradeupproject.utils.CSMoneyUtils;
 import de.batschko.tradeupproject.utils.SkinUtils;
-import de.batschko.tradeupproject.utils.Utils;
+import de.batschko.tradeupproject.utils.TradeUpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -105,7 +105,7 @@ public class TradeUpProjectApplicationCMD {
 		cmdList.put("7", () -> Generator.generateSingleCollTradeUps(4));
 		cmdList.put("8", () -> QRTradeUp.createTradeUpSkins(false));
 		cmdList.put("9", () -> QRTradeUp.createTradeUpSkins(true));
-		cmdList.put("0", Utils::calculateAllTradeUps);
+		cmdList.put("0", TradeUpUtils::calculateAllTradeUpsBackpackPrice);
 
 
 		Scanner in = new Scanner(System.in);
@@ -133,13 +133,13 @@ public class TradeUpProjectApplicationCMD {
 		cmdListNames.put("h", "Help");
 		cmdListNames.put("q", "go back");
 		cmdListNames.put("1", "runCSMoneyFilteredUrlMenu");
-		cmdListNames.put("2", "runCSMoneyPriceCheckMenu");
+	//	cmdListNames.put("2", "runCSMoneyPriceCheckMenu");
 
 		Map<String, Runnable> cmdList = new HashMap<>();
 		cmdList.put("h", () -> printCmdNames(cmdListNames));
 		cmdList.put("q", () -> System.out.println());
 		cmdList.put("1", TradeUpProjectApplicationCMD::runCSMoneyFilteredUrlMenu);
-		cmdList.put("2", TradeUpProjectApplicationCMD::runCSMoneyPriceCheckMenu);
+	//	cmdList.put("2", TradeUpProjectApplicationCMD::runCSMoneyPriceCheckMenu);
 		Scanner in = new Scanner(System.in);
 		String input = "";
 		while (!input.equals("q")) {
@@ -165,11 +165,11 @@ public class TradeUpProjectApplicationCMD {
 		CSMoneyUtils.getCSMoneyUrlFiltered(tupId);
 	}
 
-	static void runCSMoneyPriceCheckMenu(){
+/*	static void runCSMoneyPriceCheckMenu(){
 		int tupId = -1;
 		Scanner in = new Scanner(System.in);
 		System.out.print("TradeUp id: ");
 		tupId = in.nextInt();
 		CSMoneyUtils.csMoneyPriceCheck(tupId);
-	}
+	}*/
 }

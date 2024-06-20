@@ -8,6 +8,7 @@ import de.batschko.tradeupproject.tables.TradeUpSkins;
 import de.batschko.tradeupproject.utils.SkinUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
+import org.jooq.Record;
 import org.jooq.Record6;
 import org.jooq.Result;
 import org.springframework.stereotype.Repository;
@@ -16,8 +17,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static de.batschko.tradeupproject.tables.CS2Skin.C_S2_SKIN;
+import static de.batschko.tradeupproject.tables.TradeUpOutcomeCustom.TRADE_UP_OUTCOME_CUSTOM;
+import static de.batschko.tradeupproject.tables.TradeUpOutcomeSkinsCustom.TRADE_UP_OUTCOME_SKINS_CUSTOM;
 import static de.batschko.tradeupproject.tables.TradeUpSkins.TRADE_UP_SKINS;
+import static de.batschko.tradeupproject.tables.TradeUpSkinsCustom.TRADE_UP_SKINS_CUSTOM;
 import static de.batschko.tradeupproject.tables.VFullcs2skin.V_FULLCS2SKIN;
+import static de.batschko.tradeupproject.tables.VOutSkinsCsmoney.V_OUT_SKINS_CSMONEY;
+import static de.batschko.tradeupproject.tables.VTradeupskinsCsmoney.V_TRADEUPSKINS_CSMONEY;
 import static org.jooq.impl.DSL.avg;
 
 /**
@@ -56,6 +62,17 @@ public class QRCS2Skin extends QueryRepository {
                 .limit(limit)
                 .fetchInto(CS2Skin.class);
     }
+
+    /**
+     * TODO
+     */
+    public static Record getFullSkin(int id) {
+        return dsl.select()
+                .from(V_FULLCS2SKIN)
+                .where(V_FULLCS2SKIN.ID.eq(id))
+                .fetchOne();
+    }
+
 
     /**
      * Gets {@link CS2Skin} id by stashHolderId, condition and stattrak.
@@ -188,4 +205,56 @@ public class QRCS2Skin extends QueryRepository {
     }
 
 
+    public static Result<Record> getTradeUpSkins(int id){
+
+        return dsl.select()
+                .from(V_TRADEUPSKINS_CSMONEY)
+                .where(V_TRADEUPSKINS_CSMONEY.TRADE_UP_ID.eq(id))
+                .fetch();
+    }
+    public static Result<Record> getTradeUpSkinsCustom(int id){
+
+        return dsl.select()
+                .from(V_FULLCS2SKIN)
+                .join(TRADE_UP_SKINS_CUSTOM)
+                .on(TRADE_UP_SKINS_CUSTOM.C_S2_SKIN_ID.eq(V_FULLCS2SKIN.ID))
+                .where(TRADE_UP_SKINS_CUSTOM.TRADE_UP_CUSTOM_ID.eq(id))
+                .fetch();
+    }
+
+    public static Result<Record> getOutSkinsCustom(int id){
+
+        return dsl.select()
+                .from(V_FULLCS2SKIN)
+                .join(TRADE_UP_OUTCOME_SKINS_CUSTOM)
+                .on(TRADE_UP_OUTCOME_SKINS_CUSTOM.C_S2_SKIN_ID.eq(V_FULLCS2SKIN.ID))
+                .where(TRADE_UP_OUTCOME_SKINS_CUSTOM.TRADE_UP_CUSTOM_ID.eq(id))
+                .fetch();
+    }
+
+    //TODO remove
+    public static void deleteInAndOutSkins(int id){
+        dsl.deleteFrom(TRADE_UP_SKINS_CUSTOM).where(TRADE_UP_SKINS_CUSTOM.TRADE_UP_CUSTOM_ID.eq(id)).execute();
+        dsl.deleteFrom(TRADE_UP_OUTCOME_SKINS_CUSTOM).where(TRADE_UP_OUTCOME_SKINS_CUSTOM.TRADE_UP_CUSTOM_ID.eq(id)).execute();
+    }
+
+
+    public static Result<Record> getOutSkins(int id){
+
+        return dsl.select()
+                .from(V_OUT_SKINS_CSMONEY)
+                .where(V_OUT_SKINS_CSMONEY.TRADE_UP_ID.eq(id))
+                .fetch();
+    }
+
+    public static int getSkinIdByName(String weapon, String title, Condition condition, int tupId){
+        int id =  dsl.select(V_OUT_SKINS_CSMONEY.ID)
+                .from(V_OUT_SKINS_CSMONEY)
+                .where(V_OUT_SKINS_CSMONEY.TRADE_UP_ID.eq(tupId))
+                .and(V_OUT_SKINS_CSMONEY.WEAPON.eq(weapon))
+                .and(V_OUT_SKINS_CSMONEY.TITLE.eq(title))
+                .and(V_OUT_SKINS_CSMONEY.CONDITION.eq(condition))
+                .fetchOneInto(Integer.class);
+        return id;
+}
 }

@@ -3,6 +3,7 @@ package de.batschko.tradeupproject.db.query;
 
 import de.batschko.tradeupproject.tables.Collection;
 import de.batschko.tradeupproject.tables.records.CollectionRecord;
+import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
 import org.jooq.Result;
@@ -43,12 +44,8 @@ public class QRCollection extends QueryRepository {
      * @return list of collection names
      */
     public static List<String> getAllCollectionNames() {
-        List<String> stringList = new ArrayList<>();
-        Result<Record1<String>> result = dsl.select(COLLECTION.COLL_NAME).from(COLLECTION).fetch();
-        for (Record1<String> row : result) {
-            stringList.add(row.value1());
-        }
-        return stringList;
+        return dsl.select(COLLECTION.COLL_NAME).from(COLLECTION).fetchInto(String.class);
+
     }
 
 

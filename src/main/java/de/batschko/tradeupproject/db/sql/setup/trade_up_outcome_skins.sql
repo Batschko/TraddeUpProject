@@ -5,11 +5,15 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-CREATE TABLE IF NOT EXISTS `classification` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `modified_date` datetime DEFAULT NOW() ON UPDATE NOW(),
-  `data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`data`)),
-  PRIMARY KEY (`id`)
+CREATE TABLE IF NOT EXISTS `trade_up_outcome_skins` (
+  `trade_up_id` int(11) NOT NULL,
+  `c_s2_skin_id` int(11) NOT NULL,
+  `chance` float NOT NULL,
+  `skin_float` float NOT NULL,
+  PRIMARY KEY (`trade_up_id`,`c_s2_skin_id`),
+  KEY `FK_outcome_c_s2_skin` (`c_s2_skin_id`),
+  CONSTRAINT `FK_outcome_c_s2_skin` FOREIGN KEY (`c_s2_skin_id`) REFERENCES `c_s2_skin` (`id`),
+  CONSTRAINT `FK_outcome_trade_up` FOREIGN KEY (`trade_up_id`) REFERENCES `trade_up` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

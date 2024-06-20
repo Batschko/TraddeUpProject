@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
  * Class to fetch from CSGOBackpack api.
  */
 @Slf4j
+@Deprecated
 public class CSGOBackpackApi {
 
     /**

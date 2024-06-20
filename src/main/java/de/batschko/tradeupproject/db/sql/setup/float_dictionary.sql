@@ -5,21 +5,16 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-CREATE TABLE IF NOT EXISTS `stash_skin_holder` (
-  `stash_id` int(11) NOT NULL,
-  `modified_date` datetime DEFAULT NOW() ON UPDATE NOW(),
-  `collection_id` int(11) NOT NULL,
-  `weapon` varchar(15) NOT NULL,
-  `title` varchar(30) NOT NULL,
-  `rarity` varchar(20) NOT NULL,
-  `top` tinyint(1) NOT NULL,
-  `bottom` tinyint(1) default NULL,
-  `float_start` float NOT NULL,
-  `float_end` float NOT NULL,
-  `image_url` varchar(400) NOT NULL,
-  PRIMARY KEY (`stash_id`),
-  KEY `collection_id` (`collection_id`),
-  CONSTRAINT `stash_skin_holder_ibfk_1` FOREIGN KEY (`collection_id`) REFERENCES `collection` (`id`)
+CREATE TABLE IF NOT EXISTS `float_dictionary` (
+  `id` int(11) NOT NULL,
+  `modified_date` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `name` varchar(128) NOT NULL,
+  `FN` float NOT NULL,
+  `MW` float NOT NULL,
+  `FT` float NOT NULL,
+  `WW` float NOT NULL,
+  `BS` float NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

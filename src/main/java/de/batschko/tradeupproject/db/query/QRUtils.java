@@ -4,10 +4,13 @@ import de.batschko.tradeupproject.enums.Condition;
 import de.batschko.tradeupproject.enums.Rarity;
 import de.batschko.tradeupproject.tables.TradeUpOutcomeSkins;
 import de.batschko.tradeupproject.tables.TradeUpSkins;
+import de.batschko.tradeupproject.tables.records.TradeUpOutcomeCustomRecord;
 import de.batschko.tradeupproject.tables.records.TradeUpOutcomeRecord;
+import de.batschko.tradeupproject.tables.records.TradeUpOutcomeSkinsCustomRecord;
 import de.batschko.tradeupproject.tables.records.TradeUpOutcomeSkinsRecord;
 import de.batschko.tradeupproject.tradeup.TradeUpSettings;
 import de.batschko.tradeupproject.utils.SkinUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Record5;
@@ -23,7 +26,9 @@ import static de.batschko.tradeupproject.tables.CS2Skin.C_S2_SKIN;
 import static de.batschko.tradeupproject.tables.FloatDictionary.FLOAT_DICTIONARY;
 import static de.batschko.tradeupproject.tables.StashSkinHolder.STASH_SKIN_HOLDER;
 import static de.batschko.tradeupproject.tables.TradeUpOutcome.TRADE_UP_OUTCOME;
+import static de.batschko.tradeupproject.tables.TradeUpOutcomeCustom.TRADE_UP_OUTCOME_CUSTOM;
 import static de.batschko.tradeupproject.tables.TradeUpOutcomeSkins.TRADE_UP_OUTCOME_SKINS;
+import static de.batschko.tradeupproject.tables.TradeUpOutcomeSkinsCustom.TRADE_UP_OUTCOME_SKINS_CUSTOM;
 import static de.batschko.tradeupproject.tables.TradeUpSkins.TRADE_UP_SKINS;
 import static de.batschko.tradeupproject.tables.VTupnsettinggs.V_TUPNSETTINGGS;
 
@@ -148,7 +153,14 @@ public class QRUtils extends QueryRepository {
     public static TradeUpOutcomeRecord createRecordTradeUpOutcome(){
         return dsl.newRecord(TRADE_UP_OUTCOME);
     }
-
+    /**
+     * Creates empty {@link TradeUpOutcomeCustomRecord}.
+     *
+     * @return {@link TradeUpOutcomeCustomRecord}
+     */
+    public static TradeUpOutcomeCustomRecord createRecordTradeUpOutcomeCustome(){
+        return dsl.newRecord(TRADE_UP_OUTCOME_CUSTOM);
+    }
     /**
      * Creates empty {@link TradeUpOutcomeSkinsRecord}.
      *
@@ -156,6 +168,9 @@ public class QRUtils extends QueryRepository {
      */
     public static TradeUpOutcomeSkinsRecord createRecordTradeUpOutcomeSkins(){
         return dsl.newRecord(TRADE_UP_OUTCOME_SKINS);
+    }
+    public static TradeUpOutcomeSkinsCustomRecord createRecordTradeUpOutcomeSkinsCustom(){
+        return dsl.newRecord(TRADE_UP_OUTCOME_SKINS_CUSTOM);
     }
 }
 

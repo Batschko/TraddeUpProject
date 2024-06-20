@@ -12,7 +12,8 @@ public enum TradeUpStatus {
     CALCULATED (1),
     CLASSIFIED (2),
     WASTED (3),
-    ERROR (4);
+    ERROR (4),
+    CALCULATED_CSMONEY (5);
 
     private final int status;
     TradeUpStatus(int status){

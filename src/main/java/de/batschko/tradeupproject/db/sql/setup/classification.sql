@@ -5,12 +5,10 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-CREATE TABLE IF NOT EXISTS `skin_price` (
+CREATE TABLE IF NOT EXISTS `classification` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `modified_date` datetime DEFAULT NOW() ON UPDATE NOW(),
-  `price_type` VARCHAR(10) NOT NULL,
-  `price` float DEFAULT NULL,
-  `amount_sold` int DEFAULT NULL,
+  `modified_date` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`data`)),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

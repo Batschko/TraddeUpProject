@@ -5,12 +5,19 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-CREATE TABLE IF NOT EXISTS `trade_up_skins` (
+CREATE TABLE IF NOT EXISTS `trade_up_marked` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `modified_date` timestamp NULL DEFAULT current_timestamp(),
   `trade_up_id` int(11) NOT NULL,
-  `c_s2_skin_id` int(11) NOT NULL,
-  PRIMARY KEY (`trade_up_id`,`c_s2_skin_id`),
-  CONSTRAINT `FK__c_s2_skin` FOREIGN KEY (`c_s2_skin_id`) REFERENCES `c_s2_skin` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `FK__trade_up` FOREIGN KEY (`trade_up_id`) REFERENCES `trade_up` (`id`) ON DELETE CASCADE
+  `stattrak` tinyint(4) NOT NULL,
+  `rarity` varchar(32) NOT NULL,
+  `float_dict_id` int(11) NOT NULL,
+  `generation_settings` varchar(500) NOT NULL,
+  `watch` tinyint(4) NOT NULL DEFAULT 0,
+  `active` tinyint(4) NOT NULL DEFAULT 0,
+  `test` tinyint(4) NOT NULL DEFAULT 0,
+  `marked` tinyint(4) GENERATED ALWAYS AS (1) VIRTUAL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

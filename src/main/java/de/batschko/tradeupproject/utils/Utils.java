@@ -1,8 +1,7 @@
 package de.batschko.tradeupproject.utils;
 
 
-import de.batschko.tradeupproject.db.customtable.TradeUpCustom;
-import de.batschko.tradeupproject.db.query.QRTradeUp;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -12,19 +11,8 @@ import java.util.List;
 /**
  * Utility methods that do not belong to any specific file.
  */
+@Slf4j
 public class Utils {
-
-
-    /**
-     * Calculates all trade ups.
-     * <p>Gets all TradeUps which are not calculated from db and calculates them</p>
-     */
-    public static void calculateAllTradeUps(){
-        List<TradeUpCustom> tradeUps = QRTradeUp.getTradeUpsToCalculate();
-        for(TradeUpCustom tup : tradeUps){
-            tup.setCalculation();
-        }
-    }
 
 
     /**
@@ -39,7 +27,7 @@ public class Utils {
             output.write(text);
             output.close();
         } catch (IOException e) {
-            System.out.println("An error occurred.");
+            log.warn("An error occurred.");
             e.printStackTrace();
         }
     }
@@ -56,7 +44,7 @@ public class Utils {
             output.write(String.join("\n", text));
             output.close();
         } catch (IOException e) {
-            System.out.println("An error occurred.");
+            log.warn("An error occurred.");
             e.printStackTrace();
         }
     }

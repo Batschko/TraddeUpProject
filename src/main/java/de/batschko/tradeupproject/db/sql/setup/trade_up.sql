@@ -7,7 +7,7 @@
 
 CREATE TABLE IF NOT EXISTS `trade_up` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `modified_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `modified_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `stattrak` tinyint(1) NOT NULL,
   `rarity` varchar(32) NOT NULL,
   `condition_target` varchar(20) NOT NULL,

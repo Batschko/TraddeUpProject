@@ -52,7 +52,7 @@ dependencies {
 	annotationProcessor("org.projectlombok:lombok:1.18.30")
 	implementation("com.google.guava:guava:33.0.0-jre")
 	jooqGenerator("org.mariadb.jdbc:mariadb-java-client:2.7.4")
-	implementation("com.googlecode.json-simple:json-simple:1.1.1")
+	//implementation("com.googlecode.json-simple:json-simple:1.1.1")
 	implementation("org.json:json:20171018")
 
 

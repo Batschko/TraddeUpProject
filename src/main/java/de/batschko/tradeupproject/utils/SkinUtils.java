@@ -13,8 +13,9 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.Record4;
 import org.jooq.Result;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+//import org.json.parser.JSONParser;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -102,8 +103,33 @@ public class SkinUtils {
      * @return the map with special names mapped to normalized names based on reverse
      */
     public static Map<String,String> getSpecialSkinNamesMap(boolean reverse){
-        Map<String, String> map = new HashMap<>();
         String fileName = "src/main/java/de/batschko/tradeupproject/db/SkinSpecialNames.txt";
+        return readSpecialNameFile(fileName, reverse);
+    }
+
+    /**
+     * Get special CSMoneyWiki names as map.
+     * <p>Default wrapper for {@link #getCSMoneyWikiSpecialNames(boolean)} reverse: false</p>
+     * @return the map with special names mapped to normalized names
+     */
+    public static Map<String,String> getCSMoneyWikiSpecialNames(){
+        String fileName = "src/main/java/de/batschko/tradeupproject/db/CSMWikiSpecialNames.txt";
+        return readSpecialNameFile(fileName, false);
+    }
+
+    /**
+     * Get special CSMoneyWiki names as map.
+     * Default key=special name value=normalized name
+     * @param reverse reverse key an values
+     * @return the map with special names mapped to normalized names based on reverse
+     */
+    public static Map<String,String> getCSMoneyWikiSpecialNames(boolean reverse){
+        String fileName = "src/main/java/de/batschko/tradeupproject/db/CSMWikiSpecialNames.txt";
+        return readSpecialNameFile(fileName, reverse);
+    }
+
+    private static Map<String,String> readSpecialNameFile(String fileName, boolean reverse){
+        Map<String, String> map = new HashMap<>();
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName, StandardCharsets.UTF_8));
             String line;
@@ -176,10 +202,11 @@ public class SkinUtils {
             data = CSGOBackpackApi.fetchSkinPriceData(skin.getFullName(), time, percent20InsteadOfPlus);
         }
 
-        JSONParser parse = new JSONParser();
+
         JSONObject jsonObject;
         try{
-            jsonObject = (JSONObject) parse.parse(data);
+
+            jsonObject = new JSONObject(new JSONTokener(data));
         }catch (Exception ParseException){
             throw new RuntimeException("couldn't parse to JSONObject, data ->"+data+"\n for skin: "+skin.getFullName());
         }

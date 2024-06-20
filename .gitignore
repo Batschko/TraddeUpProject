@@ -40,4 +40,5 @@ out/
 src/main/resources/database.properties
 src/main/resources/application-db.properties
 /src/main/java/db/
-
+_data
+/logs
