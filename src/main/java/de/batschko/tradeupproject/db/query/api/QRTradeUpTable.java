@@ -6,7 +6,6 @@ import de.batschko.tradeupproject.enums.Rarity;
 import de.batschko.tradeupproject.enums.TradeUpStatus;
 import de.batschko.tradeupproject.tables.records.TradeUpMadeRecord;
 import de.batschko.tradeupproject.tables.records.TradeUpMarkedRecord;
-import org.jetbrains.annotations.NotNull;
 import org.jooq.*;
 import org.jooq.Record;
 import org.json.JSONArray;

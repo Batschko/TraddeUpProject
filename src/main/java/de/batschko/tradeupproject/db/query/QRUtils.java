@@ -10,7 +10,6 @@ import de.batschko.tradeupproject.tables.records.TradeUpOutcomeSkinsCustomRecord
 import de.batschko.tradeupproject.tables.records.TradeUpOutcomeSkinsRecord;
 import de.batschko.tradeupproject.tradeup.TradeUpSettings;
 import de.batschko.tradeupproject.utils.SkinUtils;
-import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Record5;
