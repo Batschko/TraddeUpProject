@@ -1,20 +1,14 @@
 package de.batschko.tradeupproject.utils;
 
 import de.batschko.tradeupproject.db.customtable.CS2SkinCustom;
-import de.batschko.tradeupproject.db.query.QRCS2Skin;
-import de.batschko.tradeupproject.db.query.QRSkinPrice;
 import de.batschko.tradeupproject.db.query.QRStashHolder;
 import de.batschko.tradeupproject.enums.Condition;
-import de.batschko.tradeupproject.enums.PriceType;
 import de.batschko.tradeupproject.enums.Rarity;
 import de.batschko.tradeupproject.tables.StashSkinHolder;
-import de.batschko.tradeupproject.webfetchers.CSGOBackpackApi;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.Record4;
 import org.jooq.Result;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 //import org.json.parser.JSONParser;
 
 import java.io.BufferedReader;
@@ -150,108 +144,6 @@ public class SkinUtils {
         return map;
     }
 
-
-    /**
-     * Sets skin prices with limit.
-     *<p>switch between 'percent20InsteadOfPlus' to get a higher api request limit</p>
-     * @param limit                  the limit
-     * @param time                   the time for median
-     * @param percent20InsteadOfPlus use %20 instead of plus in url
-     */
-    @Deprecated
-    public static void setSkinPrices(int limit, int time, boolean percent20InsteadOfPlus) {
-        List<SkinFullName> skins = QRCS2Skin.getSkinsWithoutPrice(limit, false);
-        for(SkinFullName skin: skins){
-            setSkinPrice(skin, false, time, percent20InsteadOfPlus);
-        }
-    }
-
-    /**
-     * Sets skin prices for skins with special chars.
-     *<p>switch between 'percent20InsteadOfPlus' to get a higher api request limit</p>
-     * @param time                   the time for median
-     * @param percent20InsteadOfPlus use %20 instead of plus in url
-     */
-    @Deprecated
-    public static void setSkinPricesSpecialChars(int time, boolean percent20InsteadOfPlus) {
-        List<SkinFullName> skins = QRCS2Skin.getSkinsWithoutPrice(Integer.MAX_VALUE, true);
-        for(SkinFullName skin: skins){
-            setSkinPrice(skin, true, time, percent20InsteadOfPlus);
-        }
-    }
-
-    /**
-     * Sets skin price/amountSold and saves to db.
-     * <p>price/amount cases: success -> [price,amount], no data in time -> [price,-1], no data in 180 days [-2,-2] </p>
-     *<p>switch between 'percent20InsteadOfPlus' to get a higher api request limit</p>
-     * @param skin                   the skin as {@link SkinFullName}
-     * @param withSpecialChars       true to set prices for skins with special chars
-     * @param time                   the time for median
-     * @param percent20InsteadOfPlus use %20 instead of plus in url
-     */
-    @Deprecated
-    public static void setSkinPrice(SkinFullName skin, boolean withSpecialChars, int time, boolean percent20InsteadOfPlus) {
-        double medianPrice = -1;
-        int amountSold = 0;
-        int backpackTime = 0;
-
-        PriceType priceType = PriceType.getPriceType(skin.getCondition(), skin.getStattrak());
-        String data;
-        if(withSpecialChars){
-            Map<String, String> specialCharsMapping = getSpecialSkinNamesMap(true);
-            String newTitle = specialCharsMapping.get(skin.getTitle());
-            data = CSGOBackpackApi.fetchSkinPriceData(skin.getFullNameSpecialChars(newTitle), time, percent20InsteadOfPlus);
-        }else {
-            data = CSGOBackpackApi.fetchSkinPriceData(skin.getFullName(), time, percent20InsteadOfPlus);
-        }
-
-
-        JSONObject jsonObject;
-        try{
-
-            jsonObject = new JSONObject(new JSONTokener(data));
-        }catch (Exception ParseException){
-            throw new RuntimeException("couldn't parse to JSONObject, data ->"+data+"\n for skin: "+skin.getFullName());
-        }
-
-
-        boolean success = Boolean.parseBoolean(String.valueOf(jsonObject.get("success")));
-        if (!success) {
-            log.debug("success: false for skin -> {}", skin.getFullName());
-            String reason = (String) jsonObject.get("reason");
-            if (reason != null && reason.contains("exceeded maximum number of requests")) {
-                throw new RuntimeException("exceeded maximum number of requests");
-            }else{
-                //no price data for last 180 days
-                int skinPriceId = QRSkinPrice.save(priceType, -2, -2);
-                log.debug("No Data in 180 days, saving skin -> {} price: {}  {}", skin.getFullName(),-2,-2);
-                QRCS2Skin.updatePrice(skin.getId(), skinPriceId);
-                return;
-            }
-        }
-        String medianPriceS = (String) jsonObject.get("median_price");
-        String amountSoldS = (String) jsonObject.get("amount_sold");
-        String bpTimeS = (String) jsonObject.get("time");
-        if (medianPriceS != null && amountSoldS != null) {
-            try {
-                medianPrice = Double.parseDouble(medianPriceS);
-                amountSold = Integer.parseInt(amountSoldS);
-                backpackTime = Integer.parseInt(bpTimeS);
-            } catch (NumberFormatException e) {
-                log.warn("Couldn't convert price or amount from jsonObject: {}", jsonObject);
-            }
-        }else {
-            log.error("Couldn't read price or amount from jsonObject:  {}", jsonObject);
-        }
-
-        if(time != backpackTime){
-            amountSold=-1;
-        }
-
-        int skinPriceId = QRSkinPrice.save(priceType, medianPrice, amountSold);
-        log.info("Saving SkinPrice -> {} price,amount: {}, {}", skin.getFullName(), medianPrice, amountSold );
-        QRCS2Skin.updatePrice(skin.getId(), skinPriceId);
-    }
 
     /*-------------*/
     /*   CLASSES   */

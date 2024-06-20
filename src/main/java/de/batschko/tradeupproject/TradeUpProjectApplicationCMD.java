@@ -4,8 +4,7 @@ import de.batschko.tradeupproject.db.query.QRInitQueries;
 import de.batschko.tradeupproject.db.query.QRTradeUp;
 import de.batschko.tradeupproject.tradeup.Generator;
 import de.batschko.tradeupproject.utils.CSMoneyUtils;
-import de.batschko.tradeupproject.utils.SkinUtils;
-import de.batschko.tradeupproject.utils.TradeUpUtils;
+import de.batschko.tradeupproject.webfetchers.CSGOBackpackApi;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -99,13 +98,13 @@ public class TradeUpProjectApplicationCMD {
 		cmdList.put("1", QRInitQueries::loadInitialCaseCollection);
 		cmdList.put("2", QRInitQueries::generateAndSaveStashHolderToDatabase);
 		cmdList.put("3", QRInitQueries::generateAndSaveCS2SkinToDatabase);
-		cmdList.put("4", () -> SkinUtils.setSkinPricesSpecialChars(21, false));
-		cmdList.put("5", () -> SkinUtils.setSkinPrices(Integer.MAX_VALUE,21, false));
+		cmdList.put("4", () -> CSGOBackpackApi.setSkinPricesSpecialChars(21, false));
+		cmdList.put("5", () -> CSGOBackpackApi.setSkinPrices(Integer.MAX_VALUE,21, false));
 		cmdList.put("6", () -> Generator.generateSingleCollTradeUps(2));
 		cmdList.put("7", () -> Generator.generateSingleCollTradeUps(4));
 		cmdList.put("8", () -> QRTradeUp.createTradeUpSkins(false));
 		cmdList.put("9", () -> QRTradeUp.createTradeUpSkins(true));
-		cmdList.put("0", TradeUpUtils::calculateAllTradeUpsBackpackPrice);
+		cmdList.put("0", CSGOBackpackApi::calculateAllTradeUpsBackpackPrice);
 
 
 		Scanner in = new Scanner(System.in);

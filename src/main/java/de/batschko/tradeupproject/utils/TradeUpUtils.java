@@ -1,6 +1,5 @@
 package de.batschko.tradeupproject.utils;
 
-import de.batschko.tradeupproject.TradeUpProjectApplication;
 import de.batschko.tradeupproject.db.customtable.TradeUpCustom;
 import de.batschko.tradeupproject.db.query.QRCSMoneyPrice;
 import de.batschko.tradeupproject.db.query.QRTradeUp;
@@ -14,17 +13,6 @@ import java.util.List;
 
 @Slf4j
 public class TradeUpUtils {
-    /**
-     * Calculates all trade ups using backpack price.
-     * <p>Gets all TradeUps which are not calculated from db and calculates them</p>
-     */
-    @Deprecated
-    public static void calculateAllTradeUpsBackpackPrice(){
-        List<TradeUpCustom> tradeUps = QRTradeUp.getTradeUpsToCalculate();
-        for(TradeUpCustom tup : tradeUps){
-            tup.setCalculation(false);
-        }
-    }
 
     /**
      * Calculates all trade ups using CSMoney price.
