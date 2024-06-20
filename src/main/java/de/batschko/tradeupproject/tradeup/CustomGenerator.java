@@ -4,8 +4,7 @@ import de.batschko.tradeupproject.db.query.*;
 import de.batschko.tradeupproject.enums.Condition;
 import de.batschko.tradeupproject.enums.Rarity;
 import de.batschko.tradeupproject.tables.records.StashSkinHolderRecord;
-import de.batschko.tradeupproject.tables.records.TradeUpOutcomeCustomRecord;
-import de.batschko.tradeupproject.tables.records.TradeUpOutcomeSkinsCustomRecord;
+
 import de.batschko.tradeupproject.tables.records.TradeUpOutcomeSkinsRecord;
 import de.batschko.tradeupproject.utils.ApiUtils;
 import org.jooq.impl.UpdatableRecordImpl;
@@ -17,9 +16,10 @@ import java.util.*;
 public class CustomGenerator {
 
 
-    public static JSONObject calculateTup(JSONObject jsonObject){
+   /*  public static JSONObject calculateTup(JSONObject jsonObject){
         return calculateTup(jsonObject, false);
     }
+
 
     public static JSONObject calculateTup(JSONObject jsonObject, boolean save){
         JSONObject row1 = jsonObject.getJSONObject("row1");
@@ -64,11 +64,11 @@ public class CustomGenerator {
             minSkinPriceAvg = QRCSMoneyPrice.getTradeUpSkinsAveragePriceCustom(collectionName, condition, tupId);
             amountSoldAvg = QRCSMoneyPrice.getTradeUpSkinAverageAmountSoldCustom(collectionName, condition, tupId);
 
-          /*  if( minSkinPriceAvg <= 0){
-                this.setStatus(TradeUpStatus.WASTED);
-                this.store();
-                return null;
-            }*/
+      //      if( minSkinPriceAvg <= 0){
+       //         this.setStatus(TradeUpStatus.WASTED);
+       //         this.store();
+       //         return null;
+       //     }
             amountSoldSum+= amountSoldAvg;
             totalPrice+= collNumber.get(i) * minSkinPriceAvg;
             floatSum+= collNumber.get(i) * floatDictMap.get(condition);
@@ -183,12 +183,7 @@ public class CustomGenerator {
             outSkins.forEach(UpdatableRecordImpl::store);
         }
         //TODO
-        /*
-        get tupskins
-        delete tupskins
-        delete outskins
-        alles als eine Map returnen
-         */
+
         JSONArray tupskins = ApiUtils.skinResultToJsonArray(QRCS2Skin.getTradeUpSkinsCustom(tupId));
         JSONArray outskins = ApiUtils.skinResultToJsonArray(QRCS2Skin.getOutSkinsCustom(tupId));
         QRCS2Skin.deleteInAndOutSkins(tupId);
@@ -213,5 +208,5 @@ public class CustomGenerator {
 
         return returnVal;
     }
-
+*/
 }

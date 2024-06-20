@@ -4,10 +4,9 @@ package de.batschko.tradeupproject.db.query;
 import de.batschko.tradeupproject.enums.Condition;
 import de.batschko.tradeupproject.enums.Rarity;
 import de.batschko.tradeupproject.enums.TradeUpStatus;
-import de.batschko.tradeupproject.tables.CSMoneyPrice;
-import de.batschko.tradeupproject.tables.SkinPrice;
+
 import de.batschko.tradeupproject.tables.TradeUp;
-import de.batschko.tradeupproject.tables.records.CSMoneyPriceRecord;
+
 import de.batschko.tradeupproject.tradeup.TradeUpSettings;
 import de.batschko.tradeupproject.utils.SkinUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -22,19 +21,18 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static de.batschko.tradeupproject.tables.CS2Skin.C_S2_SKIN;
-import static de.batschko.tradeupproject.tables.CSMoneyPrice.C_S_MONEY_PRICE;
-import static de.batschko.tradeupproject.tables.SkinPrice.SKIN_PRICE;
+
 import static de.batschko.tradeupproject.tables.StashSkinHolder.STASH_SKIN_HOLDER;
 import static de.batschko.tradeupproject.tables.TradeUp.TRADE_UP;
 import static de.batschko.tradeupproject.tables.TradeUpOutcomeSkins.TRADE_UP_OUTCOME_SKINS;
 import static de.batschko.tradeupproject.tables.TradeUpSkins.TRADE_UP_SKINS;
-import static de.batschko.tradeupproject.tables.TradeUpSkinsCustom.TRADE_UP_SKINS_CUSTOM;
-import static de.batschko.tradeupproject.tables.VFullcs2skinCsmoney.V_FULLCS2SKIN_CSMONEY;
 import static de.batschko.tradeupproject.tables.VTupnsettinggs.V_TUPNSETTINGGS;
+import static de.batschko.tradeupproject.tables.VFullcs2skin.V_FULLCS2SKIN;
+
 import static org.jooq.impl.DSL.*;
 
 /**
- * Database access related to {@link SkinPrice}.
+ * Database access related to {@link }.
  */
 @Repository
 @Slf4j
@@ -46,25 +44,8 @@ public class QRCSMoneyPrice extends QueryRepository{
 
 
 
-    public static Result<Record4<String, String, Double, Double>> getCSMoneyPriceListFull() {
-        return dsl.selectDistinct(STASH_SKIN_HOLDER.WEAPON, STASH_SKIN_HOLDER.TITLE, STASH_SKIN_HOLDER.FLOAT_START, STASH_SKIN_HOLDER.FLOAT_END)
-                        .from(STASH_SKIN_HOLDER)
-                        .join(C_S2_SKIN)
-                        .on(C_S2_SKIN.STASH_ID.eq(STASH_SKIN_HOLDER.STASH_ID))
-                        .leftAntiJoin(C_S_MONEY_PRICE)
-                        .on(C_S_MONEY_PRICE.C_S2_SKIN_ID.eq(C_S2_SKIN.ID))
-                        .orderBy(C_S_MONEY_PRICE.C_S2_SKIN_ID.asc()).fetch();
-    }
-    public static Result<Record4<String, String, Double, Double>> getCSMoneyPriceListUpdate() {
-        return dsl.selectDistinct(STASH_SKIN_HOLDER.WEAPON, STASH_SKIN_HOLDER.TITLE, STASH_SKIN_HOLDER.FLOAT_START, STASH_SKIN_HOLDER.FLOAT_END)
-                        .from(STASH_SKIN_HOLDER)
-                        .join(C_S2_SKIN)
-                        .on(C_S2_SKIN.STASH_ID.eq(STASH_SKIN_HOLDER.STASH_ID))
-                        .join(C_S_MONEY_PRICE)
-                        .on(C_S_MONEY_PRICE.C_S2_SKIN_ID.eq(C_S2_SKIN.ID))
-                        .orderBy(C_S_MONEY_PRICE.C_S2_SKIN_ID.asc()).fetch();
 
-    }
+
     public static Result<Record4<String, String, Double, Double>> getCSMoneyPriceList() {
         return dsl.selectDistinct(STASH_SKIN_HOLDER.WEAPON, STASH_SKIN_HOLDER.TITLE, STASH_SKIN_HOLDER.FLOAT_START, STASH_SKIN_HOLDER.FLOAT_END)
                         .from(STASH_SKIN_HOLDER)
@@ -82,9 +63,7 @@ public class QRCSMoneyPrice extends QueryRepository{
                         .from(STASH_SKIN_HOLDER)
                         .join(C_S2_SKIN)
                         .on(C_S2_SKIN.STASH_ID.eq(STASH_SKIN_HOLDER.STASH_ID))
-                        .join(C_S_MONEY_PRICE)
-                        .on(C_S_MONEY_PRICE.C_S2_SKIN_ID.eq(C_S2_SKIN.ID))
-                        .where(C_S_MONEY_PRICE.MODIFIED_DATE.lt(localDateTime(time)))
+                        .where(C_S2_SKIN.MODIFIED_DATE.lt(localDateTime(time)))
                         .orderBy(C_S2_SKIN.ID.asc()).fetch();
     }
 
@@ -93,10 +72,10 @@ public class QRCSMoneyPrice extends QueryRepository{
         final int minusHours = 12;
         DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
         String time = dateFmt.format(ZonedDateTime.now(ZoneId.of("Europe/Berlin")).minusHours(minusHours));
-        return dsl.selectDistinct(C_S_MONEY_PRICE.C_S2_SKIN_ID)
-                        .from(C_S_MONEY_PRICE)
-                        .where(C_S_MONEY_PRICE.MODIFIED_DATE.lt(localDateTime(time)))
-                        .orderBy(C_S_MONEY_PRICE.C_S2_SKIN_ID.asc())
+        return dsl.selectDistinct(C_S2_SKIN.ID)
+                        .from(C_S2_SKIN)
+                        .where(C_S2_SKIN.MODIFIED_DATE.lt(localDateTime(time)))
+                        .orderBy(C_S2_SKIN.ID.asc())
                         .fetchInto(Integer.class);
     }
 
@@ -105,20 +84,18 @@ public class QRCSMoneyPrice extends QueryRepository{
                         .from(STASH_SKIN_HOLDER)
                         .join(C_S2_SKIN)
                         .on(C_S2_SKIN.STASH_ID.eq(STASH_SKIN_HOLDER.STASH_ID))
-                        .leftAntiJoin(C_S_MONEY_PRICE)
-                        .on(C_S_MONEY_PRICE.C_S2_SKIN_ID.eq(C_S2_SKIN.ID))
+                        .where(C_S2_SKIN.PRICE.isNull())
                         .orderBy(C_S2_SKIN.ID.asc()).fetch();
     }
 
     public static List<Integer> getCSMoneyPriceListMissingIds() {
         return dsl.select(C_S2_SKIN.ID)
                         .from(C_S2_SKIN)
-                        .leftAntiJoin(C_S_MONEY_PRICE)
-                        .on(C_S_MONEY_PRICE.C_S2_SKIN_ID.eq(C_S2_SKIN.ID))
+                        .where(C_S2_SKIN.PRICE.isNull())
                         .orderBy(C_S2_SKIN.ID.asc()).fetchInto(Integer.class);
     }
 
-    public static void update(String weapon, String title, Condition condition, byte stat , double price, int amount) {
+    public static void update(String weapon, String title, Condition condition, byte stat , double price) {
 
         Integer skinId = dsl.select(C_S2_SKIN.ID).from(C_S2_SKIN).join(STASH_SKIN_HOLDER)
                 .on(C_S2_SKIN.STASH_ID.eq(STASH_SKIN_HOLDER.STASH_ID))
@@ -132,20 +109,14 @@ public class QRCSMoneyPrice extends QueryRepository{
         if(skinId == null){
             return;
         }
-        dsl.update(C_S_MONEY_PRICE).set(C_S_MONEY_PRICE.PRICE, price).set(C_S_MONEY_PRICE.AMOUNT, amount).where(C_S_MONEY_PRICE.C_S2_SKIN_ID.eq(skinId)).execute();
+        dsl.update(C_S2_SKIN).set(C_S2_SKIN.PRICE, price).where(C_S2_SKIN.ID.eq(skinId)).execute();
     }
 
     public static void update(int id, double price) {
-        Integer skinId = dsl.select(C_S_MONEY_PRICE.C_S2_SKIN_ID).from(C_S_MONEY_PRICE).where(C_S_MONEY_PRICE.C_S2_SKIN_ID.eq(id)).fetchOneInto(Integer.class);
-        if(skinId == null){
-            dsl.newRecord(C_S_MONEY_PRICE).setCS2SkinId(id).setPrice(price).store();
-        }else {
-            dsl.update(C_S_MONEY_PRICE).set(C_S_MONEY_PRICE.PRICE, price).set(C_S_MONEY_PRICE.MODIFIED_DATE, LocalDateTime.now(ZoneId.of("Europe/Berlin"))).where(C_S_MONEY_PRICE.C_S2_SKIN_ID.eq(id)).execute();
-        }
-
+        dsl.update(C_S2_SKIN).set(C_S2_SKIN.PRICE, price).set(C_S2_SKIN.MODIFIED_DATE, LocalDateTime.now(ZoneId.of("Europe/Berlin"))).where(C_S2_SKIN.ID.eq(id)).execute();
     }
 
-    public static void save(String weapon, String title, Condition condition, byte stat , double price, int amount){
+  /*  public static void save(String weapon, String title, Condition condition, byte stat , double price, int amount){
         Integer skinId = dsl.select(C_S2_SKIN.ID).from(C_S2_SKIN).join(STASH_SKIN_HOLDER)
                 .on(C_S2_SKIN.STASH_ID.eq(STASH_SKIN_HOLDER.STASH_ID))
                 .where(STASH_SKIN_HOLDER.WEAPON.eq(weapon))
@@ -169,55 +140,60 @@ public class QRCSMoneyPrice extends QueryRepository{
             log.warn("Saving CSMoneyPrice failed for {} | {}  id:{}",weapon,title,skinId);
         }
 
-    }
+    }*/
 
     public static double getSkinPrice(int cs2skinId){
-        Double result = dsl.select(C_S_MONEY_PRICE.PRICE)
-                .from(C_S_MONEY_PRICE)
-                .where(C_S_MONEY_PRICE.C_S2_SKIN_ID.eq(cs2skinId))
+        Double result = dsl.select(C_S2_SKIN.PRICE)
+                .from(C_S2_SKIN)
+                .where(C_S2_SKIN.ID.eq(cs2skinId))
                 .fetchOneInto(Double.class);
         if(result == null) result=  0.0;//throw new RuntimeException("Couldn't get SkinPrice for cs2skinId: "+cs2skinId); //result=  -1.0;//throw new RuntimeException("Couldn't get SkinPrice for cs2skinId: "+cs2skinId);
         return result;
     }
 
 
+    @Deprecated
     public static double getTradeUpSkinAverageAmountSold(String collName, Condition condition, int tupId) {
-        Double result = dsl.select(avg(V_FULLCS2SKIN_CSMONEY.AMOUNT))
-                .from(V_FULLCS2SKIN_CSMONEY)
+    /*    Double result = dsl.select(avg(V_FULLCS2SKIN.AMOUNT))
+                .from(V_FULLCS2SKIN)
                 .join(TRADE_UP_SKINS)
-                .on(TRADE_UP_SKINS.C_S2_SKIN_ID.eq(V_FULLCS2SKIN_CSMONEY.ID))
-                .where(V_FULLCS2SKIN_CSMONEY.COLL_NAME.eq(collName))
-                .and(V_FULLCS2SKIN_CSMONEY.CONDITION.eq(condition))
+                .on(TRADE_UP_SKINS.C_S2_SKIN_ID.eq(V_FULLCS2SKIN.ID))
+                .where(V_FULLCS2SKIN.COLL_NAME.eq(collName))
+                .and(V_FULLCS2SKIN.CONDITION.eq(condition))
                 .and(TRADE_UP_SKINS.TRADE_UP_ID.eq(tupId))
                 .fetchOneInto(Double.class);
         if (result==null){
             return -3;
         }
-        return result;
+        return result;*/
+        return -1;
     }
+
     public static double getTradeUpSkinAverageAmountSoldCustom(String collName, Condition condition, int tupId) {
-        Double result = dsl.select(avg(V_FULLCS2SKIN_CSMONEY.AMOUNT))
-                .from(V_FULLCS2SKIN_CSMONEY)
+     /*   Double result = dsl.select(avg(V_FULLCS2SKIN.AMOUNT))
+                .from(V_FULLCS2SKIN)
                 .join(TRADE_UP_SKINS_CUSTOM)
-                .on(TRADE_UP_SKINS_CUSTOM.C_S2_SKIN_ID.eq(V_FULLCS2SKIN_CSMONEY.ID))
-                .where(V_FULLCS2SKIN_CSMONEY.COLL_NAME.eq(collName))
-                .and(V_FULLCS2SKIN_CSMONEY.CONDITION.eq(condition))
+                .on(TRADE_UP_SKINS_CUSTOM.C_S2_SKIN_ID.eq(V_FULLCS2SKIN.ID))
+                .where(V_FULLCS2SKIN.COLL_NAME.eq(collName))
+                .and(V_FULLCS2SKIN.CONDITION.eq(condition))
                 .and(TRADE_UP_SKINS_CUSTOM.TRADE_UP_CUSTOM_ID.eq(tupId))
                 .fetchOneInto(Double.class);
         if (result==null){
             return -3;
         }
-        return result;
+        return result;*/
+        return -1;
     }
+
 
     public static double getTradeUpSkinsAveragePrice(String collName, Condition condition, int tupId) {
 
-        Double result = dsl.select(avg(V_FULLCS2SKIN_CSMONEY.PRICE))
-                .from(V_FULLCS2SKIN_CSMONEY)
+        Double result = dsl.select(avg(V_FULLCS2SKIN.PRICE))
+                .from(V_FULLCS2SKIN)
                 .join(TRADE_UP_SKINS)
-                .on(TRADE_UP_SKINS.C_S2_SKIN_ID.eq(V_FULLCS2SKIN_CSMONEY.ID))
-                .where(V_FULLCS2SKIN_CSMONEY.COLL_NAME.eq(collName))
-                .and(V_FULLCS2SKIN_CSMONEY.CONDITION.eq(condition))
+                .on(TRADE_UP_SKINS.C_S2_SKIN_ID.eq(V_FULLCS2SKIN.ID))
+                .where(V_FULLCS2SKIN.COLL_NAME.eq(collName))
+                .and(V_FULLCS2SKIN.CONDITION.eq(condition))
                 .and(TRADE_UP_SKINS.TRADE_UP_ID.eq(tupId))
                 .fetchOneInto(Double.class);
         if (result==null){
@@ -227,21 +203,23 @@ public class QRCSMoneyPrice extends QueryRepository{
         return result;
     }
 
-    public static double getTradeUpSkinsAveragePriceCustom(String collName, Condition condition, int tupId) {
 
-        Double result = dsl.select(avg(V_FULLCS2SKIN_CSMONEY.PRICE))
-                .from(V_FULLCS2SKIN_CSMONEY)
+    public static double getTradeUpSkinsAveragePriceCustom(String collName, Condition condition, int tupId) {
+/*
+        Double result = dsl.select(avg(V_FULLCS2SKIN.PRICE))
+                .from(V_FULLCS2SKIN)
                 .join(TRADE_UP_SKINS_CUSTOM)
-                .on(TRADE_UP_SKINS_CUSTOM.C_S2_SKIN_ID.eq(V_FULLCS2SKIN_CSMONEY.ID))
-                .where(V_FULLCS2SKIN_CSMONEY.COLL_NAME.eq(collName))
-                .and(V_FULLCS2SKIN_CSMONEY.CONDITION.eq(condition))
+                .on(TRADE_UP_SKINS_CUSTOM.C_S2_SKIN_ID.eq(V_FULLCS2SKIN.ID))
+                .where(V_FULLCS2SKIN.COLL_NAME.eq(collName))
+                .and(V_FULLCS2SKIN.CONDITION.eq(condition))
                 .and(TRADE_UP_SKINS_CUSTOM.TRADE_UP_CUSTOM_ID.eq(tupId))
                 .fetchOneInto(Double.class);
         if (result==null){
             log.warn("Couldn't get average TradeUpSkins price for: tupId -> " + tupId + " coll -> " + collName + " cond -> " + condition);
             return -3;
         }
-        return result;
+        return result;*/
+        return -1;
     }
 
 
@@ -276,24 +254,24 @@ public class QRCSMoneyPrice extends QueryRepository{
             List<SkinUtils.TradeUpSkinInfo> infos = settings.getTradeUpSkinInfo(rarity, stat);
             for(SkinUtils.TradeUpSkinInfo info : infos){
 
-                SelectConditionStep<Record1<Double>> subquery = dsl.select(min(V_FULLCS2SKIN_CSMONEY.PRICE.mul(1.15)))
-                        .from(V_FULLCS2SKIN_CSMONEY)
-                        .where(V_FULLCS2SKIN_CSMONEY.COLL_NAME.eq(info.getColl_name()))
-                        .and(V_FULLCS2SKIN_CSMONEY.RARITY.eq(info.getRarity()))
-                        .and(V_FULLCS2SKIN_CSMONEY.CONDITION.eq(info.getCondition()))
-                        .and(V_FULLCS2SKIN_CSMONEY.STATTRAK.eq(info.getStattrak()))
-                        .and(V_FULLCS2SKIN_CSMONEY.PRICE.gt(0.0));
+                SelectConditionStep<Record1<Double>> subquery = dsl.select(min(V_FULLCS2SKIN.PRICE.mul(1.15)))
+                        .from(V_FULLCS2SKIN)
+                        .where(V_FULLCS2SKIN.COLL_NAME.eq(info.getColl_name()))
+                        .and(V_FULLCS2SKIN.RARITY.eq(info.getRarity()))
+                        .and(V_FULLCS2SKIN.CONDITION.eq(info.getCondition()))
+                        .and(V_FULLCS2SKIN.STATTRAK.eq(info.getStattrak()))
+                        .and(V_FULLCS2SKIN.PRICE.gt(0.0));
 
 
 
-                SelectConditionStep<Record1<Integer>> query = dsl.select(V_FULLCS2SKIN_CSMONEY.ID)
-                        .from(V_FULLCS2SKIN_CSMONEY)
-                        .where(V_FULLCS2SKIN_CSMONEY.COLL_NAME.eq(info.getColl_name()))
-                        .and(V_FULLCS2SKIN_CSMONEY.RARITY.eq(info.getRarity()))
-                        .and(V_FULLCS2SKIN_CSMONEY.CONDITION.eq(info.getCondition()))
-                        .and(V_FULLCS2SKIN_CSMONEY.STATTRAK.eq(info.getStattrak()))
-                        .and(V_FULLCS2SKIN_CSMONEY.PRICE.ge(0.0))
-                        .and(V_FULLCS2SKIN_CSMONEY.PRICE.le(subquery));
+                SelectConditionStep<Record1<Integer>> query = dsl.select(V_FULLCS2SKIN.ID)
+                        .from(V_FULLCS2SKIN)
+                        .where(V_FULLCS2SKIN.COLL_NAME.eq(info.getColl_name()))
+                        .and(V_FULLCS2SKIN.RARITY.eq(info.getRarity()))
+                        .and(V_FULLCS2SKIN.CONDITION.eq(info.getCondition()))
+                        .and(V_FULLCS2SKIN.STATTRAK.eq(info.getStattrak()))
+                        .and(V_FULLCS2SKIN.PRICE.ge(0.0))
+                        .and(V_FULLCS2SKIN.PRICE.le(subquery));
 
                 List<Integer> tupSkinIds = query.fetchInto(Integer.class);
                 //TODO delete tradeups that are not possible beause condition doesnt exist?

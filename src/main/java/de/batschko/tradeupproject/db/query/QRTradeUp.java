@@ -22,9 +22,8 @@ import static de.batschko.tradeupproject.tables.TradeUp.TRADE_UP;
 import static de.batschko.tradeupproject.tables.TradeUpOutcome.TRADE_UP_OUTCOME;
 import static de.batschko.tradeupproject.tables.TradeUpOutcomeSkins.TRADE_UP_OUTCOME_SKINS;
 import static de.batschko.tradeupproject.tables.TradeUpSkins.TRADE_UP_SKINS;
-import static de.batschko.tradeupproject.tables.TradeUpSkinsCustom.TRADE_UP_SKINS_CUSTOM;
+
 import static de.batschko.tradeupproject.tables.VFullcs2skin.V_FULLCS2SKIN;
-import static de.batschko.tradeupproject.tables.VFullcs2skinCsmoney.V_FULLCS2SKIN_CSMONEY;
 import static de.batschko.tradeupproject.tables.VTupnsettinggs.V_TUPNSETTINGGS;
 import static org.jooq.impl.DSL.min;
 import static org.jooq.impl.DSL.row;
@@ -77,6 +76,7 @@ public class QRTradeUp extends QueryRepository{
     /**
      * Save {@link TradeUpRecord} with attributes as parameters.
      *
+     * @param custom            false if generated
      * @param stattrak          stattrak as byte
      * @param rarity            rarity {@link Rarity}
      * @param condTarget        condition target {@link Condition}
@@ -85,8 +85,9 @@ public class QRTradeUp extends QueryRepository{
      * @param floatDictId       float dict id
      * @param tradeUpSettingsId tradeup settings id
      */
-    public static void saveRecord(byte stattrak, Rarity rarity, Condition condTarget, byte collCount, TradeUpStatus status, int floatDictId, int tradeUpSettingsId){
+    public static void saveRecord(boolean custom, byte stattrak, Rarity rarity, Condition condTarget, byte collCount, TradeUpStatus status, int floatDictId, int tradeUpSettingsId){
         TradeUpRecord tup = dsl.newRecord(TradeUp.TRADE_UP);
+        tup.setCustom(custom ? 1:0);
         tup.setStattrak(stattrak);
         tup.setRarity(rarity);
         tup.setConditionTarget(condTarget);
@@ -173,6 +174,7 @@ public class QRTradeUp extends QueryRepository{
         processCreateTradeUpSkins(tupAndSettings, false);
     }
 
+    /*
     public static void createTradeUpSkinsCustom(int tupId, TradeUpSettings settings, Rarity rarity, byte stat){
             List<SkinUtils.TradeUpSkinInfo> infos = settings.getTradeUpSkinInfo(rarity, stat);
             for(SkinUtils.TradeUpSkinInfo info : infos){
@@ -213,7 +215,7 @@ public class QRTradeUp extends QueryRepository{
 
 
             }
-        }
+        }*/
 
     //TODO doc
     public static TradeUpOutcomeRecord getTradeUpOutcome(int tupId){
@@ -253,7 +255,6 @@ public class QRTradeUp extends QueryRepository{
                         .and(V_FULLCS2SKIN.CONDITION.eq(info.getCondition()))
                         .and(V_FULLCS2SKIN.STATTRAK.eq(info.getStattrak()))
                         .and(V_FULLCS2SKIN.PRICE.ge(0.0))
-                        .and(V_FULLCS2SKIN.AMOUNT_SOLD.ge(0))
                         .and(V_FULLCS2SKIN.PRICE.le(subquery));
 
                 List<Integer> tupSkinIds = query.fetchInto(Integer.class);

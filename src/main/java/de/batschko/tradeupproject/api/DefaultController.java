@@ -30,9 +30,10 @@ public class DefaultController {
             throw new RuntimeException(e);
         }
         System.out.println(json);
-        JSONObject jsonObject = CustomGenerator.calculateTup(json);
+     //   JSONObject jsonObject = CustomGenerator.calculateTup(json);
 
 
-        return jsonObject.toString();
+      //  return jsonObject.toString();
+        return  "";
     }
 }

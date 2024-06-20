@@ -36,9 +36,9 @@ public class CSMoneyWiki {
         Result<Record4<String, String, Double, Double>> skinNameWithFloatList;
         if(update){
           //  a = QRCSMoneyPrice.getCSMoneyPriceListNegativ();
-            skinNameWithFloatList = QRCSMoneyPrice.getCSMoneyPriceListUpdate();
+            skinNameWithFloatList = QRCSMoneyPrice.getCSMoneyPriceListByDate();
         }else {
-            skinNameWithFloatList = QRCSMoneyPrice.getCSMoneyPriceListFull();
+            skinNameWithFloatList = QRCSMoneyPrice.getCSMoneyPriceList();
 
         }
         for(int i=0; i<skip; i++){
@@ -142,11 +142,9 @@ public class CSMoneyWiki {
                     if (priceObj != null && priceObj.has("lowestPrice") && priceObj.has("count")) {
                         price = priceObj.get("lowestPrice").toString();
                         count = priceObj.get("count").toString();
-                        if(!update){
-                            QRCSMoneyPrice.save(weapon, title, condition, stat, Double.parseDouble(price), Integer.parseInt(count));
-                        }else {
-                            QRCSMoneyPrice.update(weapon, title, condition, stat, Double.parseDouble(price), Integer.parseInt(count));
-                        }
+                        //QRCSMoneyPrice.update(weapon, title, condition, stat, Double.parseDouble(price), Integer.parseInt(count));
+                        QRCSMoneyPrice.update(weapon, title, condition, stat, Double.parseDouble(price));
+
                     } else {
                         if(!update){
 
@@ -165,14 +163,18 @@ public class CSMoneyWiki {
             if(update){
                 return;
             }
+
+            /* not needed anymore?
             for(Condition cond : unsavedConds){
-                    QRCSMoneyPrice.save(weapon, title, cond, (byte) 0, -1, -1);
+                    //QRCSMoneyPrice.update(weapon, title, cond, (byte) 0, -1);
+                    QRCSMoneyPrice.update(weapon, title, cond, (byte) 0, (Double) null);
             }
             if(unsavedCondsStat.size() != possibleCondCount){
                 for(Condition cond : unsavedCondsStat){
-                    QRCSMoneyPrice.save(weapon, title, cond, (byte) 1, -1, -1);
+                    //QRCSMoneyPrice.update(weapon, title, cond, (byte) 1, -1);
+                    QRCSMoneyPrice.update(weapon, title, cond, (byte) 1, (Double) null);
                 }
-            }
+            }*/
 
         }catch (Exception e){
             throw new RuntimeException(e);

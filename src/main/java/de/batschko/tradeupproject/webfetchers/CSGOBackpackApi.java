@@ -1,12 +1,15 @@
 package de.batschko.tradeupproject.webfetchers;
 
 import de.batschko.tradeupproject.db.customtable.TradeUpCustom;
-import de.batschko.tradeupproject.db.query.QRCS2Skin;
-import de.batschko.tradeupproject.db.query.QRSkinPrice;
 import de.batschko.tradeupproject.db.query.QRTradeUp;
+import de.batschko.tradeupproject.db.query.QueryRepository;
+import de.batschko.tradeupproject.enums.Condition;
 import de.batschko.tradeupproject.enums.PriceType;
+import de.batschko.tradeupproject.tables.CS2Skin;
 import de.batschko.tradeupproject.utils.SkinUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.jooq.Record6;
+import org.jooq.Result;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
@@ -17,8 +20,11 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static de.batschko.tradeupproject.tables.VFullcs2skin.V_FULLCS2SKIN;
 
 /**
  * Class to fetch from CSGOBackpack api.
@@ -35,6 +41,7 @@ public class CSGOBackpackApi {
      * @param percent20InsteadOfPlus use %20 instead of plus in url
      * @return json data from skin price api
      */
+    @Deprecated
     public static String fetchSkinPriceData(String fullItemName, int time, boolean percent20InsteadOfPlus)
     {
         StringBuilder content = new StringBuilder();
@@ -85,7 +92,7 @@ public class CSGOBackpackApi {
      */
     @Deprecated
     public static void setSkinPrices(int limit, int time, boolean percent20InsteadOfPlus) {
-        List<SkinUtils.SkinFullName> skins = QRCS2Skin.getSkinsWithoutPrice(limit, false);
+        List<SkinUtils.SkinFullName> skins = getSkinsWithoutPrice(limit, false);
         for(SkinUtils.SkinFullName skin: skins){
             setSkinPrice(skin, false, time, percent20InsteadOfPlus);
         }
@@ -99,7 +106,7 @@ public class CSGOBackpackApi {
      */
     @Deprecated
     public static void setSkinPricesSpecialChars(int time, boolean percent20InsteadOfPlus) {
-        List<SkinUtils.SkinFullName> skins = QRCS2Skin.getSkinsWithoutPrice(Integer.MAX_VALUE, true);
+        List<SkinUtils.SkinFullName> skins = getSkinsWithoutPrice(Integer.MAX_VALUE, true);
         for(SkinUtils.SkinFullName skin: skins){
             setSkinPrice(skin, true, time, percent20InsteadOfPlus);
         }
@@ -148,9 +155,9 @@ public class CSGOBackpackApi {
                 throw new RuntimeException("exceeded maximum number of requests");
             }else{
                 //no price data for last 180 days
-                int skinPriceId = QRSkinPrice.save(priceType, -2, -2);
+            /*    int skinPriceId = QRSkinPrice.save(priceType, -2, -2);
                 log.debug("No Data in 180 days, saving skin -> {} price: {}  {}", skin.getFullName(),-2,-2);
-                QRCS2Skin.updatePrice(skin.getId(), skinPriceId);
+                QRCS2Skin.updatePrice(skin.getId(), skinPriceId);*/
                 return;
             }
         }
@@ -173,8 +180,45 @@ public class CSGOBackpackApi {
             amountSold=-1;
         }
 
-        int skinPriceId = QRSkinPrice.save(priceType, medianPrice, amountSold);
+        /*  int skinPriceId = QRSkinPrice.save(priceType, medianPrice, amountSold);
         log.info("Saving SkinPrice -> {} price,amount: {}, {}", skin.getFullName(), medianPrice, amountSold );
-        QRCS2Skin.updatePrice(skin.getId(), skinPriceId);
+        QRCS2Skin.updatePrice(skin.getId(), skinPriceId);*/
+    }
+
+    /**
+     * Gets {@link CS2Skin}s without price as {@link SkinUtils.SkinFullName}.
+     *
+     * @param limit       limit
+     * @param specialChar true -> use special chars
+     * @return list of {@link SkinUtils.SkinFullName}
+     */
+    public static List<SkinUtils.SkinFullName> getSkinsWithoutPrice(int limit, boolean specialChar) {
+      /*  List<String> specialChars = new ArrayList<>(SkinUtils.getSpecialSkinNamesMap().values());
+        org.jooq.Condition condSpecialChars;
+        if(specialChar){
+            condSpecialChars = V_FULLCS2SKIN.TITLE.in(specialChars);
+        }else {
+            condSpecialChars = V_FULLCS2SKIN.TITLE.notIn(specialChars);
+        }
+
+        Result<Record6<Integer, Byte, String, String, Condition, Double>> result = QueryRepository.dsl.select(
+                        V_FULLCS2SKIN.ID, V_FULLCS2SKIN.STATTRAK, V_FULLCS2SKIN.WEAPON,
+                        V_FULLCS2SKIN.TITLE, V_FULLCS2SKIN.CONDITION, V_FULLCS2SKIN.PRICE)
+                .from(V_FULLCS2SKIN)
+                .where(condSpecialChars.and(V_FULLCS2SKIN.SKIN_PRICE_ID.isNull()))
+                .limit(limit)
+                .fetch();
+        List<SkinUtils.SkinFullName> resultList = new ArrayList<>();
+        result.forEach(record -> {
+            SkinUtils.SkinFullName test = new SkinUtils.SkinFullName(
+                    record.get(0, Integer.class),
+                    record.get(1, Byte.class),
+                    record.get(2, String.class),
+                    record.get(3, String.class),
+                    record.get(4, Condition.class));
+            resultList.add(test);
+        });
+        return resultList;*/
+        return null;
     }
 }

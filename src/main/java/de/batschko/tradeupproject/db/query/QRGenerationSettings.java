@@ -41,19 +41,21 @@ public class QRGenerationSettings extends QueryRepository {
      * Save serialized {@link TradeUpSettings} as {@link GenerationSettings} if no entry exists.
      *
      * @param settings  serialized {@link TradeUpSettings}
+     * @param custom  0 if settings are generated, 1 if custom
      * @return id for the existing/saved settings
      */
-    public static int saveIfNotExists(String settings) {
+    public static int saveIfNotExists(String settings, boolean custom) {
 
         Integer existingRecord = dsl.select(GENERATION_SETTINGS.ID)
                 .from(GENERATION_SETTINGS)
                 .where(GENERATION_SETTINGS.SETTINGS.eq(settings))
                 .fetchOneInto(Integer.class);
         if (existingRecord == null) {
-            GenerationSettingsRecord test_obj = dsl.newRecord(GenerationSettings.GENERATION_SETTINGS);
-            test_obj.setSettings(settings);
-            test_obj.store();
-            return test_obj.getId();
+            GenerationSettingsRecord tsettings = dsl.newRecord(GenerationSettings.GENERATION_SETTINGS);
+            tsettings.setSettings(settings);
+            tsettings.setCustom((byte) (custom ? 1:0));
+            tsettings.store();
+            return tsettings.getId();
         }
         return existingRecord;
 

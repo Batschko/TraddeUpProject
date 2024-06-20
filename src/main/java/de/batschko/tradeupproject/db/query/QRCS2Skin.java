@@ -3,24 +3,17 @@ package de.batschko.tradeupproject.db.query;
 
 import de.batschko.tradeupproject.enums.Condition;
 import de.batschko.tradeupproject.tables.CS2Skin;
-import de.batschko.tradeupproject.tables.SkinPrice;
 import de.batschko.tradeupproject.tables.TradeUpSkins;
-import de.batschko.tradeupproject.utils.SkinUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.Record;
-import org.jooq.Record6;
 import org.jooq.Result;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static de.batschko.tradeupproject.tables.CS2Skin.C_S2_SKIN;
-import static de.batschko.tradeupproject.tables.TradeUpOutcomeCustom.TRADE_UP_OUTCOME_CUSTOM;
-import static de.batschko.tradeupproject.tables.TradeUpOutcomeSkinsCustom.TRADE_UP_OUTCOME_SKINS_CUSTOM;
 import static de.batschko.tradeupproject.tables.TradeUpSkins.TRADE_UP_SKINS;
-import static de.batschko.tradeupproject.tables.TradeUpSkinsCustom.TRADE_UP_SKINS_CUSTOM;
 import static de.batschko.tradeupproject.tables.VFullcs2skin.V_FULLCS2SKIN;
 import static de.batschko.tradeupproject.tables.VOutSkinsCsmoney.V_OUT_SKINS_CSMONEY;
 import static de.batschko.tradeupproject.tables.VTradeupskinsCsmoney.V_TRADEUPSKINS_CSMONEY;
@@ -129,8 +122,9 @@ public class QRCS2Skin extends QueryRepository {
      * @param tupId     tradeUp id
      * @return avg amount sold or -3 if no records are found
      */
+    @Deprecated
     public static double getTradeUpSkinAverageAmountSold(String collName, Condition condition, int tupId) {
-        Double result = dsl.select(avg(V_FULLCS2SKIN.AMOUNT_SOLD))
+     /*   Double result = dsl.select(avg(V_FULLCS2SKIN.AMOUNT_SOLD))
                 .from(V_FULLCS2SKIN)
                 .join(TRADE_UP_SKINS)
                 .on(TRADE_UP_SKINS.C_S2_SKIN_ID.eq(V_FULLCS2SKIN.ID))
@@ -142,66 +136,17 @@ public class QRCS2Skin extends QueryRepository {
             log.debug("Couldn't get average TradeUpSkins amount sold for: tupId -> " + tupId + " coll -> " + collName + " cond -> " + condition);
             return -3;
         }
-        return result;
-
+        return result;*/
+        return -1;
     }
 
 
     /**
-     * Gets {@link CS2Skin}s without price as {@link SkinUtils.SkinFullName}.
-     *
-     * @param limit       limit
-     * @param specialChar true -> use special chars
-     * @return list of {@link SkinUtils.SkinFullName}
-     */
-    public static List<SkinUtils.SkinFullName> getSkinsWithoutPrice(int limit, boolean specialChar) {
-        List<String> specialChars = new ArrayList<>(SkinUtils.getSpecialSkinNamesMap().values());
-        org.jooq.Condition condSpecialChars;
-        if(specialChar){
-            condSpecialChars = V_FULLCS2SKIN.TITLE.in(specialChars);
-        }else {
-            condSpecialChars = V_FULLCS2SKIN.TITLE.notIn(specialChars);
-        }
-
-        Result<Record6<Integer, Byte, String, String, Condition, Double>> result = dsl.select(
-                        V_FULLCS2SKIN.ID, V_FULLCS2SKIN.STATTRAK, V_FULLCS2SKIN.WEAPON,
-                        V_FULLCS2SKIN.TITLE, V_FULLCS2SKIN.CONDITION, V_FULLCS2SKIN.PRICE)
-                .from(V_FULLCS2SKIN)
-                .where(condSpecialChars.and(V_FULLCS2SKIN.SKIN_PRICE_ID.isNull()))
-                .limit(limit)
-                .fetch();
-        List<SkinUtils.SkinFullName> resultList = new ArrayList<>();
-        result.forEach(record -> {
-            SkinUtils.SkinFullName test = new SkinUtils.SkinFullName(
-                    record.get(0, Integer.class),
-                    record.get(1, Byte.class),
-                    record.get(2, String.class),
-                    record.get(3, String.class),
-                    record.get(4, Condition.class));
-            resultList.add(test);
-        });
-        return resultList;
-    }
-
-
-    /**
-     * Update {@link CS2Skin} price with {@link SkinPrice}.
-     *
-     * @param skinId      {@link CS2Skin} id
-     * @param skinPriceId {@link SkinPrice} id
-     */
-    public static void updatePrice(int skinId, int skinPriceId) {
-        dsl.update(C_S2_SKIN).set(C_S2_SKIN.SKIN_PRICE_ID, skinPriceId).where(C_S2_SKIN.ID.eq(skinId)).execute();
-
-    }
-
-
-    /**
-     * Remove all price ids from all {@link CS2Skin}s.
+     * Remove all skin prices from all {@link CS2Skin}s.
      * <p>->dangerous!<-</p>
      */
-    public static void removeAllPriceIds() {
-        dsl.update(C_S2_SKIN).set(C_S2_SKIN.SKIN_PRICE_ID, (Integer) null).execute();
+    public static void removeAllPrices() {
+        dsl.update(C_S2_SKIN).set(C_S2_SKIN.PRICE, (Double) null).execute();
     }
 
 
@@ -212,6 +157,8 @@ public class QRCS2Skin extends QueryRepository {
                 .where(V_TRADEUPSKINS_CSMONEY.TRADE_UP_ID.eq(id))
                 .fetch();
     }
+
+    /*
     public static Result<Record> getTradeUpSkinsCustom(int id){
 
         return dsl.select()
@@ -237,7 +184,7 @@ public class QRCS2Skin extends QueryRepository {
         dsl.deleteFrom(TRADE_UP_SKINS_CUSTOM).where(TRADE_UP_SKINS_CUSTOM.TRADE_UP_CUSTOM_ID.eq(id)).execute();
         dsl.deleteFrom(TRADE_UP_OUTCOME_SKINS_CUSTOM).where(TRADE_UP_OUTCOME_SKINS_CUSTOM.TRADE_UP_CUSTOM_ID.eq(id)).execute();
     }
-
+*/
 
     public static Result<Record> getOutSkins(int id){
 

@@ -3,15 +3,13 @@ package de.batschko.tradeupproject.db.query;
 
 import de.batschko.tradeupproject.enums.Condition;
 import de.batschko.tradeupproject.enums.Rarity;
-import de.batschko.tradeupproject.tables.SkinPrice;
 import org.jooq.*;
 import org.springframework.stereotype.Repository;
 
 import static de.batschko.tradeupproject.tables.TradeUpSkins.TRADE_UP_SKINS;
-import static de.batschko.tradeupproject.tables.VFullcs2skinCsmoney.V_FULLCS2SKIN_CSMONEY;
-
+import static de.batschko.tradeupproject.tables.VFullcs2skin.V_FULLCS2SKIN;
 /**
- * Database access related to {@link SkinPrice}.
+ * Database access related to {@link }.
  */
 @Repository
 public class QRCSMoney extends QueryRepository{
@@ -23,10 +21,10 @@ public class QRCSMoney extends QueryRepository{
 
     public static Result<Record6<String, String, String, Rarity, Byte, Condition>> getTradeUpSkinInfo(int tupId) {
          Result<Record6<String, String, String, Rarity, Byte, Condition>> result =
-                dsl.selectDistinct(V_FULLCS2SKIN_CSMONEY.WEAPON,V_FULLCS2SKIN_CSMONEY.TITLE, V_FULLCS2SKIN_CSMONEY.COLL_NAME, V_FULLCS2SKIN_CSMONEY.RARITY, V_FULLCS2SKIN_CSMONEY.STATTRAK, V_FULLCS2SKIN_CSMONEY.CONDITION)
+                dsl.selectDistinct(V_FULLCS2SKIN.WEAPON,V_FULLCS2SKIN.TITLE, V_FULLCS2SKIN.COLL_NAME, V_FULLCS2SKIN.RARITY, V_FULLCS2SKIN.STATTRAK, V_FULLCS2SKIN.CONDITION)
                         .from(TRADE_UP_SKINS)
-                        .join(V_FULLCS2SKIN_CSMONEY)
-                        .on(TRADE_UP_SKINS.C_S2_SKIN_ID.eq(V_FULLCS2SKIN_CSMONEY.ID))
+                        .join(V_FULLCS2SKIN)
+                        .on(TRADE_UP_SKINS.C_S2_SKIN_ID.eq(V_FULLCS2SKIN.ID))
                         .where(TRADE_UP_SKINS.TRADE_UP_ID.eq(tupId)).fetch();
 
         return result;

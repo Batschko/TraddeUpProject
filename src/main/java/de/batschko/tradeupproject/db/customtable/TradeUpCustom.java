@@ -153,9 +153,7 @@ public class TradeUpCustom extends TradeUpRecord {
                 skin.setChance(chance);
                 chanceSum += chance;
                 //TODO
-                double skinPrice;
-                if(csMoneyPrice) skinPrice = QRCSMoneyPrice.getSkinPrice(skin.getCS2SkinId())*0.9;
-                else skinPrice = QRSkinPrice.getSkinPrice(skin.getCS2SkinId());
+                double skinPrice = QRCSMoneyPrice.getSkinPrice(skin.getCS2SkinId())*0.9;
 
                 skinAvgPrice += skinPrice * chance;
                 if(skinPrice > skinMaxPrice){
