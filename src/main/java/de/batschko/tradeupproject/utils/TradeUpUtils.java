@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jooq.Record4;
 import org.jooq.Result;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Slf4j
@@ -25,10 +26,21 @@ public class TradeUpUtils {
         }
     }
 
-    public static void fullPriceUpdate(){
+    public static void priceUpdateMissing(){
+        fullPriceUpdate(false);
+    }
+    public static void priceUpdateByDate(){
+        fullPriceUpdate(true);
+    }
+
+
+    private static void fullPriceUpdate(boolean byDate){
         int lastSize = 0;
         while (true){
-            Result<Record4<String, String, Double, Double>> nameList = QRCSMoneyPrice.getCSMoneyPriceListByDate();
+            Result<Record4<String, String, Double, Double>> nameList;
+            if(byDate) nameList = QRCSMoneyPrice.getCSMoneyPriceListByDate();
+            else nameList = QRCSMoneyPrice.getCSMoneyPriceListMissing();
+
             if(nameList.size() == lastSize){
                 break;
             }else {
@@ -36,7 +48,10 @@ public class TradeUpUtils {
             }
             lastSize = nameList.size();
         }
-        List<Integer> ids = QRCSMoneyPrice.getCSMoneyPriceListByDateId();
+        List<Integer> ids;
+        if(byDate) ids = QRCSMoneyPrice.getCSMoneyPriceListByDateId();
+        else ids = QRCSMoneyPrice.getCSMoneyPriceListMissingIds();
+
         log.info("\n\n\nget remaining by CSMoney Bot");
         log.info("updating {} names", ids.size());
         int loop = 1;
@@ -51,6 +66,8 @@ public class TradeUpUtils {
         }
     }
 
+
+    /*
     public static void initFullPriceUpdate(boolean init){
         if(init){
             Result<Record4<String, String, Double, Double>> nameList = QRCSMoneyPrice.getCSMoneyPriceList();
@@ -76,7 +93,7 @@ public class TradeUpUtils {
                 throw new RuntimeException(e);
             }
         }
-    }
+    }*/
 
     //todo
 }
