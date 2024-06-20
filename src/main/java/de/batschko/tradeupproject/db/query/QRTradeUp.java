@@ -31,6 +31,7 @@ import static org.jooq.impl.DSL.row;
 
 /**
  * Database access related to {@link TradeUp}
+ * all methods filter for custom = false
  */
 @Repository
 @Slf4j
@@ -48,6 +49,7 @@ public class QRTradeUp extends QueryRepository{
     public static List<TradeUpCustom> getTradeUpList(){
         return dsl.select()
                 .from(TRADE_UP)
+                .where(TRADE_UP.CUSTOM.eq((byte) 0))
                 .fetchInto(TradeUpCustom.class);
     }
 
@@ -60,6 +62,7 @@ public class QRTradeUp extends QueryRepository{
     public static List<TradeUpCustom> getTradeUpList(int limit){
         return dsl.select()
                 .from(TRADE_UP)
+                .where(TRADE_UP.CUSTOM.eq((byte) 0))
                 .limit(limit)
                 .fetchInto(TradeUpCustom.class);
     }
@@ -87,7 +90,7 @@ public class QRTradeUp extends QueryRepository{
      */
     public static void saveRecord(boolean custom, byte stattrak, Rarity rarity, Condition condTarget, byte collCount, TradeUpStatus status, int floatDictId, int tradeUpSettingsId){
         TradeUpRecord tup = dsl.newRecord(TradeUp.TRADE_UP);
-        tup.setCustom(custom ? 1:0);
+        tup.setCustom((byte) (custom ? 1:0));
         tup.setStattrak(stattrak);
         tup.setRarity(rarity);
         tup.setConditionTarget(condTarget);
@@ -110,6 +113,7 @@ public class QRTradeUp extends QueryRepository{
         return dsl.select()
                 .from(TRADE_UP)
                 .where(TRADE_UP.ID.eq(tupId))
+                .and(TRADE_UP.CUSTOM.eq((byte) 0))
                 .fetchOneInto(TradeUpCustom.class);
     }
 
@@ -121,10 +125,12 @@ public class QRTradeUp extends QueryRepository{
     public static List<TradeUpCustom> getTradeUpsToCalculate(){
         List<Integer> ids = dsl.select(TRADE_UP_OUTCOME.TRADEUP_ID)
                 .from(TRADE_UP_OUTCOME)
+                .where(TRADE_UP_OUTCOME.CUSTOM.eq((byte) 0))
                 .fetchInto(Integer.class);
         return dsl.select()
                 .from(TRADE_UP)
                 .where(TRADE_UP.ID.notIn(ids))
+                .and(TRADE_UP.CUSTOM.eq((byte) 0))
                 .fetchInto(TradeUpCustom.class);
     }
 
@@ -163,14 +169,14 @@ public class QRTradeUp extends QueryRepository{
                 .from(V_TUPNSETTINGGS)
                 .leftJoin(TRADE_UP_SKINS)
                 .on(V_TUPNSETTINGGS.ID.eq(TRADE_UP_SKINS.TRADE_UP_ID))
-                .where(TRADE_UP_SKINS.TRADE_UP_ID.isNull());
+                .where(TRADE_UP_SKINS.TRADE_UP_ID.isNull())
+                .and(V_TUPNSETTINGGS.CUSTOM.eq((byte) 0));
     }
 
     //TODO doc
     public static void updateTradeUpSkins(int tupId){
-        // deleteTradeUpskins(tup.id)
         dsl.deleteFrom(TRADE_UP_SKINS).where(TRADE_UP_SKINS.TRADE_UP_ID.eq(tupId)).execute();
-        Result<Record> tupAndSettings = dsl.select().from(V_TUPNSETTINGGS).where(V_TUPNSETTINGGS.ID.eq(tupId)).fetch();
+        Result<Record> tupAndSettings = dsl.select().from(V_TUPNSETTINGGS).where(V_TUPNSETTINGGS.ID.eq(tupId)).and(V_TUPNSETTINGGS.CUSTOM.eq((byte) 0)).fetch();
         processCreateTradeUpSkins(tupAndSettings, false);
     }
 
@@ -219,11 +225,11 @@ public class QRTradeUp extends QueryRepository{
 
     //TODO doc
     public static TradeUpOutcomeRecord getTradeUpOutcome(int tupId){
-        return dsl.select().from(TRADE_UP_OUTCOME).where(TRADE_UP_OUTCOME.TRADEUP_ID.eq(tupId)).fetchOneInto(TradeUpOutcomeRecord.class);
+        return dsl.select().from(TRADE_UP_OUTCOME).where(TRADE_UP_OUTCOME.TRADEUP_ID.eq(tupId)).and(TRADE_UP_OUTCOME.CUSTOM.eq((byte) 0)).fetchOneInto(TradeUpOutcomeRecord.class);
     }
     //TODO doc
     public static List<TradeUpOutcomeSkinsRecord> getTradeUpOutcomeSkins(int tupId){
-        return dsl.select().from(TRADE_UP_OUTCOME_SKINS).where(TRADE_UP_OUTCOME_SKINS.TRADE_UP_ID.eq(tupId)).fetchInto(TradeUpOutcomeSkinsRecord.class);
+        return dsl.select().from(TRADE_UP_OUTCOME_SKINS).where(TRADE_UP_OUTCOME_SKINS.TRADE_UP_ID.eq(tupId)).and(TRADE_UP_OUTCOME_SKINS.CUSTOM.eq((byte) 0)).fetchInto(TradeUpOutcomeSkinsRecord.class);
     }
 
     //TODO check min_price for normal calcuation because -1 etc.
@@ -259,7 +265,7 @@ public class QRTradeUp extends QueryRepository{
 
                 List<Integer> tupSkinIds = query.fetchInto(Integer.class);
                 //TODO delete tradeups that are not possible beause condition doesnt exist?
-                List<Row2<Integer, Integer>> rowList = tupSkinIds.stream().map(tupSkinId -> row(tupId, tupSkinId)).toList();
+                List<Row3<Byte, Integer, Integer>> rowList = tupSkinIds.stream().map(tupSkinId -> row((byte)0 ,tupId, tupSkinId)).toList();
                 if(rowList.isEmpty()){
                     log.warn(""+settings + " "+rarity+ " "+ stat);
                     if(deleteTradeUps){
@@ -274,7 +280,7 @@ public class QRTradeUp extends QueryRepository{
                 }
 
                 try{
-                    int inserted = dsl.insertInto(TRADE_UP_SKINS, TRADE_UP_SKINS.TRADE_UP_ID, TRADE_UP_SKINS.C_S2_SKIN_ID).valuesOfRows(rowList).execute();
+                    int inserted = dsl.insertInto(TRADE_UP_SKINS, TRADE_UP_SKINS.CUSTOM, TRADE_UP_SKINS.TRADE_UP_ID, TRADE_UP_SKINS.C_S2_SKIN_ID).valuesOfRows(rowList).execute();
                     if(inserted != tupSkinIds.size()){
                         throw new RuntimeException("Error inserting TradeUpSkins");
                     }
@@ -294,10 +300,10 @@ public class QRTradeUp extends QueryRepository{
      * @return the number of updated records
      */
     public static int resetTradeUpStatusAll(){
-        return dsl.update(TRADE_UP).set(TRADE_UP.STATUS, TradeUpStatus.NOT_CALCULATED).execute();
+        return dsl.update(TRADE_UP).set(TRADE_UP.STATUS, TradeUpStatus.NOT_CALCULATED).where(TRADE_UP.CUSTOM.eq((byte) 0)).execute();
     }
 //todo doc
     public static void updateStatus(int id, TradeUpStatus tradeUpStatus) {
-       dsl.update(TRADE_UP).set(TRADE_UP.STATUS, tradeUpStatus).where(TRADE_UP.ID.eq(id)).execute();
+       dsl.update(TRADE_UP).set(TRADE_UP.STATUS, tradeUpStatus).where(TRADE_UP.ID.eq(id)).and(TRADE_UP.CUSTOM.eq((byte) 0)).execute();
     }
 }

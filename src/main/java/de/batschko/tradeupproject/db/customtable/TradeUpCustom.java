@@ -90,6 +90,7 @@ public class TradeUpCustom extends TradeUpRecord {
             Condition resultingCondition =  Condition.getConditionByFloat(magic_float);
             int cs2SkinId = QRCS2Skin.getByStashHolderConditionStattrak(stashHolder.getStashId(), resultingCondition, this.getStattrak());
             TradeUpOutcomeSkinsRecord out_skin = QRUtils.createRecordTradeUpOutcomeSkins();
+            out_skin.setCustom((byte) 0);
             out_skin.setCS2SkinId(cs2SkinId);
             out_skin.setTradeUpId(this.getId());
             out_skin.setSkinFloat(magic_float);
@@ -133,7 +134,7 @@ public class TradeUpCustom extends TradeUpRecord {
         // TODO maybe remove if it cant happen
         if(skinPool < 1) throw new RuntimeException("skinPool is 0");
 
-        double chanceSum = 0;
+
         double hitChanceSum = 0;
         double skinAvgPrice =0;
         double skinMinPrice = Double.MAX_VALUE, skinMaxPrice = Double.MIN_VALUE;
@@ -151,7 +152,6 @@ public class TradeUpCustom extends TradeUpRecord {
             }
             for(TradeUpOutcomeSkinsRecord skin : entry.getValue()){
                 skin.setChance(chance);
-                chanceSum += chance;
                 //TODO
                 double skinPrice = QRCSMoneyPrice.getSkinPrice(skin.getCS2SkinId())*0.9;
 
