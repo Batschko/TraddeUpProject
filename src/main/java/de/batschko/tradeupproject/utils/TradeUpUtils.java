@@ -58,7 +58,7 @@ public class TradeUpUtils {
             log.info("loop: "+loop++);
             CSMoneyWiki.updateCSMoneySkinPrice(id);
             try {
-                Thread.sleep(5000);
+                Thread.sleep(3500);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
