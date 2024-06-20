@@ -142,14 +142,14 @@ public class CSGOBackpackApi {
 
         boolean success = Boolean.parseBoolean(String.valueOf(jsonObject.get("success")));
         if (!success) {
-            SkinUtils.log.debug("success: false for skin -> {}", skin.getFullName());
+            log.debug("success: false for skin -> {}", skin.getFullName());
             String reason = (String) jsonObject.get("reason");
             if (reason != null && reason.contains("exceeded maximum number of requests")) {
                 throw new RuntimeException("exceeded maximum number of requests");
             }else{
                 //no price data for last 180 days
                 int skinPriceId = QRSkinPrice.save(priceType, -2, -2);
-                SkinUtils.log.debug("No Data in 180 days, saving skin -> {} price: {}  {}", skin.getFullName(),-2,-2);
+                log.debug("No Data in 180 days, saving skin -> {} price: {}  {}", skin.getFullName(),-2,-2);
                 QRCS2Skin.updatePrice(skin.getId(), skinPriceId);
                 return;
             }
@@ -163,10 +163,10 @@ public class CSGOBackpackApi {
                 amountSold = Integer.parseInt(amountSoldS);
                 backpackTime = Integer.parseInt(bpTimeS);
             } catch (NumberFormatException e) {
-                SkinUtils.log.warn("Couldn't convert price or amount from jsonObject: {}", jsonObject);
+                log.warn("Couldn't convert price or amount from jsonObject: {}", jsonObject);
             }
         }else {
-            SkinUtils.log.error("Couldn't read price or amount from jsonObject:  {}", jsonObject);
+            log.error("Couldn't read price or amount from jsonObject:  {}", jsonObject);
         }
 
         if(time != backpackTime){
@@ -174,7 +174,7 @@ public class CSGOBackpackApi {
         }
 
         int skinPriceId = QRSkinPrice.save(priceType, medianPrice, amountSold);
-        SkinUtils.log.info("Saving SkinPrice -> {} price,amount: {}, {}", skin.getFullName(), medianPrice, amountSold );
+        log.info("Saving SkinPrice -> {} price,amount: {}, {}", skin.getFullName(), medianPrice, amountSold );
         QRCS2Skin.updatePrice(skin.getId(), skinPriceId);
     }
 }
