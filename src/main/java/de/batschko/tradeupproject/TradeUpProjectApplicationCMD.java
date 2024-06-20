@@ -90,7 +90,7 @@ public class TradeUpProjectApplicationCMD {
 		cmdListNames.put("6", "floatId 2 generateSingleCollTradeups");
 		cmdListNames.put("7", "floatId 4 generateSingleCollTradeups");
 		cmdListNames.put("8", "false createTradeUpSkins");
-		cmdListNames.put("9", "true createTradeUpSkins");
+	//	cmdListNames.put("9", "true createTradeUpSkins");
 		cmdListNames.put("0", "calculateAllTradeUps");
 		Map<String, Runnable> cmdList = new HashMap<>();
 		cmdList.put("h", () -> printCmdNames(cmdListNames));
@@ -103,7 +103,7 @@ public class TradeUpProjectApplicationCMD {
 		cmdList.put("6", () -> Generator.generateSingleCollTradeUps(2));
 		cmdList.put("7", () -> Generator.generateSingleCollTradeUps(4));
 		cmdList.put("8", () -> QRTradeUp.createTradeUpSkins(false));
-		cmdList.put("9", () -> QRTradeUp.createTradeUpSkins(true));
+		//cmdList.put("9", () -> QRTradeUp.createTradeUpSkins(true));
 		cmdList.put("0", TradeUpUtils::calculateAllTradeUps);
 
 
