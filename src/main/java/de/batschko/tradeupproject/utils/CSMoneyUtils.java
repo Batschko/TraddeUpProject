@@ -14,41 +14,40 @@ import java.util.*;
  */
 public class CSMoneyUtils {
 
-    /**
+    /**TODO only working for one collection
+     *
      * Gets cs money url filtered for TradeUp-Skins.
      *
      * @param tupId the TradeUp id
      */
     public static String getCSMoneyUrlFiltered(int tupId) {
-        List<SkinUtils.TradeUpSkinInfo> skinList = QRUtils.getTradeUpSkinsInfo(tupId);
+        final String baseUrl = ("https://cs.money/csgo/trade/");
+        List<SkinUtils.TradeUpSkinInfo> infoList = QRUtils.getTradeUpSkinsInfo(tupId);
+
         StringBuilder sb = new StringBuilder();
-        String baseUrl = ("https://cs.money/csgo/trade/");
-        //TODO why for loop???
-        //TODO why for loop???
-        //TODO why for loop???
-        //TODO why for loop???
-        for (SkinUtils.TradeUpSkinInfo skin : skinList) {
-            sb.setLength(0);
-            Rarity rarity = skin.getRarity();
-            byte stat = skin.getStattrak();
+        Rarity rarity = infoList.getFirst().getRarity();
+        byte stat = infoList.getFirst().getStattrak();
+        sb.append("?sort=price&order=desc");
+        sb.append("&rarity=").append(rarity.getText());
+        sb.append("&isStatTrak=").append(stat == 1);
+
+        HashSet<String> collSet = new HashSet<>();
+        for (SkinUtils.TradeUpSkinInfo skin : infoList) {
             String coll = skin.getColl_name();
+            if(!collSet.add(coll)){
+                continue;
+            }
             coll = coll.replace("Case", "Collection");
-            sb.append("?sort=price&order=desc");
-            sb.append("&rarity=").append(rarity.getText());
-            sb.append("&isStatTrak=").append(stat == 1);
             sb.append("&collection=").append("The ").append(coll);
 
-            String encoded = sb.toString().replace(" ", "+");
-
-            try {
-                String uri = String.valueOf(new URI(baseUrl + encoded).toURL());
-                return uri;
-            } catch (MalformedURLException | URISyntaxException e) {
-                throw new RuntimeException(e);
-            }
-
         }
-        return "";
+        String encoded = sb.toString().replace(" ", "+");
+
+        try {
+            return String.valueOf(new URI(baseUrl + encoded).toURL());
+        } catch (MalformedURLException | URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
