@@ -83,7 +83,7 @@ public class TradeUpController {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        //(String weapon, String title, Condition condition, int tupId
+        
         String[] nameToken = json.getString("name").split(" \\| ");
         if(nameToken.length!=2)throw new RuntimeException();
         int tradeUpId = json.getInt("tupId");
@@ -93,13 +93,12 @@ public class TradeUpController {
         Rarity rarity = Rarity.valueOf(json.getString("rarity")) ;
         int floatDictId = json.getInt("floatDictId");
         String gsettings = json.getString("gsettings");
-       // double cost = Double.parseDouble((String) json.get("cost"));
-      //  double price = Double.parseDouble((String) json.get("price"));
+
         double cost = json.getDouble("cost");
         double price = json.getDouble("price");
 
-        //int tradeUpId, byte stattrak, Rarity rarity, int floatDictId, String gsettings, int cs2skinId, String skinName, double cost, double price)
-        int saved = QRTradeUpTable.saveMadeTradeUp(tradeUpId, stattrak, rarity, floatDictId, gsettings, skinId, (String) json.get("name"), cond, cost, price);
+
+        int saved = QRTradeUpTable.saveMadeTradeUp((byte) 0,tradeUpId, stattrak, rarity, floatDictId, gsettings, skinId, (String) json.get("name"), cond, cost, price);
         if(saved !=1) throw new RuntimeException();
 
         return "saved";

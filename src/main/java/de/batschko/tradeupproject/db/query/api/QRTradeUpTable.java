@@ -145,9 +145,11 @@ public class QRTradeUpTable extends QueryRepository {
         Record5<Integer, Byte, Rarity, Integer, String> result =  dsl.select(V_FULL_TRADEUP.ID, V_FULL_TRADEUP.STATTRAK, V_FULL_TRADEUP.RARITY, V_FULL_TRADEUP.FLOAT_DICT_ID, V_FULL_TRADEUP.SETTINGS)
                 .from(V_FULL_TRADEUP)
                 .where(V_FULL_TRADEUP.ID.eq(id))
+                .and(V_FULL_TRADEUP.CUSTOM.eq((byte)0))
                 .fetchOne();
         TradeUpMarkedRecord markedRecord = dsl.newRecord(TRADE_UP_MARKED);
         markedRecord.setTradeUpId(result.get(0, Integer.class));
+        markedRecord.setCustom((byte) 0);
         markedRecord.setStattrak(result.get(1, Byte.class));
         markedRecord.setRarity(result.get(2, Rarity.class));
         markedRecord.setFloatDictId(result.get(3, Integer.class));
@@ -185,9 +187,10 @@ public class QRTradeUpTable extends QueryRepository {
         }
     }
 
-    public static int saveMadeTradeUp(int tradeUpId, byte stattrak, Rarity rarity, int floatDictId, String gsettings, int cs2skinId, String skinName, Condition cond, double cost, double price){
+    public static int saveMadeTradeUp(byte custom, int tradeUpId, byte stattrak, Rarity rarity, int floatDictId, String gsettings, int cs2skinId, String skinName, Condition cond, double cost, double price){
         TradeUpMadeRecord record = dsl.newRecord(TRADE_UP_MADE);
         record.setTradeUpId(tradeUpId);
+        record.setCustom(custom);
         record.setStattrak(stattrak);
         record.setRarity(rarity);
         record.setFloatDictId(floatDictId);
