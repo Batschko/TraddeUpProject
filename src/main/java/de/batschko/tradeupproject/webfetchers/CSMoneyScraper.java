@@ -83,7 +83,7 @@ public class CSMoneyScraper {
             try {
 
                 wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".yyofkzfzpvevfrzbkbcwiwleal > tr:nth-child(1) > td:nth-child(2)")));
-                priceBoxStat = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".yyofkzfzpvevfrzbkbcwiwleal > tr:nth-child(2)")));
+                priceBoxStat =driver.findElement(By.cssSelector(".yyofkzfzpvevfrzbkbcwiwleal > tr:nth-child(2)"));
                 basicStat = priceBoxStat.findElement(By.cssSelector("td:nth-child(1)")).getText();
                 if (!basicStat.equals("StatTrak™")) {
                     if(!basicStat.equals("Souvenir™")){
