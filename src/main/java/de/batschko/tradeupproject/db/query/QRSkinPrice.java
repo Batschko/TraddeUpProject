@@ -54,7 +54,7 @@ public class QRSkinPrice extends QueryRepository{
 
     public static List<Integer> getSkinPriceListByDateId() {
 
-        final int minusHours = 12;
+        final int minusHours = 24;
         DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
         String time = dateFmt.format(ZonedDateTime.now(ZoneId.of("Europe/Berlin")).minusHours(minusHours));
         return dsl.selectDistinct(C_S2_SKIN.ID)
