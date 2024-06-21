@@ -90,7 +90,7 @@ public class TradeUpController {
         if(nameToken.length!=2)throw new RuntimeException();
         int tradeUpId = json.getInt("tupId");
         Condition cond = Condition.valueOf(json.getString("cond"));
-        int skinId = QRCS2Skin.getSkinIdByName(nameToken[0], nameToken[1], cond, tradeUpId);
+        int skinId = QRCS2Skin.getOutSkinIdByNameCondTup(nameToken[0], nameToken[1], cond, tradeUpId);
         byte stattrak = (byte) json.getInt("stat");
         Rarity rarity = Rarity.valueOf(json.getString("rarity")) ;
         int floatDictId = json.getInt("floatDictId");

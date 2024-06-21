@@ -15,8 +15,8 @@ import java.util.List;
 import static de.batschko.tradeupproject.tables.CS2Skin.C_S2_SKIN;
 import static de.batschko.tradeupproject.tables.TradeUpSkins.TRADE_UP_SKINS;
 import static de.batschko.tradeupproject.tables.VFullcs2skin.V_FULLCS2SKIN;
-import static de.batschko.tradeupproject.tables.VOutSkinsCsmoney.V_OUT_SKINS_CSMONEY;
-import static de.batschko.tradeupproject.tables.VTradeupskinsCsmoney.V_TRADEUPSKINS_CSMONEY;
+import static de.batschko.tradeupproject.tables.VOutSkins.V_OUT_SKINS;
+import static de.batschko.tradeupproject.tables.VTradeupskins.V_TRADEUPSKINS;
 import static org.jooq.impl.DSL.avg;
 
 /**
@@ -153,8 +153,8 @@ public class QRCS2Skin extends QueryRepository {
     public static Result<Record> getTradeUpSkins(int id){
 
         return dsl.select()
-                .from(V_TRADEUPSKINS_CSMONEY)
-                .where(V_TRADEUPSKINS_CSMONEY.TRADE_UP_ID.eq(id))
+                .from(V_TRADEUPSKINS)
+                .where(V_TRADEUPSKINS.TRADE_UP_ID.eq(id))
                 .fetch();
     }
 
@@ -189,18 +189,18 @@ public class QRCS2Skin extends QueryRepository {
     public static Result<Record> getOutSkins(int id){
 
         return dsl.select()
-                .from(V_OUT_SKINS_CSMONEY)
-                .where(V_OUT_SKINS_CSMONEY.TRADE_UP_ID.eq(id))
+                .from(V_OUT_SKINS)
+                .where(V_OUT_SKINS.TRADE_UP_ID.eq(id))
                 .fetch();
     }
 
-    public static int getSkinIdByName(String weapon, String title, Condition condition, int tupId){
-        int id =  dsl.select(V_OUT_SKINS_CSMONEY.ID)
-                .from(V_OUT_SKINS_CSMONEY)
-                .where(V_OUT_SKINS_CSMONEY.TRADE_UP_ID.eq(tupId))
-                .and(V_OUT_SKINS_CSMONEY.WEAPON.eq(weapon))
-                .and(V_OUT_SKINS_CSMONEY.TITLE.eq(title))
-                .and(V_OUT_SKINS_CSMONEY.CONDITION.eq(condition))
+    public static int getOutSkinIdByNameCondTup(String weapon, String title, Condition condition, int tupId){
+        int id =  dsl.select(V_OUT_SKINS.ID)
+                .from(V_OUT_SKINS)
+                .where(V_OUT_SKINS.TRADE_UP_ID.eq(tupId))
+                .and(V_OUT_SKINS.WEAPON.eq(weapon))
+                .and(V_OUT_SKINS.TITLE.eq(title))
+                .and(V_OUT_SKINS.CONDITION.eq(condition))
                 .fetchOneInto(Integer.class);
         return id;
 }
