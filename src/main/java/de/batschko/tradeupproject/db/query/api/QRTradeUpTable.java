@@ -47,7 +47,7 @@ public class QRTradeUpTable extends QueryRepository {
                 .where(TRADE_UP_MARKED.ACTIVE.eq((byte)1))
                 .fetchInto(Integer.class);
     }
-    
+
 
     public static Result<Record>  getTradeUpsMarked(){
         return dsl.select(V_FULL_TRADEUP.fields()).select(TRADE_UP_MARKED.MARKED, TRADE_UP_MARKED.WATCH, TRADE_UP_MARKED.ACTIVE)

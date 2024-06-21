@@ -231,7 +231,7 @@ public class QRTradeUp extends QueryRepository{
         return dsl.select().from(TRADE_UP_OUTCOME_SKINS).where(TRADE_UP_OUTCOME_SKINS.TRADE_UP_ID.eq(tupId)).and(TRADE_UP_OUTCOME_SKINS.CUSTOM.eq((byte) 0)).fetchInto(TradeUpOutcomeSkinsRecord.class);
     }
 
-    //TODO check min_price for normal calcuation because -1 etc.
+    
     private static void processCreateTradeUpSkins(Result<Record> tupAndSettings,boolean deleteTradeUps){
         tradeupLoop:
         for(Record tupAndS: tupAndSettings){
@@ -249,8 +249,6 @@ public class QRTradeUp extends QueryRepository{
                         .and(V_FULLCS2SKIN.CONDITION.eq(info.getCondition()))
                         .and(V_FULLCS2SKIN.STATTRAK.eq(info.getStattrak()))
                         .and(V_FULLCS2SKIN.PRICE.gt(0.0));
-
-
 
 
                 SelectConditionStep<Record1<Integer>> query = dsl.select(V_FULLCS2SKIN.ID)
@@ -286,8 +284,6 @@ public class QRTradeUp extends QueryRepository{
                 }catch (Exception e){
                     throw new RuntimeException("Exception inserting TradeUpSkins");
                 }
-
-
             }
         }
     }
@@ -301,6 +297,7 @@ public class QRTradeUp extends QueryRepository{
     public static int resetTradeUpStatusAll(){
         return dsl.update(TRADE_UP).set(TRADE_UP.STATUS, TradeUpStatus.NOT_CALCULATED).where(TRADE_UP.CUSTOM.eq((byte) 0)).execute();
     }
+
 //todo doc
     public static void updateStatus(int id, TradeUpStatus tradeUpStatus) {
        dsl.update(TRADE_UP).set(TRADE_UP.STATUS, tradeUpStatus).where(TRADE_UP.ID.eq(id)).and(TRADE_UP.CUSTOM.eq((byte) 0)).execute();
