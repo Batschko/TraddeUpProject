@@ -114,31 +114,7 @@ public class QRCS2Skin extends QueryRepository {
             return result;
     }
 
-    /**
-     * Gets average amount sold for {@link TradeUpSkins} by collection name, condition and TradeUp id.
-     *
-     * @param collName  collection name
-     * @param condition condition {@link Condition}
-     * @param tupId     tradeUp id
-     * @return avg amount sold or -3 if no records are found
-     */
-    @Deprecated
-    public static double getTradeUpSkinAverageAmountSold(String collName, Condition condition, int tupId) {
-     /*   Double result = dsl.select(avg(V_FULLCS2SKIN.AMOUNT_SOLD))
-                .from(V_FULLCS2SKIN)
-                .join(TRADE_UP_SKINS)
-                .on(TRADE_UP_SKINS.C_S2_SKIN_ID.eq(V_FULLCS2SKIN.ID))
-                .where(V_FULLCS2SKIN.COLL_NAME.eq(collName))
-                .and(V_FULLCS2SKIN.CONDITION.eq(condition))
-                .and(TRADE_UP_SKINS.TRADE_UP_ID.eq(tupId))
-                .fetchOneInto(Double.class);
-        if (result==null){
-            log.debug("Couldn't get average TradeUpSkins amount sold for: tupId -> " + tupId + " coll -> " + collName + " cond -> " + condition);
-            return -3;
-        }
-        return result;*/
-        return -1;
-    }
+
 
 
     /**
