@@ -36,7 +36,7 @@ public class QRTradeUpTable extends QueryRepository {
                 .from(V_FULL_TRADEUP)
                 .leftJoin(TRADE_UP_MARKED)
                 .on(V_FULL_TRADEUP.ID.eq(TRADE_UP_MARKED.TRADE_UP_ID))
-                .where(V_FULL_TRADEUP.STATUS.eq(TradeUpStatus.CALCULATED_CSMONEY))
+                .where(V_FULL_TRADEUP.STATUS.eq(TradeUpStatus.CALCULATED))
                 .and(V_FULL_TRADEUP.OUTCOME.gt(0.0))
                 .fetch();
     }
