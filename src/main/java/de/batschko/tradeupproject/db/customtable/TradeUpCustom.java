@@ -4,7 +4,6 @@ import de.batschko.tradeupproject.db.query.*;
 import de.batschko.tradeupproject.enums.Condition;
 import de.batschko.tradeupproject.enums.Rarity;
 import de.batschko.tradeupproject.enums.TradeUpStatus;
-import de.batschko.tradeupproject.tables.TradeUpOutcome;
 import de.batschko.tradeupproject.tables.records.StashSkinHolderRecord;
 import de.batschko.tradeupproject.tables.records.TradeUpOutcomeRecord;
 import de.batschko.tradeupproject.tables.records.TradeUpOutcomeSkinsRecord;
@@ -232,11 +231,11 @@ public class TradeUpCustom extends TradeUpRecord {
 
     }
 
+
     //TODO doc
-    public static void updatePrices() {
-        List<TradeUpCustom> tups = QRTradeUp.getTradeUpList();
+    public static void reCalculateUpdatedPrices(List<TradeUpCustom> tupList) {
         tupLoop:
-        for (TradeUpCustom tup : tups) {
+        for (TradeUpCustom tup : tupList) {
             QRTradeUp.updateTradeUpSkins(tup.getId());
             TradeUpSettings settings = QRGenerationSettings.getTradeUpSettings(tup.getGenerationSettingsId());
             double totalPrice = 0;

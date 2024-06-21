@@ -24,6 +24,10 @@ public class TradeUpUtils {
             tup.setCalculation(true);
         }
     }
+    public static void reCalculateTradeUps() {
+        List<TradeUpCustom> tupList = QRTradeUp.getTradeUpList();
+        TradeUpCustom.reCalculateUpdatedPrices(tupList);
+    }
 
     public static void priceUpdateMissing(){
         fullPriceUpdate(false);
@@ -31,7 +35,6 @@ public class TradeUpUtils {
     public static void priceUpdateByDate(){
         fullPriceUpdate(true);
     }
-
 
     private static void fullPriceUpdate(boolean byDate){
         int lastSize = 0;
@@ -66,33 +69,5 @@ public class TradeUpUtils {
     }
 
 
-    /*
-    public static void initFullPriceUpdate(boolean init){
-        if(init){
-            Result<Record4<String, String, Double, Double>> nameList = QRCSMoneyPrice.getCSMoneyPriceList();
-            CSMoneyScraper.updatePrice(nameList);
-        }
-        int size = 0;
-        while (true){
-            Result<Record4<String, String, Double, Double>> nameList2 = QRCSMoneyPrice.getCSMoneyPriceListMissing();
-            if(nameList2.size() == size){
 
-                break;
-            }else {
-                CSMoneyScraper.updatePrice(nameList2);
-            }
-            size = nameList2.size();
-        }
-        List<Integer> ids = QRCSMoneyPrice.getCSMoneyPriceListMissingIds();
-        for(int id : ids){
-            CSMoneyWiki.updateCSMoneySkinPrice(id);
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }*/
-
-    //todo
 }
