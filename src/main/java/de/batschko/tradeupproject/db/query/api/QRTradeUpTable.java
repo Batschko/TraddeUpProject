@@ -47,17 +47,13 @@ public class QRTradeUpTable extends QueryRepository {
                 .where(TRADE_UP_MARKED.ACTIVE.eq((byte)1))
                 .fetchInto(Integer.class);
     }
-
-
-
-
+    
 
     public static Result<Record>  getTradeUpsMarked(){
         return dsl.select(V_FULL_TRADEUP.fields()).select(TRADE_UP_MARKED.MARKED, TRADE_UP_MARKED.WATCH, TRADE_UP_MARKED.ACTIVE)
                 .from(V_FULL_TRADEUP)
                 .join(TRADE_UP_MARKED)
                 .on(V_FULL_TRADEUP.ID.eq(TRADE_UP_MARKED.TRADE_UP_ID))
-            //    .where(V_FULL_TRADEUP.STATUS.eq(TradeUpStatus.CALCULATED_CSMONEY))
                 .fetch();
     }
 
@@ -66,7 +62,6 @@ public class QRTradeUpTable extends QueryRepository {
                 .from(V_FULL_TRADEUP)
                 .join(TRADE_UP_MARKED)
                 .on(V_FULL_TRADEUP.ID.eq(TRADE_UP_MARKED.TRADE_UP_ID))
-              //  .where(V_FULL_TRADEUP.STATUS.eq(TradeUpStatus.CALCULATED_CSMONEY))
                 .and(TRADE_UP_MARKED.WATCH.eq((byte)1))
                 .fetch();
     }
@@ -76,7 +71,6 @@ public class QRTradeUpTable extends QueryRepository {
                 .from(V_FULL_TRADEUP)
                 .join(TRADE_UP_MARKED)
                 .on(V_FULL_TRADEUP.ID.eq(TRADE_UP_MARKED.TRADE_UP_ID))
-              //  .where(V_FULL_TRADEUP.STATUS.eq(TradeUpStatus.CALCULATED_CSMONEY))
                 .where(TRADE_UP_MARKED.ACTIVE.eq((byte)1))
                 .fetch();
     }
