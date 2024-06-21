@@ -4,7 +4,6 @@ package de.batschko.tradeupproject.db.query;
 import de.batschko.tradeupproject.enums.Condition;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
-import org.jooq.Record3;
 import org.jooq.Record4;
 import org.jooq.Result;
 import org.springframework.stereotype.Repository;
@@ -114,16 +113,4 @@ public class QRSkinPrice extends QueryRepository{
     }
 
 
-
-
-    public static Result<Record3<Integer, Condition, Byte>> getSkinIdsCondStatByName(String weapon, String title){
-        return dsl.select(C_S2_SKIN.ID, C_S2_SKIN.CONDITION, C_S2_SKIN.STATTRAK)
-                .from(STASH_SKIN_HOLDER)
-                .join(C_S2_SKIN)
-                .on(STASH_SKIN_HOLDER.STASH_ID.eq(C_S2_SKIN.STASH_ID))
-                .where(STASH_SKIN_HOLDER.WEAPON.eq(weapon))
-                .and(STASH_SKIN_HOLDER.TITLE.eq(title))
-                .fetch();
-
-        }
-    }
+}

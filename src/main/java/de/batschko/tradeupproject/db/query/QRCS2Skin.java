@@ -6,15 +6,14 @@ import de.batschko.tradeupproject.enums.Rarity;
 import de.batschko.tradeupproject.tables.CS2Skin;
 import de.batschko.tradeupproject.tables.TradeUpSkins;
 import lombok.extern.slf4j.Slf4j;
-import org.jooq.DSLContext;
+import org.jooq.*;
 import org.jooq.Record;
-import org.jooq.Record6;
-import org.jooq.Result;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 import static de.batschko.tradeupproject.tables.CS2Skin.C_S2_SKIN;
+import static de.batschko.tradeupproject.tables.StashSkinHolder.STASH_SKIN_HOLDER;
 import static de.batschko.tradeupproject.tables.TradeUpSkins.TRADE_UP_SKINS;
 import static de.batschko.tradeupproject.tables.VFullcs2skin.V_FULLCS2SKIN;
 import static de.batschko.tradeupproject.tables.VOutSkins.V_OUT_SKINS;
@@ -192,4 +191,15 @@ public class QRCS2Skin extends QueryRepository {
                 .on(TRADE_UP_SKINS.C_S2_SKIN_ID.eq(V_FULLCS2SKIN.ID))
                 .where(TRADE_UP_SKINS.TRADE_UP_ID.eq(tupId)).fetch();
     }
+
+    public static Result<Record3<Integer, Condition, Byte>> getSkinIdsCondStatByName(String weapon, String title){
+        return dsl.select(C_S2_SKIN.ID, C_S2_SKIN.CONDITION, C_S2_SKIN.STATTRAK)
+                .from(STASH_SKIN_HOLDER)
+                .join(C_S2_SKIN)
+                .on(STASH_SKIN_HOLDER.STASH_ID.eq(C_S2_SKIN.STASH_ID))
+                .where(STASH_SKIN_HOLDER.WEAPON.eq(weapon))
+                .and(STASH_SKIN_HOLDER.TITLE.eq(title))
+                .fetch();
+
+        }
 }

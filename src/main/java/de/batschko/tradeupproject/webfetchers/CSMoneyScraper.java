@@ -1,5 +1,6 @@
 package de.batschko.tradeupproject.webfetchers;
 
+import de.batschko.tradeupproject.db.query.QRCS2Skin;
 import de.batschko.tradeupproject.db.query.QRSkinPrice;
 import de.batschko.tradeupproject.enums.Condition;
 import de.batschko.tradeupproject.utils.SkinUtils;
@@ -139,7 +140,7 @@ public class CSMoneyScraper {
 
             }
 
-            Result<Record3<Integer, Condition, Byte>> missingSkins = QRSkinPrice.getSkinIdsCondStatByName(weapon, originalTitle);
+            Result<Record3<Integer, Condition, Byte>> missingSkins = QRCS2Skin.getSkinIdsCondStatByName(weapon, originalTitle);
             for (Record3<Integer, Condition, Byte> skin : missingSkins) {
                 byte stat = skin.get(2, Byte.class);
                 String cond = skin.get(1, Condition.class).getText();
