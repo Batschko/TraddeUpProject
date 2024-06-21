@@ -127,7 +127,7 @@ public class TradeUpCustom extends TradeUpRecord {
 
 
         double hitChanceSum = 0;
-        double skinAvgPrice =0;
+        double skinAvgPrice = 0;
         double skinMinPrice = Double.MAX_VALUE, skinMaxPrice = Double.MIN_VALUE;
         double categoryEven = 0, categoryProfit = 0;
         for(Map.Entry<Integer, Set<TradeUpOutcomeSkinsRecord>> entry: outSkinsMap.entrySet()){
@@ -143,7 +143,7 @@ public class TradeUpCustom extends TradeUpRecord {
             }
             for(TradeUpOutcomeSkinsRecord skin : entry.getValue()){
                 skin.setChance(chance);
-                //TODO use final global var as multiplier
+
                 double skinPrice = QRCSMoneyPrice.getSkinPrice(skin.getCS2SkinId())* outSkinMultiplier;
 
                 skinAvgPrice += skinPrice * chance;
@@ -199,7 +199,7 @@ public class TradeUpCustom extends TradeUpRecord {
         }
 
         //TODO
-        if(csMoneyPrice) this.setStatus(TradeUpStatus.CALCULATED_CSMONEY);
+        if(csMoneyPrice) this.setStatus(TradeUpStatus.CALCULATED);
         else this.setStatus(TradeUpStatus.CALCULATED);
 
 
@@ -319,7 +319,7 @@ public class TradeUpCustom extends TradeUpRecord {
             if(tupOutcome.getOutcome()<0){
                 QRTradeUp.updateStatus(tup.getId(), TradeUpStatus.WASTED);
             }else {
-                QRTradeUp.updateStatus(tup.getId(), TradeUpStatus.CALCULATED_CSMONEY);
+                QRTradeUp.updateStatus(tup.getId(), TradeUpStatus.CALCULATED);
             }
 
         }
