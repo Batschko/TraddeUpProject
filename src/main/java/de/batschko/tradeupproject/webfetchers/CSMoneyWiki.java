@@ -1,7 +1,6 @@
 package de.batschko.tradeupproject.webfetchers;
 
 import de.batschko.tradeupproject.db.query.QRCS2Skin;
-import de.batschko.tradeupproject.db.query.QRCSMoney;
 import de.batschko.tradeupproject.db.query.QRCSMoneyPrice;
 import de.batschko.tradeupproject.enums.Condition;
 import de.batschko.tradeupproject.enums.Rarity;
@@ -314,7 +313,7 @@ public class CSMoneyWiki {
     public static HashMap<String, Map<String, Map<String, Double>>> getCSMoneyUrls(List<Integer> tupIds) {
         HashMap<String, Map<String, Map<String, Double>>> urlSkinMap = new HashMap<>();
         for (int id : tupIds) {
-            Result<Record6<String, String, String, Rarity, Byte, Condition>> tupSkinInfo = QRCSMoney.getTradeUpSkinInfo(id);
+            Result<Record6<String, String, String, Rarity, Byte, Condition>> tupSkinInfo = QRCS2Skin.getTradeUpSkinInfo(id);
             String collName = tupSkinInfo.getFirst().value3();
             if (collName.contains("Case")) {
                 collName = collName.replace("Case", "Collection");

@@ -2,11 +2,13 @@ package de.batschko.tradeupproject.db.query;
 
 
 import de.batschko.tradeupproject.enums.Condition;
+import de.batschko.tradeupproject.enums.Rarity;
 import de.batschko.tradeupproject.tables.CS2Skin;
 import de.batschko.tradeupproject.tables.TradeUpSkins;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.Record;
+import org.jooq.Record6;
 import org.jooq.Result;
 import org.springframework.stereotype.Repository;
 
@@ -181,5 +183,13 @@ public class QRCS2Skin extends QueryRepository {
             throw new RuntimeException("Couldn't get SkinId for -> " + weapon + title + " condition -> " + condition + " tupId -> " + tupId);
 
         return id;
+    }
+
+    public static Result<Record6<String, String, String, Rarity, Byte, Condition>> getTradeUpSkinInfo(int tupId) {
+        return dsl.selectDistinct(V_FULLCS2SKIN.WEAPON,V_FULLCS2SKIN.TITLE, V_FULLCS2SKIN.COLL_NAME, V_FULLCS2SKIN.RARITY, V_FULLCS2SKIN.STATTRAK, V_FULLCS2SKIN.CONDITION)
+                .from(TRADE_UP_SKINS)
+                .join(V_FULLCS2SKIN)
+                .on(TRADE_UP_SKINS.C_S2_SKIN_ID.eq(V_FULLCS2SKIN.ID))
+                .where(TRADE_UP_SKINS.TRADE_UP_ID.eq(tupId)).fetch();
     }
 }
