@@ -242,9 +242,9 @@ public class TradeUpCustom extends TradeUpRecord {
                 totalPrice += collNumber.get(i) * minSkinPriceAvg;
             }
             // TODO maybe remove if it cant happen
-            if (totalPrice <= 0) continue; //throw new RuntimeException("totalPrice is 0");
+            if (totalPrice <= 0) throw new RuntimeException("totalPrice is 0");
             TradeUpOutcomeRecord tupOutcome = QRTradeUp.getTradeUpOutcome(tup.getId());
-            if(tupOutcome == null) continue ;
+            if(tupOutcome == null) throw new RuntimeException("tupOutcome is null");
             tupOutcome.setCost(totalPrice*costMultiplier);
 
 
@@ -260,7 +260,7 @@ public class TradeUpCustom extends TradeUpRecord {
             double skinMinPrice = Double.MAX_VALUE, skinMaxPrice = Double.MIN_VALUE;
             double categoryEven = 0, categoryProfit = 0;
             for (TradeUpOutcomeSkinsRecord skin : outSkins) {
-                //only csmoney price
+
                 double skinPrice = QRSkinPrice.getSkinPrice(skin.getCS2SkinId()) * outSkinMultiplier;
 
                 skinAvgPrice += skinPrice * chance;
