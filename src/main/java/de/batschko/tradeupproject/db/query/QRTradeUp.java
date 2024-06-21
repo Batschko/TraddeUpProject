@@ -78,7 +78,6 @@ public class QRTradeUp extends QueryRepository{
     /**
      * Save {@link TradeUpRecord} with attributes as parameters.
      *
-     * @param custom            false if generated
      * @param stattrak          stattrak as byte
      * @param rarity            rarity {@link Rarity}
      * @param condTarget        condition target {@link Condition}
@@ -87,9 +86,9 @@ public class QRTradeUp extends QueryRepository{
      * @param floatDictId       float dict id
      * @param tradeUpSettingsId tradeup settings id
      */
-    public static void saveRecord(boolean custom, byte stattrak, Rarity rarity, Condition condTarget, byte collCount, TradeUpStatus status, int floatDictId, int tradeUpSettingsId){
-        TradeUpRecord tup = dsl.newRecord(TradeUp.TRADE_UP);
-        tup.setCustom((byte) (custom ? 1:0));
+    public static void saveRecord(byte stattrak, Rarity rarity, Condition condTarget, byte collCount, TradeUpStatus status, int floatDictId, int tradeUpSettingsId){
+        TradeUpRecord tup = dsl.newRecord(TRADE_UP);
+        tup.setCustom((byte) 0);
         tup.setStattrak(stattrak);
         tup.setRarity(rarity);
         tup.setConditionTarget(condTarget);

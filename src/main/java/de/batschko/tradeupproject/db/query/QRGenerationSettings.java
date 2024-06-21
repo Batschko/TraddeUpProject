@@ -51,14 +51,13 @@ public class QRGenerationSettings extends QueryRepository {
                 .where(GENERATION_SETTINGS.SETTINGS.eq(settings))
                 .fetchOneInto(Integer.class);
         if (existingRecord == null) {
-            GenerationSettingsRecord tsettings = dsl.newRecord(GenerationSettings.GENERATION_SETTINGS);
+            GenerationSettingsRecord tsettings = dsl.newRecord(GENERATION_SETTINGS);
             tsettings.setSettings(settings);
             tsettings.setCustom((byte) (custom ? 1:0));
             tsettings.store();
             return tsettings.getId();
         }
         return existingRecord;
-
-
     }
+    
 }

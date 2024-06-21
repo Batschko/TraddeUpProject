@@ -50,7 +50,7 @@ public class Generator {
         TradeUpStatus status = TradeUpStatus.NOT_CALCULATED;
         int tradeUpSettingsId = QRGenerationSettings.saveIfNotExists(tSettings.serialize(),false);
 
-        QRTradeUp.saveRecord(false, stattrak, rarity, tSettings.condTarget, collCount, status, floatDictId, tradeUpSettingsId);
+        QRTradeUp.saveRecord(stattrak, rarity, tSettings.condTarget, collCount, status, floatDictId, tradeUpSettingsId);
     }
 
 
