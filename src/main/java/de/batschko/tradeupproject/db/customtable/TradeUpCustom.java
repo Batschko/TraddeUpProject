@@ -118,9 +118,6 @@ public class TradeUpCustom extends TradeUpRecord {
                 skinPool+= (collNumber.get(collIndex) * entry.getValue().size());
             }
         }
-        // TODO maybe remove if it cant happen
-        if(skinPool < 1) throw new RuntimeException("skinPool is 0");
-
 
         double hitChanceSum = 0;
         double skinAvgPrice = 0;
