@@ -2,14 +2,10 @@ package de.batschko.tradeupproject.webfetchers;
 
 import de.batschko.tradeupproject.db.customtable.TradeUpCustom;
 import de.batschko.tradeupproject.db.query.QRTradeUp;
-import de.batschko.tradeupproject.db.query.QueryRepository;
-import de.batschko.tradeupproject.enums.Condition;
 import de.batschko.tradeupproject.enums.PriceType;
 import de.batschko.tradeupproject.tables.CS2Skin;
 import de.batschko.tradeupproject.utils.SkinUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.jooq.Record6;
-import org.jooq.Result;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
@@ -20,11 +16,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static de.batschko.tradeupproject.tables.VFullcs2skin.V_FULLCS2SKIN;
 
 /**
  * Class to fetch from CSGOBackpack api.

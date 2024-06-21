@@ -3,7 +3,9 @@ package de.batschko.tradeupproject.db.query;
 
 import de.batschko.tradeupproject.enums.Condition;
 import de.batschko.tradeupproject.enums.Rarity;
-import org.jooq.*;
+import org.jooq.DSLContext;
+import org.jooq.Record6;
+import org.jooq.Result;
 import org.springframework.stereotype.Repository;
 
 import static de.batschko.tradeupproject.tables.TradeUpSkins.TRADE_UP_SKINS;

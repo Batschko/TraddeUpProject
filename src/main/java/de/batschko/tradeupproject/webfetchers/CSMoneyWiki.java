@@ -12,8 +12,6 @@ import org.jooq.Record6;
 import org.jooq.Result;
 import org.json.JSONArray;
 import org.json.JSONObject;
-//import org.json.parser.JSONParser;
-//import org.json.simple.parser.ParseException;
 import org.json.JSONTokener;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;

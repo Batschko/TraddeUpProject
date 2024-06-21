@@ -1,7 +1,6 @@
 package de.batschko.tradeupproject.api;
 
 import de.batschko.tradeupproject.db.query.QRCollection;
-import de.batschko.tradeupproject.tradeup.CustomGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.json.JSONTokener;

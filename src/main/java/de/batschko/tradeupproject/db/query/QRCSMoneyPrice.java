@@ -2,16 +2,11 @@ package de.batschko.tradeupproject.db.query;
 
 
 import de.batschko.tradeupproject.enums.Condition;
-import de.batschko.tradeupproject.enums.Rarity;
-import de.batschko.tradeupproject.enums.TradeUpStatus;
-
-import de.batschko.tradeupproject.tables.TradeUp;
-
-import de.batschko.tradeupproject.tradeup.TradeUpSettings;
-import de.batschko.tradeupproject.utils.SkinUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.jooq.Record;
-import org.jooq.*;
+import org.jooq.DSLContext;
+import org.jooq.Record3;
+import org.jooq.Record4;
+import org.jooq.Result;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -21,15 +16,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static de.batschko.tradeupproject.tables.CS2Skin.C_S2_SKIN;
-
 import static de.batschko.tradeupproject.tables.StashSkinHolder.STASH_SKIN_HOLDER;
-import static de.batschko.tradeupproject.tables.TradeUp.TRADE_UP;
-import static de.batschko.tradeupproject.tables.TradeUpOutcomeSkins.TRADE_UP_OUTCOME_SKINS;
-import static de.batschko.tradeupproject.tables.TradeUpSkins.TRADE_UP_SKINS;
-import static de.batschko.tradeupproject.tables.VTupnsettinggs.V_TUPNSETTINGGS;
-import static de.batschko.tradeupproject.tables.VFullcs2skin.V_FULLCS2SKIN;
-
-import static org.jooq.impl.DSL.*;
+import static org.jooq.impl.DSL.localDateTime;
 
 /**
  * Database access related to {@link }.

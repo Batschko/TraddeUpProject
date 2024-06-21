@@ -7,8 +7,6 @@ import de.batschko.tradeupproject.enums.Rarity;
 import de.batschko.tradeupproject.utils.ApiUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-//import org.json.simple.parser.JSONParser;
-//import org.json.simple.parser.ParseException;
 import org.json.JSONTokener;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,18 +1,5 @@
 package de.batschko.tradeupproject.tradeup;
 
-import de.batschko.tradeupproject.db.query.*;
-import de.batschko.tradeupproject.enums.Condition;
-import de.batschko.tradeupproject.enums.Rarity;
-import de.batschko.tradeupproject.tables.records.StashSkinHolderRecord;
-
-import de.batschko.tradeupproject.tables.records.TradeUpOutcomeSkinsRecord;
-import de.batschko.tradeupproject.utils.ApiUtils;
-import org.jooq.impl.UpdatableRecordImpl;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.*;
-
 public class CustomGenerator {
 
 

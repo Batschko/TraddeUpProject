@@ -2,12 +2,12 @@ package de.batschko.tradeupproject.utils;
 
 import de.batschko.tradeupproject.db.query.QRUtils;
 import de.batschko.tradeupproject.enums.Rarity;
-import de.batschko.tradeupproject.webfetchers.CSMoneyScraper;
 
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * Utility methods for CSMoney

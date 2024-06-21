@@ -22,7 +22,6 @@ import static de.batschko.tradeupproject.tables.TradeUp.TRADE_UP;
 import static de.batschko.tradeupproject.tables.TradeUpOutcome.TRADE_UP_OUTCOME;
 import static de.batschko.tradeupproject.tables.TradeUpOutcomeSkins.TRADE_UP_OUTCOME_SKINS;
 import static de.batschko.tradeupproject.tables.TradeUpSkins.TRADE_UP_SKINS;
-
 import static de.batschko.tradeupproject.tables.VFullcs2skin.V_FULLCS2SKIN;
 import static de.batschko.tradeupproject.tables.VTupnsettinggs.V_TUPNSETTINGGS;
 import static org.jooq.impl.DSL.min;

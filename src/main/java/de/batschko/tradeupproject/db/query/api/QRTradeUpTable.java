@@ -6,8 +6,8 @@ import de.batschko.tradeupproject.enums.Rarity;
 import de.batschko.tradeupproject.enums.TradeUpStatus;
 import de.batschko.tradeupproject.tables.records.TradeUpMadeRecord;
 import de.batschko.tradeupproject.tables.records.TradeUpMarkedRecord;
-import org.jooq.*;
 import org.jooq.Record;
+import org.jooq.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Repository;
@@ -17,9 +17,9 @@ import java.util.List;
 import java.util.Map;
 
 import static de.batschko.tradeupproject.tables.TradeUpMade.TRADE_UP_MADE;
+import static de.batschko.tradeupproject.tables.TradeUpMarked.TRADE_UP_MARKED;
 import static de.batschko.tradeupproject.tables.VFullTradeup.V_FULL_TRADEUP;
 import static de.batschko.tradeupproject.tables.VFullcs2skin.V_FULLCS2SKIN;
-import static de.batschko.tradeupproject.tables.TradeUpMarked.TRADE_UP_MARKED;
 import static org.jooq.impl.DSL.count;
 import static org.jooq.impl.DSL.sum;
 
