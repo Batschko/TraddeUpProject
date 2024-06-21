@@ -163,7 +163,6 @@ public class QRCS2Skin extends QueryRepository {
 */
 
     public static Result<Record> getOutSkins(int id){
-
         return dsl.select()
                 .from(V_OUT_SKINS)
                 .where(V_OUT_SKINS.TRADE_UP_ID.eq(id))
@@ -171,13 +170,16 @@ public class QRCS2Skin extends QueryRepository {
     }
 
     public static int getOutSkinIdByNameCondTup(String weapon, String title, Condition condition, int tupId){
-        int id =  dsl.select(V_OUT_SKINS.ID)
+        Integer id =  dsl.select(V_OUT_SKINS.ID)
                 .from(V_OUT_SKINS)
                 .where(V_OUT_SKINS.TRADE_UP_ID.eq(tupId))
                 .and(V_OUT_SKINS.WEAPON.eq(weapon))
                 .and(V_OUT_SKINS.TITLE.eq(title))
                 .and(V_OUT_SKINS.CONDITION.eq(condition))
                 .fetchOneInto(Integer.class);
+        if (id == null)
+            throw new RuntimeException("Couldn't get SkinId for -> " + weapon + title + " condition -> " + condition + " tupId -> " + tupId);
+
         return id;
-}
+    }
 }
