@@ -173,7 +173,7 @@ public class QRTradeUp extends QueryRepository{
 
     //TODO doc
     public static void updateTradeUpSkins(int tupId){
-        dsl.deleteFrom(TRADE_UP_SKINS).where(TRADE_UP_SKINS.TRADE_UP_ID.eq(tupId)).and(V_TUPNSETTINGGS.CUSTOM.eq((byte) 0)).execute();
+        dsl.deleteFrom(TRADE_UP_SKINS).where(TRADE_UP_SKINS.TRADE_UP_ID.eq(tupId)).and(TRADE_UP_SKINS.CUSTOM.eq((byte) 0)).execute();
         Result<Record> tupAndSettings = dsl.select().from(V_TUPNSETTINGGS).where(V_TUPNSETTINGGS.ID.eq(tupId)).and(V_TUPNSETTINGGS.CUSTOM.eq((byte) 0)).fetch();
         processCreateTradeUpSkins(tupAndSettings, false);
     }
