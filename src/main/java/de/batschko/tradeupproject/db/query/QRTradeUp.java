@@ -29,7 +29,7 @@ import static org.jooq.impl.DSL.row;
 
 
 /**
- * Database access related to {@link TradeUp}
+ * Database access related to generated {@link TradeUp}
  * ! all methods filter for custom = false !
  */
 @Repository
@@ -178,48 +178,8 @@ public class QRTradeUp extends QueryRepository{
         processCreateTradeUpSkins(tupAndSettings, false);
     }
 
-    /*
-    public static void createTradeUpSkinsCustom(int tupId, TradeUpSettings settings, Rarity rarity, byte stat){
-            List<SkinUtils.TradeUpSkinInfo> infos = settings.getTradeUpSkinInfo(rarity, stat);
-            for(SkinUtils.TradeUpSkinInfo info : infos){
-                SelectConditionStep<Record1<Double>> subquery = dsl.select(min(V_FULLCS2SKIN_CSMONEY.PRICE.mul(1.15)))
-                        .from(V_FULLCS2SKIN_CSMONEY)
-                        .where(V_FULLCS2SKIN_CSMONEY.COLL_NAME.eq(info.getColl_name()))
-                        .and(V_FULLCS2SKIN_CSMONEY.RARITY.eq(info.getRarity()))
-                        .and(V_FULLCS2SKIN_CSMONEY.CONDITION.eq(info.getCondition()))
-                        .and(V_FULLCS2SKIN_CSMONEY.STATTRAK.eq(info.getStattrak()))
-                        .and(V_FULLCS2SKIN_CSMONEY.PRICE.gt(0.0));
 
 
-                SelectConditionStep<Record1<Integer>> query = dsl.select(V_FULLCS2SKIN_CSMONEY.ID)
-                        .from(V_FULLCS2SKIN_CSMONEY)
-                        .where(V_FULLCS2SKIN_CSMONEY.COLL_NAME.eq(info.getColl_name()))
-                        .and(V_FULLCS2SKIN_CSMONEY.RARITY.eq(info.getRarity()))
-                        .and(V_FULLCS2SKIN_CSMONEY.CONDITION.eq(info.getCondition()))
-                        .and(V_FULLCS2SKIN_CSMONEY.STATTRAK.eq(info.getStattrak()))
-                        .and(V_FULLCS2SKIN_CSMONEY.PRICE.ge(0.0))
-                       // .and(V_FULLCS2SKIN_CSMONEY.AMOUNT_SOLD.ge(0))
-                        .and(V_FULLCS2SKIN_CSMONEY.PRICE.le(subquery));
-
-                List<Integer> tupSkinIds = query.fetchInto(Integer.class);
-                //TODO delete tradeups that are not possible beause condition doesnt exist?
-                List<Row2<Integer, Integer>> rowList = tupSkinIds.stream().map(tupSkinId -> row(tupId, tupSkinId)).toList();
-                if(rowList.isEmpty()){
-                    log.warn(""+settings + " "+rarity+ " "+ stat);
-                }
-
-                try{
-                    int inserted = dsl.insertInto(TRADE_UP_SKINS_CUSTOM, TRADE_UP_SKINS_CUSTOM.TRADE_UP_CUSTOM_ID, TRADE_UP_SKINS_CUSTOM.C_S2_SKIN_ID).valuesOfRows(rowList).execute();
-                    if(inserted != tupSkinIds.size()){
-                        throw new RuntimeException("Error inserting TradeUpSkins");
-                    }
-                }catch (Exception e){
-                    throw new RuntimeException("Exception inserting TradeUpSkins\n"+e.getMessage());
-                }
-
-
-            }
-        }*/
 
     //TODO doc
     public static TradeUpOutcomeRecord getTradeUpOutcome(int tupId){

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import static de.batschko.tradeupproject.Tables.TRADE_UP_OUTCOME_SKINS;
 import static de.batschko.tradeupproject.tables.CS2Skin.C_S2_SKIN;
 import static de.batschko.tradeupproject.tables.StashSkinHolder.STASH_SKIN_HOLDER;
 import static de.batschko.tradeupproject.tables.TradeUpSkins.TRADE_UP_SKINS;
@@ -135,33 +136,33 @@ public class QRCS2Skin extends QueryRepository {
                 .fetch();
     }
 
-    /*
-    public static Result<Record> getTradeUpSkinsCustom(int id){
 
+    public static Result<Record> getTradeUpSkinsCustom(int id){
         return dsl.select()
                 .from(V_FULLCS2SKIN)
-                .join(TRADE_UP_SKINS_CUSTOM)
-                .on(TRADE_UP_SKINS_CUSTOM.C_S2_SKIN_ID.eq(V_FULLCS2SKIN.ID))
-                .where(TRADE_UP_SKINS_CUSTOM.TRADE_UP_CUSTOM_ID.eq(id))
+                .join(TRADE_UP_SKINS)
+                .on(TRADE_UP_SKINS.C_S2_SKIN_ID.eq(V_FULLCS2SKIN.ID))
+                .where(TRADE_UP_SKINS.TRADE_UP_ID.eq(id))
+                .and(TRADE_UP_SKINS.CUSTOM.eq((byte) 1))
                 .fetch();
     }
 
     public static Result<Record> getOutSkinsCustom(int id){
-
         return dsl.select()
                 .from(V_FULLCS2SKIN)
-                .join(TRADE_UP_OUTCOME_SKINS_CUSTOM)
-                .on(TRADE_UP_OUTCOME_SKINS_CUSTOM.C_S2_SKIN_ID.eq(V_FULLCS2SKIN.ID))
-                .where(TRADE_UP_OUTCOME_SKINS_CUSTOM.TRADE_UP_CUSTOM_ID.eq(id))
+                .join(TRADE_UP_OUTCOME_SKINS)
+                .on(TRADE_UP_OUTCOME_SKINS.C_S2_SKIN_ID.eq(V_FULLCS2SKIN.ID))
+                .where(TRADE_UP_OUTCOME_SKINS.TRADE_UP_ID.eq(id))
+                .and(TRADE_UP_OUTCOME_SKINS.CUSTOM.eq((byte) 1))
                 .fetch();
     }
 
     //TODO remove
-    public static void deleteInAndOutSkins(int id){
-        dsl.deleteFrom(TRADE_UP_SKINS_CUSTOM).where(TRADE_UP_SKINS_CUSTOM.TRADE_UP_CUSTOM_ID.eq(id)).execute();
-        dsl.deleteFrom(TRADE_UP_OUTCOME_SKINS_CUSTOM).where(TRADE_UP_OUTCOME_SKINS_CUSTOM.TRADE_UP_CUSTOM_ID.eq(id)).execute();
+    public static void deleteCustomInAndOutSkins(int id){
+        dsl.deleteFrom(TRADE_UP_SKINS).where(TRADE_UP_SKINS.TRADE_UP_ID.eq(id)).and(TRADE_UP_SKINS.CUSTOM.eq((byte) 1)).execute();
+        dsl.deleteFrom(TRADE_UP_OUTCOME_SKINS).where(TRADE_UP_OUTCOME_SKINS.TRADE_UP_ID.eq(id)).and(TRADE_UP_OUTCOME_SKINS.CUSTOM.eq((byte) 1)).execute();
     }
-*/
+
 
     public static Result<Record> getOutSkins(int id){
         return dsl.select()

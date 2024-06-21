@@ -1,6 +1,7 @@
 package de.batschko.tradeupproject.api;
 
 import de.batschko.tradeupproject.db.query.QRCollection;
+import de.batschko.tradeupproject.tradeup.CustomGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -29,10 +30,9 @@ public class DefaultController {
             throw new RuntimeException(e);
         }
         System.out.println(json);
-     //   JSONObject jsonObject = CustomGenerator.calculateTup(json);
+        JSONObject jsonObject = CustomGenerator.calculateTup(json);
 
 
-      //  return jsonObject.toString();
-        return  "";
+        return jsonObject.toString();
     }
 }
