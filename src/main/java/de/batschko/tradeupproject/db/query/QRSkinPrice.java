@@ -16,24 +16,23 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static de.batschko.tradeupproject.tables.CS2Skin.C_S2_SKIN;
+import de.batschko.tradeupproject.tables.CS2Skin;
 import static de.batschko.tradeupproject.tables.StashSkinHolder.STASH_SKIN_HOLDER;
 import static org.jooq.impl.DSL.localDateTime;
 
 /**
- * Database access related to {@link }.
+ * Database access related to {@link CS2Skin } prices.
  */
 @Repository
 @Slf4j
-public class QRCSMoneyPrice extends QueryRepository{
+public class QRSkinPrice extends QueryRepository{
 
-    public QRCSMoneyPrice(DSLContext dslContext) {
+    public QRSkinPrice(DSLContext dslContext) {
         super(dslContext);
     }
 
-    
 
-
-    public static Result<Record4<String, String, Double, Double>> getCSMoneyPriceList() {
+    public static Result<Record4<String, String, Double, Double>> getSkinPriceList() {
         return dsl.selectDistinct(STASH_SKIN_HOLDER.WEAPON, STASH_SKIN_HOLDER.TITLE, STASH_SKIN_HOLDER.FLOAT_START, STASH_SKIN_HOLDER.FLOAT_END)
                         .from(STASH_SKIN_HOLDER)
                         .join(C_S2_SKIN)
@@ -42,7 +41,7 @@ public class QRCSMoneyPrice extends QueryRepository{
 
     }
 
-    public static Result<Record4<String, String, Double, Double>> getCSMoneyPriceListByDate() {
+    public static Result<Record4<String, String, Double, Double>> getSkinPriceListByDate() {
         final int minusHours = 24;
         DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
         String time = dateFmt.format(ZonedDateTime.now(ZoneId.of("Europe/Berlin")).minusHours(minusHours));
@@ -54,7 +53,7 @@ public class QRCSMoneyPrice extends QueryRepository{
                         .orderBy(C_S2_SKIN.ID.asc()).fetch();
     }
 
-    public static List<Integer> getCSMoneyPriceListByDateId() {
+    public static List<Integer> getSkinPriceListByDateId() {
 
         final int minusHours = 12;
         DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
@@ -66,7 +65,7 @@ public class QRCSMoneyPrice extends QueryRepository{
                         .fetchInto(Integer.class);
     }
 
-    public static Result<Record4<String, String, Double, Double>> getCSMoneyPriceListMissing() {
+    public static Result<Record4<String, String, Double, Double>> getSkinPriceListMissing() {
         return dsl.selectDistinct(STASH_SKIN_HOLDER.WEAPON, STASH_SKIN_HOLDER.TITLE, STASH_SKIN_HOLDER.FLOAT_START, STASH_SKIN_HOLDER.FLOAT_END)
                         .from(STASH_SKIN_HOLDER)
                         .join(C_S2_SKIN)
@@ -75,7 +74,7 @@ public class QRCSMoneyPrice extends QueryRepository{
                         .orderBy(C_S2_SKIN.ID.asc()).fetch();
     }
 
-    public static List<Integer> getCSMoneyPriceListMissingIds() {
+    public static List<Integer> getSkinPriceListMissingIds() {
         return dsl.select(C_S2_SKIN.ID)
                         .from(C_S2_SKIN)
                         .where(C_S2_SKIN.PRICE.isNull())
@@ -117,7 +116,7 @@ public class QRCSMoneyPrice extends QueryRepository{
 
 
 
-    public static Result<Record3<Integer, Condition, Byte>> getSkinIdsFromName(String weapon, String title){
+    public static Result<Record3<Integer, Condition, Byte>> getSkinIdsCondStatByName(String weapon, String title){
         return dsl.select(C_S2_SKIN.ID, C_S2_SKIN.CONDITION, C_S2_SKIN.STATTRAK)
                 .from(STASH_SKIN_HOLDER)
                 .join(C_S2_SKIN)

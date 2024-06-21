@@ -1,7 +1,7 @@
 package de.batschko.tradeupproject.webfetchers;
 
 import de.batschko.tradeupproject.db.query.QRCS2Skin;
-import de.batschko.tradeupproject.db.query.QRCSMoneyPrice;
+import de.batschko.tradeupproject.db.query.QRSkinPrice;
 import de.batschko.tradeupproject.enums.Condition;
 import de.batschko.tradeupproject.enums.Rarity;
 import lombok.extern.slf4j.Slf4j;
@@ -33,9 +33,9 @@ public class CSMoneyWiki {
         Result<Record4<String, String, Double, Double>> skinNameWithFloatList;
         if(update){
           //  a = QRCSMoneyPrice.getCSMoneyPriceListNegativ();
-            skinNameWithFloatList = QRCSMoneyPrice.getCSMoneyPriceListByDate();
+            skinNameWithFloatList = QRSkinPrice.getSkinPriceListByDate();
         }else {
-            skinNameWithFloatList = QRCSMoneyPrice.getCSMoneyPriceList();
+            skinNameWithFloatList = QRSkinPrice.getSkinPriceList();
 
         }
         for(int i=0; i<skip; i++){
@@ -140,7 +140,7 @@ public class CSMoneyWiki {
                         price = priceObj.get("lowestPrice").toString();
                         count = priceObj.get("count").toString();
                         //QRCSMoneyPrice.update(weapon, title, condition, stat, Double.parseDouble(price), Integer.parseInt(count));
-                        QRCSMoneyPrice.update(weapon, title, condition, stat, Double.parseDouble(price));
+                        QRSkinPrice.update(weapon, title, condition, stat, Double.parseDouble(price));
 
                     } else {
                         if(!update){
@@ -202,7 +202,7 @@ public class CSMoneyWiki {
 
             JSONObject firstJsonObject =  array.getJSONObject(0);
             double price = Double.parseDouble(String.valueOf(firstJsonObject.get("defaultPrice")));
-            QRCSMoneyPrice.update(skinId, price);
+            QRSkinPrice.update(skinId, price);
             log.info("updated {} {} : {}", fullName, stattrak, price);
         } catch (Exception e) {
             throw new RuntimeException(e);

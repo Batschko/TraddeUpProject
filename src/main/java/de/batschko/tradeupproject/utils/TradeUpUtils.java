@@ -1,7 +1,7 @@
 package de.batschko.tradeupproject.utils;
 
 import de.batschko.tradeupproject.db.customtable.TradeUpCustom;
-import de.batschko.tradeupproject.db.query.QRCSMoneyPrice;
+import de.batschko.tradeupproject.db.query.QRSkinPrice;
 import de.batschko.tradeupproject.db.query.QRTradeUp;
 import de.batschko.tradeupproject.webfetchers.CSMoneyScraper;
 import de.batschko.tradeupproject.webfetchers.CSMoneyWiki;
@@ -40,8 +40,8 @@ public class TradeUpUtils {
         int lastSize = 0;
         while (true){
             Result<Record4<String, String, Double, Double>> nameList;
-            if(byDate) nameList = QRCSMoneyPrice.getCSMoneyPriceListByDate();
-            else nameList = QRCSMoneyPrice.getCSMoneyPriceListMissing();
+            if(byDate) nameList = QRSkinPrice.getSkinPriceListByDate();
+            else nameList = QRSkinPrice.getSkinPriceListMissing();
 
             if(nameList.size() == lastSize){
                 break;
@@ -51,8 +51,8 @@ public class TradeUpUtils {
             lastSize = nameList.size();
         }
         List<Integer> ids;
-        if(byDate) ids = QRCSMoneyPrice.getCSMoneyPriceListByDateId();
-        else ids = QRCSMoneyPrice.getCSMoneyPriceListMissingIds();
+        if(byDate) ids = QRSkinPrice.getSkinPriceListByDateId();
+        else ids = QRSkinPrice.getSkinPriceListMissingIds();
 
         log.info("\n\n\nget remaining by CSMoney Bot");
         log.info("updating {} names", ids.size());

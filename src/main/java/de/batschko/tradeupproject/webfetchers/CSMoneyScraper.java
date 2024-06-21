@@ -1,6 +1,6 @@
 package de.batschko.tradeupproject.webfetchers;
 
-import de.batschko.tradeupproject.db.query.QRCSMoneyPrice;
+import de.batschko.tradeupproject.db.query.QRSkinPrice;
 import de.batschko.tradeupproject.enums.Condition;
 import de.batschko.tradeupproject.utils.SkinUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -139,16 +139,16 @@ public class CSMoneyScraper {
 
             }
 
-            Result<Record3<Integer, Condition, Byte>> missingSkins = QRCSMoneyPrice.getSkinIdsFromName(weapon, originalTitle);
+            Result<Record3<Integer, Condition, Byte>> missingSkins = QRSkinPrice.getSkinIdsCondStatByName(weapon, originalTitle);
             for (Record3<Integer, Condition, Byte> skin : missingSkins) {
                 byte stat = skin.get(2, Byte.class);
                 String cond = skin.get(1, Condition.class).getText();
                 int id = skin.get(0, Integer.class);
                 try{
                     if (stat == 1) {
-                        QRCSMoneyPrice.update(id, priceMapStat.get(cond));
+                        QRSkinPrice.update(id, priceMapStat.get(cond));
                     } else {
-                        QRCSMoneyPrice.update(id, priceMap.get(cond));
+                        QRSkinPrice.update(id, priceMap.get(cond));
                     }
                     log.info("updated {} {} stat:{}  {}",weapon,title, stat, cond);
                 }catch (NullPointerException e){
