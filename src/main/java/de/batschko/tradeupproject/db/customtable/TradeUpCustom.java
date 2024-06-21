@@ -219,6 +219,7 @@ public class TradeUpCustom extends TradeUpRecord {
     public static void reCalculateUpdatedPrices(List<TradeUpCustom> tupList) {
         tupLoop:
         for (TradeUpCustom tup : tupList) {
+            log.info("updating tup: {}", tup.getId());
             QRTradeUp.updateTradeUpSkins(tup.getId());
             TradeUpSettings settings = QRGenerationSettings.getTradeUpSettings(tup.getGenerationSettingsId());
             double totalPrice = 0;
