@@ -217,7 +217,7 @@ public class TradeUpCustom extends TradeUpRecord {
         log.info("updating tups: {}", tupList.size());
         tupLoop:
         for (TradeUpCustom tup : tupList) {
-            QRTradeUp.updateTradeUpSkins(tup.getId());
+            QRTradeUpGenerated.updateTradeUpSkins(tup.getId());
             TradeUpSettings settings = QRGenerationSettings.getTradeUpSettings(tup.getGenerationSettingsId());
             double totalPrice = 0;
 
@@ -233,7 +233,7 @@ public class TradeUpCustom extends TradeUpRecord {
                 double minSkinPriceAvg = QRCS2Skin.getTradeUpSkinsAveragePrice(false, collectionName, condition, tup.getId());
 
                 if (minSkinPriceAvg <= 0) {
-                    QRTradeUp.updateStatus(tup.getId(), TradeUpStatus.WASTED);
+                    QRTradeUpGenerated.updateStatus(tup.getId(), TradeUpStatus.WASTED);
                     continue tupLoop;
                 }
 
@@ -241,12 +241,12 @@ public class TradeUpCustom extends TradeUpRecord {
             }
             // TODO maybe remove if it cant happen
             if (totalPrice <= 0) throw new RuntimeException("totalPrice is 0");
-            TradeUpOutcomeRecord tupOutcome = QRTradeUp.getTradeUpOutcome(tup.getId());
+            TradeUpOutcomeRecord tupOutcome = QRTradeUpGenerated.getTradeUpOutcome(tup.getId());
             if(tupOutcome == null) throw new RuntimeException("tupOutcome is null");
             tupOutcome.setCost(totalPrice*costMultiplier);
 
 
-            List<TradeUpOutcomeSkinsRecord> outSkins = QRTradeUp.getTradeUpOutcomeSkins(tup.getId());
+            List<TradeUpOutcomeSkinsRecord> outSkins = QRTradeUpGenerated.getTradeUpOutcomeSkins(tup.getId());
 
             //TODO only single collection!
             //TODO only single collection!
@@ -294,9 +294,9 @@ public class TradeUpCustom extends TradeUpRecord {
             tupOutcome.store();
 
             if(tupOutcome.getOutcome()<0){
-                QRTradeUp.updateStatus(tup.getId(), TradeUpStatus.WASTED);
+                QRTradeUpGenerated.updateStatus(tup.getId(), TradeUpStatus.WASTED);
             }else {
-                QRTradeUp.updateStatus(tup.getId(), TradeUpStatus.CALCULATED);
+                QRTradeUpGenerated.updateStatus(tup.getId(), TradeUpStatus.CALCULATED);
             }
 
         }

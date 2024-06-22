@@ -1,7 +1,7 @@
 package de.batschko.tradeupproject;
 
 import de.batschko.tradeupproject.db.query.QRInitQueries;
-import de.batschko.tradeupproject.db.query.QRTradeUp;
+import de.batschko.tradeupproject.db.query.QRTradeUpGenerated;
 import de.batschko.tradeupproject.tradeup.Generator;
 import de.batschko.tradeupproject.utils.CSMoneyUtils;
 import de.batschko.tradeupproject.utils.SkinUtils;
@@ -103,7 +103,7 @@ public class TradeUpProjectApplicationCMD {
 		cmdList.put("5", SkinUtils::priceUpdateMissing);
 		cmdList.put("6", () -> Generator.generateSingleCollTradeUps(2));
 		cmdList.put("7", () -> Generator.generateSingleCollTradeUps(4));
-		cmdList.put("8", () -> QRTradeUp.createTradeUpSkins(false));
+		cmdList.put("8", () -> QRTradeUpGenerated.createTradeUpSkins(false));
 		//cmdList.put("9", () -> QRTradeUp.createTradeUpSkins(true));
 		cmdList.put("0", TradeUpUtils::calculateAllTradeUps);
 

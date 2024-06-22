@@ -34,9 +34,9 @@ import static org.jooq.impl.DSL.row;
  */
 @Repository
 @Slf4j
-public class QRTradeUp extends QueryRepository{
+public class QRTradeUpGenerated extends QueryRepository{
 
-    public QRTradeUp(DSLContext dslContext) {
+    public QRTradeUpGenerated(DSLContext dslContext) {
         super(dslContext);
     }
 

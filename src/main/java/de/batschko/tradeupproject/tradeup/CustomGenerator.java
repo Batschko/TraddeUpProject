@@ -59,7 +59,7 @@ public class CustomGenerator {
         TradeUpSettings settings = new TradeUpSettings(collectionList,collCondDistri,condTarget);
 
         int tupId=666666;
-        QRCustomTradeUp.createTradeUpSkinsCustom(tupId,settings, rarity , stat? (byte) 1: 0);
+        QRTradeUpCustom.createTradeUpSkinsCustom(tupId,settings, rarity , stat? (byte) 1: 0);
 
         double totalPrice = 0;
         double floatSum = 0;

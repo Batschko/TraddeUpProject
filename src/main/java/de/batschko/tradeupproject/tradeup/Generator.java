@@ -2,7 +2,7 @@ package de.batschko.tradeupproject.tradeup;
 
 import de.batschko.tradeupproject.db.query.QRCollection;
 import de.batschko.tradeupproject.db.query.QRGenerationSettings;
-import de.batschko.tradeupproject.db.query.QRTradeUp;
+import de.batschko.tradeupproject.db.query.QRTradeUpGenerated;
 import de.batschko.tradeupproject.enums.Condition;
 import de.batschko.tradeupproject.enums.Rarity;
 import de.batschko.tradeupproject.enums.TradeUpStatus;
@@ -50,7 +50,7 @@ public class Generator {
         TradeUpStatus status = TradeUpStatus.NOT_CALCULATED;
         int tradeUpSettingsId = QRGenerationSettings.saveIfNotExists(tSettings.serialize(),false);
 
-        QRTradeUp.saveRecord(stattrak, rarity, tSettings.condTarget, collCount, status, floatDictId, tradeUpSettingsId);
+        QRTradeUpGenerated.saveRecord(stattrak, rarity, tSettings.condTarget, collCount, status, floatDictId, tradeUpSettingsId);
     }
 
 

@@ -22,9 +22,9 @@ import static org.jooq.impl.DSL.row;
  */
 @Repository
 @Slf4j
-public class QRCustomTradeUp extends QueryRepository{
+public class QRTradeUpCustom extends QueryRepository{
 
-    public QRCustomTradeUp(DSLContext dslContext) {
+    public QRTradeUpCustom(DSLContext dslContext) {
         super(dslContext);
     }
     public static void createTradeUpSkinsCustom(int tupId, TradeUpSettings settings, Rarity rarity, byte stat){

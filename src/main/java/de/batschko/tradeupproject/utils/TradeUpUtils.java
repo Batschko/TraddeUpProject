@@ -1,7 +1,7 @@
 package de.batschko.tradeupproject.utils;
 
 import de.batschko.tradeupproject.db.customtable.TradeUpCustom;
-import de.batschko.tradeupproject.db.query.QRTradeUp;
+import de.batschko.tradeupproject.db.query.QRTradeUpGenerated;
 import de.batschko.tradeupproject.tables.CS2Skin;
 import de.batschko.tradeupproject.tables.TradeUp;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ public class TradeUpUtils {
      * <p>Gets all TradeUps which are not calculated from db and calculates them</p>
      */
     public static void calculateAllTradeUps(){
-        List<TradeUpCustom> tradeUps = QRTradeUp.getTradeUpsToCalculate();
+        List<TradeUpCustom> tradeUps = QRTradeUpGenerated.getTradeUpsToCalculate();
         log.info("calculating tups: {}", tradeUps.size());
         for(TradeUpCustom tup : tradeUps){
             tup.setCalculation(true);
@@ -31,7 +31,7 @@ public class TradeUpUtils {
      * <p>Use this after updating {@link CS2Skin} prices</p>
      */
     public static void reCalculateTradeUps() {
-        List<TradeUpCustom> tupList = QRTradeUp.getTradeUpList();
+        List<TradeUpCustom> tupList = QRTradeUpGenerated.getTradeUpList();
         TradeUpCustom.reCalculateUpdatedPrices(tupList);
     }
 

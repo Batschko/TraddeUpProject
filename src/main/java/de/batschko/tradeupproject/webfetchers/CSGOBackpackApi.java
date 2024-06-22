@@ -1,7 +1,7 @@
 package de.batschko.tradeupproject.webfetchers;
 
 import de.batschko.tradeupproject.db.customtable.TradeUpCustom;
-import de.batschko.tradeupproject.db.query.QRTradeUp;
+import de.batschko.tradeupproject.db.query.QRTradeUpGenerated;
 import de.batschko.tradeupproject.enums.PriceType;
 import de.batschko.tradeupproject.tables.CS2Skin;
 import de.batschko.tradeupproject.utils.SkinUtils;
@@ -70,7 +70,7 @@ public class CSGOBackpackApi {
      */
     @Deprecated
     public static void calculateAllTradeUpsBackpackPrice(){
-        List<TradeUpCustom> tradeUps = QRTradeUp.getTradeUpsToCalculate();
+        List<TradeUpCustom> tradeUps = QRTradeUpGenerated.getTradeUpsToCalculate();
         for(TradeUpCustom tup : tradeUps){
             tup.setCalculation(false);
         }
