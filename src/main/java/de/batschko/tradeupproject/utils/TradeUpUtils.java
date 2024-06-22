@@ -20,6 +20,7 @@ public class TradeUpUtils {
      */
     public static void calculateAllTradeUps(){
         List<TradeUpCustom> tradeUps = QRTradeUp.getTradeUpsToCalculate();
+        log.info("calculating tups: {}", tradeUps.size());
         for(TradeUpCustom tup : tradeUps){
             tup.setCalculation(true);
         }
