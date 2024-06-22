@@ -4,8 +4,13 @@ import de.batschko.tradeupproject.db.query.QueryRepository;
 import de.batschko.tradeupproject.enums.Condition;
 import de.batschko.tradeupproject.enums.Rarity;
 import de.batschko.tradeupproject.enums.TradeUpStatus;
+import de.batschko.tradeupproject.tables.Collection;
+import de.batschko.tradeupproject.tables.TradeUp;
+import de.batschko.tradeupproject.tables.TradeUpMade;
+import de.batschko.tradeupproject.tables.TradeUpMarked;
 import de.batschko.tradeupproject.tables.records.TradeUpMadeRecord;
 import de.batschko.tradeupproject.tables.records.TradeUpMarkedRecord;
+import lombok.extern.slf4j.Slf4j;
 import org.jooq.Record;
 import org.jooq.*;
 import org.json.JSONArray;
@@ -23,6 +28,11 @@ import static de.batschko.tradeupproject.tables.VFullcs2skin.V_FULLCS2SKIN;
 import static org.jooq.impl.DSL.count;
 import static org.jooq.impl.DSL.sum;
 
+/**
+ * Database access related to api access for {@link TradeUp}, {@link TradeUpMarked}, {@link TradeUpMade}.
+ * <p>{@link TradeUp}s are joined with {@link TradeUpMarked}</p>
+ */
+@Slf4j
 @Repository
 public class QRTradeUpTable extends QueryRepository {
     public QRTradeUpTable(DSLContext dslContext) {
@@ -30,51 +40,59 @@ public class QRTradeUpTable extends QueryRepository {
     }
 
 
-    public static Result<Record> getTradeUps(){
-
+    /**
+     * Get TableTradeUps.
+     *
+     * @return {@code Result<Record>} all {@link TradeUp} & {@link TradeUpMarked} fields
+     */
+    public static Result<Record> getTradeUps(boolean custom){
         return dsl.select(V_FULL_TRADEUP.fields()).select(TRADE_UP_MARKED.MARKED, TRADE_UP_MARKED.WATCH, TRADE_UP_MARKED.ACTIVE)
                 .from(V_FULL_TRADEUP)
                 .leftJoin(TRADE_UP_MARKED)
                 .on(V_FULL_TRADEUP.ID.eq(TRADE_UP_MARKED.TRADE_UP_ID))
                 .where(V_FULL_TRADEUP.STATUS.eq(TradeUpStatus.CALCULATED))
                 .and(V_FULL_TRADEUP.OUTCOME.gt(0.0))
+                .and(V_FULL_TRADEUP.CUSTOM.eq((byte) (custom?1:0)))
                 .fetch();
     }
 
-    public static List<Integer> getTradeUpsActiveIds(){
+    public static List<Integer> getTradeUpsActiveIds(boolean custom){
         return  dsl.select(TRADE_UP_MARKED.TRADE_UP_ID)
                 .from(TRADE_UP_MARKED)
                 .where(TRADE_UP_MARKED.ACTIVE.eq((byte)1))
+                .and(TRADE_UP_MARKED.CUSTOM.eq((byte) (custom?1:0)))
                 .fetchInto(Integer.class);
     }
 
 
-    public static Result<Record>  getTradeUpsMarked(){
+    public static Result<Record> getTradeUpsMarked(boolean custom){
         return dsl.select(V_FULL_TRADEUP.fields()).select(TRADE_UP_MARKED.MARKED, TRADE_UP_MARKED.WATCH, TRADE_UP_MARKED.ACTIVE)
                 .from(V_FULL_TRADEUP)
                 .join(TRADE_UP_MARKED)
-                .on(V_FULL_TRADEUP.ID.eq(TRADE_UP_MARKED.TRADE_UP_ID))
+                .on(V_FULL_TRADEUP.ID.eq(TRADE_UP_MARKED.TRADE_UP_ID)).and(V_FULL_TRADEUP.CUSTOM.eq(TRADE_UP_MARKED.CUSTOM))
+                .where(V_FULL_TRADEUP.CUSTOM.eq((byte) (custom?1:0)))
                 .fetch();
     }
 
-    public static Result<Record>  getTradeUpsWatched(){
+    public static Result<Record> getTradeUpsWatched(boolean custom){
         return dsl.select(V_FULL_TRADEUP.fields()).select(TRADE_UP_MARKED.MARKED, TRADE_UP_MARKED.WATCH, TRADE_UP_MARKED.ACTIVE)
                 .from(V_FULL_TRADEUP)
                 .join(TRADE_UP_MARKED)
-                .on(V_FULL_TRADEUP.ID.eq(TRADE_UP_MARKED.TRADE_UP_ID))
+                .on(V_FULL_TRADEUP.ID.eq(TRADE_UP_MARKED.TRADE_UP_ID)).and(V_FULL_TRADEUP.CUSTOM.eq(TRADE_UP_MARKED.CUSTOM))
                 .and(TRADE_UP_MARKED.WATCH.eq((byte)1))
+                .and(TRADE_UP_MARKED.CUSTOM.eq((byte) (custom?1:0)))
                 .fetch();
     }
 
-    public static Result<Record>  getTradeUpsActive(){
+    public static Result<Record> getTradeUpsActive(boolean custom){
         return dsl.select(V_FULL_TRADEUP.fields()).select(TRADE_UP_MARKED.MARKED, TRADE_UP_MARKED.WATCH, TRADE_UP_MARKED.ACTIVE)
                 .from(V_FULL_TRADEUP)
                 .join(TRADE_UP_MARKED)
-                .on(V_FULL_TRADEUP.ID.eq(TRADE_UP_MARKED.TRADE_UP_ID))
+                .on(V_FULL_TRADEUP.ID.eq(TRADE_UP_MARKED.TRADE_UP_ID)).and(V_FULL_TRADEUP.CUSTOM.eq(TRADE_UP_MARKED.CUSTOM))
                 .where(TRADE_UP_MARKED.ACTIVE.eq((byte)1))
+                .and(TRADE_UP_MARKED.CUSTOM.eq((byte) (custom?1:0)))
                 .fetch();
     }
-
 
     public static JSONObject getTradeUpsMade(){
         Result<Record> a =  dsl.select(TRADE_UP_MADE.fields()).select(V_FULLCS2SKIN.IMAGE_URL)
@@ -130,12 +148,12 @@ public class QRTradeUpTable extends QueryRepository {
         return jsonArray;
     }
 
-
-    public static void markTradeUp(int id){
+    public static void markTradeUp(int id, boolean custom){
         //check if tup is already marked
         Record exists =  dsl.select()
                 .from(TRADE_UP_MARKED)
                 .where(TRADE_UP_MARKED.TRADE_UP_ID.eq(id))
+                .and(TRADE_UP_MARKED.CUSTOM.eq((byte) (custom?1:0)))
                 .fetchOne();
 
         if(exists!=null){
@@ -155,35 +173,37 @@ public class QRTradeUpTable extends QueryRepository {
         markedRecord.setFloatDictId(result.get(3, Integer.class));
         markedRecord.setGenerationSettings(result.get(4, String.class));
         markedRecord.store();
-
     }
-    public static void setWatch(int id){
+
+    public static void setWatch(int id, boolean custom){
         //check if tup is already marked
         Record exists =  dsl.select()
                 .from(TRADE_UP_MARKED)
                 .where(TRADE_UP_MARKED.TRADE_UP_ID.eq(id))
                 .and(TRADE_UP_MARKED.WATCH.eq((byte)1))
+                .and(TRADE_UP_MARKED.CUSTOM.eq((byte) (custom?1:0)))
                 .fetchOne();
 
         if(exists!=null){
-            dsl.update(TRADE_UP_MARKED).set(TRADE_UP_MARKED.WATCH, (byte)0).where(TRADE_UP_MARKED.TRADE_UP_ID.eq(id)).execute();
+            dsl.update(TRADE_UP_MARKED).set(TRADE_UP_MARKED.WATCH, (byte)0).where(TRADE_UP_MARKED.TRADE_UP_ID.eq(id)).and(TRADE_UP_MARKED.CUSTOM.eq((byte) (custom?1:0))).execute();
         }else {
-            dsl.update(TRADE_UP_MARKED).set(TRADE_UP_MARKED.WATCH, (byte)1).where(TRADE_UP_MARKED.TRADE_UP_ID.eq(id)).execute();
+            dsl.update(TRADE_UP_MARKED).set(TRADE_UP_MARKED.WATCH, (byte)1).where(TRADE_UP_MARKED.TRADE_UP_ID.eq(id)).and(TRADE_UP_MARKED.CUSTOM.eq((byte) (custom?1:0))).execute();
         }
     }
 
-    public static void setActive(int id){
+    public static void setActive(int id, boolean custom){
         //check if tup is already active
         Record exists =  dsl.select()
                 .from(TRADE_UP_MARKED)
                 .where(TRADE_UP_MARKED.TRADE_UP_ID.eq(id))
                 .and(TRADE_UP_MARKED.ACTIVE.eq((byte)1))
+                .and(TRADE_UP_MARKED.CUSTOM.eq((byte) (custom?1:0)))
                 .fetchOne();
 
         if(exists!=null){
-            dsl.update(TRADE_UP_MARKED).set(TRADE_UP_MARKED.ACTIVE, (byte)0).where(TRADE_UP_MARKED.TRADE_UP_ID.eq(id)).execute();
+            dsl.update(TRADE_UP_MARKED).set(TRADE_UP_MARKED.ACTIVE, (byte)0).where(TRADE_UP_MARKED.TRADE_UP_ID.eq(id)).and(TRADE_UP_MARKED.CUSTOM.eq((byte) (custom?1:0))).execute();
         }else {
-            dsl.update(TRADE_UP_MARKED).set(TRADE_UP_MARKED.ACTIVE, (byte)1).where(TRADE_UP_MARKED.TRADE_UP_ID.eq(id)).execute();
+            dsl.update(TRADE_UP_MARKED).set(TRADE_UP_MARKED.ACTIVE, (byte)1).where(TRADE_UP_MARKED.TRADE_UP_ID.eq(id)).and(TRADE_UP_MARKED.CUSTOM.eq((byte) (custom?1:0))).execute();
         }
     }
 

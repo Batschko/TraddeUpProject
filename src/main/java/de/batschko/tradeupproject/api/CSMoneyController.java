@@ -40,7 +40,7 @@ public class CSMoneyController {
         log.info("sending CSMoney bot active");
         StopWatch watch = new StopWatch();
         watch.start();
-        List<Integer> ids = QRTradeUpTable.getTradeUpsActiveIds();
+        List<Integer> ids = QRTradeUpTable.getTradeUpsActiveIds(false);
         Map<String, Map<String, List<Double>>> botItems = CSMoneyWiki.fetchBotItems((byte)0, ids);
 
         JSONArray jsonArray = new JSONArray();

@@ -17,50 +17,50 @@ public class TradeUpController {
     @GetMapping(value = "/api/tup", produces = "application/json" )
     public String tup() {
         log.info("sending TradeUps");
-        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUps()).toString();
+        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUps(false)).toString();
     }
 
 
     @GetMapping(value = "/api/tup/marked", produces = "application/json" )
     public String tupMarked() {
         log.info("sending TradeUpsMarked");
-        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUpsMarked()).toString();
+        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUpsMarked(false)).toString();
     }
 
     @PatchMapping(value = "/api/tup/marked/{tupId}", produces = "application/json" )
     public String tupMarkedPatch(@PathVariable int tupId) {
         log.info("marking TradeUp");
         log.info("sending TradeUps");
-        QRTradeUpTable.markTradeUp(tupId);
-        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUps()).toString();
+        QRTradeUpTable.markTradeUp(tupId, false);
+        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUps(false)).toString();
     }
 
     @GetMapping(value = "/api/tup/watched", produces = "application/json" )
     public String tupWatched() {
         log.info("sending TradeUpsWatched");
-        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUpsWatched()).toString();
+        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUpsWatched(false)).toString();
     }
 
     @PatchMapping(value = "/api/tup/watched/{tupId}", produces = "application/json" )
     public String tupWatchPatch(@PathVariable int tupId) {
         log.info("marking TradeUp as watched");
         log.info("sending TradeUps");
-        QRTradeUpTable.setWatch(tupId);
-        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUpsMarked()).toString();
+        QRTradeUpTable.setWatch(tupId, false);
+        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUpsMarked(false)).toString();
     }
 
     @GetMapping(value = "/api/tup/active", produces = "application/json" )
     public String tupActive() {
         log.info("sending TradeUpsActive");
-        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUpsActive()).toString();
+        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUpsActive(false)).toString();
     }
 
     @PatchMapping(value = "/api/tup/active/{tupId}", produces = "application/json" )
     public String tupActivePatch(@PathVariable int tupId) {
         log.info("marking TradeUp active");
         log.info("sending TradeUpsWatched");
-        QRTradeUpTable.setActive(tupId);
-        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUpsWatched()).toString();
+        QRTradeUpTable.setActive(tupId, false);
+        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUpsWatched(false)).toString();
     }
 
 
