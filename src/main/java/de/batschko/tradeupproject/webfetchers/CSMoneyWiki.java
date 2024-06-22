@@ -32,7 +32,7 @@ public class CSMoneyWiki {
     /**
      * Update {@link CS2Skin} price.
      *
-     * @param skinId the skin id
+     * @param skinId {@link CS2Skin} id
      */
     public static void updateSkinPrice(int skinId){
         Record skin = QRCS2Skin.getFullSkin(skinId);
