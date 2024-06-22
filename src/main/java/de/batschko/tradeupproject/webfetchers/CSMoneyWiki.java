@@ -4,6 +4,7 @@ import de.batschko.tradeupproject.db.query.QRCS2Skin;
 import de.batschko.tradeupproject.db.query.QRSkinPrice;
 import de.batschko.tradeupproject.enums.Condition;
 import de.batschko.tradeupproject.enums.Rarity;
+import de.batschko.tradeupproject.tables.CS2Skin;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.Record;
 import org.jooq.Record4;
@@ -28,8 +29,12 @@ import static de.batschko.tradeupproject.tables.VFullcs2skin.V_FULLCS2SKIN;
 public class CSMoneyWiki {
 
 
-
-    public static void updateCSMoneySkinPrice(int skinId){
+    /**
+     * Update {@link CS2Skin} price.
+     *
+     * @param skinId the skin id
+     */
+    public static void updateSkinPrice(int skinId){
         Record skin = QRCS2Skin.getFullSkin(skinId);
         String fullName = skin.get(V_FULLCS2SKIN.WEAPON)+" "+skin.get(V_FULLCS2SKIN.TITLE)+" ("+skin.get(V_FULLCS2SKIN.CONDITION).getText()+")";
         boolean stattrak = skin.get(V_FULLCS2SKIN.STATTRAK)==1;
@@ -85,13 +90,12 @@ public class CSMoneyWiki {
                 }
                 String body = getCSMoneyDocumentBody(urlOffset);
 
-
                 JSONObject jsonObject;
                 JSONArray array;
                 try{
                     jsonObject = new JSONObject(new JSONTokener(body));
                     if(!jsonObject.has("items")){
-                        log.warn("aaaaaaaaaaa\naaaaaaa\naaa\naaaa\naaaa\naaaaaaaa\naaaaa\naaaaaa\njson array is null");
+                        log.warn("json array is null\njson array is null");
                         break;
                     }
                     array = jsonObject.getJSONArray("items");
@@ -145,7 +149,6 @@ public class CSMoneyWiki {
         } catch (IOException e) {
 
             try {
-
                 log.warn("error 249 waiting 30sec");
                 Thread.sleep(30000);
                 response = Jsoup.connect(url)
@@ -286,7 +289,6 @@ public class CSMoneyWiki {
             }
         }
     }
-
 
     @Deprecated
     public static void fetchWikiPrice(String weapon, String title, double floatStart, double floatEnd, boolean update) throws IOException {

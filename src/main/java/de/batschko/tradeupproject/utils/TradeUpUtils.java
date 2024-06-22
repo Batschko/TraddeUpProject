@@ -59,7 +59,7 @@ public class TradeUpUtils {
         int loop = 1;
         for(int id : ids){
             log.info("loop: "+loop++);
-            CSMoneyWiki.updateCSMoneySkinPrice(id);
+            CSMoneyWiki.updateSkinPrice(id);
             try {
                 Thread.sleep(3500);
             } catch (InterruptedException e) {
