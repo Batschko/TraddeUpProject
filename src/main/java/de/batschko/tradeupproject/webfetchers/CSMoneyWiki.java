@@ -60,7 +60,6 @@ public class CSMoneyWiki {
         }
     }
 
-
     /**
      * Fetch active items on bot for TradeUps.
      *
@@ -132,12 +131,9 @@ public class CSMoneyWiki {
                 Collections.sort(values);
             }
             skinsOnBot.put(url, urlSkinsOnBot);
-
         }//loop url
         return skinsOnBot;
     }
-
-
 
     private static String getCSMoneyDocumentBody(String url){
         Connection.Response response;
@@ -167,7 +163,6 @@ public class CSMoneyWiki {
         }
         return document.childNode(0).childNode(1).childNode(0).toString();
     }
-
 
     private static HashMap<String, Map<String, Map<String, Double>>> getCSMoneyUrls(byte custom, List<Integer> tupIds) {
         HashMap<String, Map<String, Map<String, Double>>> urlSkinMap = new HashMap<>();
@@ -206,7 +201,6 @@ public class CSMoneyWiki {
                 } else {
                     skinmap.put(info.value1() + " | " + info.value2() + " (" + cond.getText() + ")", new HashMap<>(Map.of(cond.toString().toLowerCase(), skinFloat)));
                 }
-
                 condMap.put(cond.toString().toLowerCase(), skinFloat);
             }
             urlSkinMap.put(createCSMoneyUrl(collName, rarity, stattrak, condMap), skinmap);
@@ -214,8 +208,6 @@ public class CSMoneyWiki {
 
        return urlSkinMap;
     }
-
-
 
     private static String createCSMoneyUrl(String collName, String rarityVal, boolean stattrak, Map<String, Double> condMap){
         String baseUrl = "https://cs.money/5.0/load_bots_inventory/730?";
@@ -241,8 +233,7 @@ public class CSMoneyWiki {
         sb.append(rarity).append("&sort=price&withStack=true");
         return sb.toString();
     }
-
-
+    
 
     @Deprecated
     public static void fetchPrices(boolean update, int skip) throws IOException {
