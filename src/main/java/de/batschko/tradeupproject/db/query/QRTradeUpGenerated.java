@@ -100,7 +100,6 @@ public class QRTradeUpGenerated extends QueryRepository{
     }
 
 
-
     /**
      * Get {@link TradeUp} by id.
      *
@@ -134,22 +133,12 @@ public class QRTradeUpGenerated extends QueryRepository{
 
 
     /**
-     * Create {@link TradeUpSkins} and delete wasted {@link TradeUp}s.
-     *
-     * @param deleteTradeUps true for delete
-     */
-    public static void createTradeUpSkins(boolean deleteTradeUps){
-        Result<Record> tupAndSettings = getTradeUpAndSettingsBuilder().fetch();
-        processCreateTradeUpSkins(tupAndSettings, deleteTradeUps);
-    }
-
-    /**
      * Create {@link TradeUpSkins}.
-     * <p>doesn't delete tradeups</p>
+     * <p>creates all TradeUpSkins for existing TradeUps</p>
      */
     public static void createTradeUpSkins(){
         Result<Record> tupAndSettings = getTradeUpAndSettingsBuilder().fetch();
-        processCreateTradeUpSkins(tupAndSettings, false);
+        processCreateTradeUpSkins(tupAndSettings);
     }
 
     /**
@@ -159,7 +148,7 @@ public class QRTradeUpGenerated extends QueryRepository{
      */
     public static void createTradeUpSkins(int limit){
         Result<Record> tupAndSettings = getTradeUpAndSettingsBuilder().limit(limit).fetch();
-        processCreateTradeUpSkins(tupAndSettings, false);
+        processCreateTradeUpSkins(tupAndSettings);
     }
 
     private static SelectConditionStep<Record> getTradeUpAndSettingsBuilder(){
@@ -171,28 +160,42 @@ public class QRTradeUpGenerated extends QueryRepository{
                 .and(V_TUPNSETTINGGS.CUSTOM.eq((byte) 0));
     }
 
-    //TODO doc
+
+    /**
+     * Update {@link TradeUpSkins}.
+     * <p>create new tradeUp skins for a calculated TradeUp</p>
+     *
+     * @param tupId tradeUp id
+     */
     public static void updateTradeUpSkins(int tupId){
         dsl.deleteFrom(TRADE_UP_SKINS).where(TRADE_UP_SKINS.TRADE_UP_ID.eq(tupId)).and(TRADE_UP_SKINS.CUSTOM.eq((byte) 0)).execute();
         Result<Record> tupAndSettings = dsl.select().from(V_TUPNSETTINGGS).where(V_TUPNSETTINGGS.ID.eq(tupId)).and(V_TUPNSETTINGGS.CUSTOM.eq((byte) 0)).fetch();
-        processCreateTradeUpSkins(tupAndSettings, false);
+        processCreateTradeUpSkins(tupAndSettings);
     }
 
 
-
-
-    //TODO doc
+    /**
+     * Get {@link TradeUpOutcomeRecord}.
+     *
+     * @param tupId tradeUp id
+     * @return tradeUp outcome record
+     */
     public static TradeUpOutcomeRecord getTradeUpOutcome(int tupId){
         return dsl.select().from(TRADE_UP_OUTCOME).where(TRADE_UP_OUTCOME.TRADEUP_ID.eq(tupId)).and(TRADE_UP_OUTCOME.CUSTOM.eq((byte) 0)).fetchOneInto(TradeUpOutcomeRecord.class);
     }
-    //TODO doc
+
+
+    /**
+     * Get list of {@link TradeUpOutcomeSkinsRecord}.
+     *
+     * @param tupId tradeUp id
+     * @return list of outcome skin records
+     */
     public static List<TradeUpOutcomeSkinsRecord> getTradeUpOutcomeSkins(int tupId){
         return dsl.select().from(TRADE_UP_OUTCOME_SKINS).where(TRADE_UP_OUTCOME_SKINS.TRADE_UP_ID.eq(tupId)).and(TRADE_UP_OUTCOME_SKINS.CUSTOM.eq((byte) 0)).fetchInto(TradeUpOutcomeSkinsRecord.class);
     }
-
     
-    private static void processCreateTradeUpSkins(Result<Record> tupAndSettings,boolean deleteTradeUps){
-        tradeupLoop:
+    private static void processCreateTradeUpSkins(Result<Record> tupAndSettings){
         for(Record tupAndS: tupAndSettings){
             byte stat = tupAndS.get("stattrak", Byte.class);
             Rarity rarity = tupAndS.get("rarity", Rarity.class);
@@ -220,19 +223,10 @@ public class QRTradeUpGenerated extends QueryRepository{
                         .and(V_FULLCS2SKIN.PRICE.le(subquery));
 
                 List<Integer> tupSkinIds = query.fetchInto(Integer.class);
-                //TODO delete tradeups that are not possible beause condition doesnt exist?
+                //TODO delete tradeups that are not possible because condition doesnt exist?
                 List<Row3<Byte, Integer, Integer>> rowList = tupSkinIds.stream().map(tupSkinId -> row((byte)0 ,tupId, tupSkinId)).toList();
                 if(rowList.isEmpty()){
                     log.warn(""+settings + " "+rarity+ " "+ stat);
-                    if(deleteTradeUps){
-                        int deleted = dsl.deleteFrom(TradeUp.TRADE_UP).where(TradeUp.TRADE_UP.ID.eq(tupId)).execute();
-                        //TODO should be already deleted
-                        if(deleted!=1){
-                            log.warn("Error deleting TradeUp: "+tupId);
-                        }
-                        log.warn("Deleted TradeUP: "+tupId);
-                        continue tradeupLoop;
-                    }
                 }
 
                 try{
@@ -257,7 +251,13 @@ public class QRTradeUpGenerated extends QueryRepository{
         return dsl.update(TRADE_UP).set(TRADE_UP.STATUS, TradeUpStatus.NOT_CALCULATED).where(TRADE_UP.CUSTOM.eq((byte) 0)).execute();
     }
 
-//todo doc
+
+    /**
+     * Update {@link TradeUp} status ({@link TradeUpStatus}) by id.
+     *
+     * @param id            tradeUp id
+     * @param tradeUpStatus tradeUp status
+     */
     public static void updateStatus(int id, TradeUpStatus tradeUpStatus) {
        dsl.update(TRADE_UP).set(TRADE_UP.STATUS, tradeUpStatus).where(TRADE_UP.ID.eq(id)).and(TRADE_UP.CUSTOM.eq((byte) 0)).execute();
     }

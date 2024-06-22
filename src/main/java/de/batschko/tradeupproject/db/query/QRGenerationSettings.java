@@ -20,7 +20,6 @@ public class QRGenerationSettings extends QueryRepository {
     }
 
 
-
     /**
      * Get {@link TradeUpSettings} by id.
      *

@@ -5,6 +5,8 @@ import de.batschko.tradeupproject.tables.TradeUp;
 
 import static de.batschko.tradeupproject.tables.TradeUpSkins.TRADE_UP_SKINS;
 import static de.batschko.tradeupproject.tables.VFullcs2skin.V_FULLCS2SKIN;
+
+import de.batschko.tradeupproject.tables.TradeUpSkins;
 import de.batschko.tradeupproject.tradeup.TradeUpSettings;
 import de.batschko.tradeupproject.utils.SkinUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +29,16 @@ public class QRTradeUpCustom extends QueryRepository{
     public QRTradeUpCustom(DSLContext dslContext) {
         super(dslContext);
     }
+
+
+    /**
+     * Create custom {@link TradeUpSkins} for custom {@link TradeUp}.
+     *
+     * @param tupId    tradeUp id
+     * @param settings tradeUpSettings
+     * @param rarity   rarity
+     * @param stat     stattrak
+     */
     public static void createTradeUpSkinsCustom(int tupId, TradeUpSettings settings, Rarity rarity, byte stat){
         List<SkinUtils.TradeUpSkinInfo> infos = settings.getTradeUpSkinInfo(rarity, stat);
 

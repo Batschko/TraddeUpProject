@@ -1,5 +1,7 @@
 package de.batschko.tradeupproject.utils;
 
+import de.batschko.tradeupproject.tables.TradeUp;
+import de.batschko.tradeupproject.tables.records.CS2SkinRecord;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.json.JSONArray;
@@ -8,7 +10,17 @@ import org.json.JSONObject;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Utility methods for api.
+ */
 public class ApiUtils {
+
+    /**
+     * Convert {@link Result} of TradeUp to JSON-Array.
+     *
+     * @param result Result < Record >
+     * @return result as JSONArray
+     */
     public static JSONArray tradeupResultToJsonArray(Result<Record> result){
         //field name , data
         List<Map<String, Object>> maps = result.intoMaps();
@@ -29,6 +41,12 @@ public class ApiUtils {
         return jsonArray;
     }
 
+    /**
+     * Convert {@link Result} of CS2Skin to JSON-Array.
+     *
+     * @param result Result < Record >
+     * @return result as JSONArray
+     */
     public static JSONArray skinResultToJsonArray(Result<Record> result){
         //field name , data
         List<Map<String, Object>> maps = result.intoMaps();

@@ -103,7 +103,7 @@ public class TradeUpProjectApplicationCMD {
 		cmdList.put("5", SkinUtils::priceUpdateMissing);
 		cmdList.put("6", () -> Generator.generateSingleCollTradeUps(2));
 		cmdList.put("7", () -> Generator.generateSingleCollTradeUps(4));
-		cmdList.put("8", () -> QRTradeUpGenerated.createTradeUpSkins(false));
+		cmdList.put("8", QRTradeUpGenerated::createTradeUpSkins);
 		//cmdList.put("9", () -> QRTradeUp.createTradeUpSkins(true));
 		cmdList.put("0", TradeUpUtils::calculateAllTradeUps);
 

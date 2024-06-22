@@ -2,6 +2,7 @@ package de.batschko.tradeupproject.utils;
 
 import de.batschko.tradeupproject.db.query.QRUtils;
 import de.batschko.tradeupproject.enums.Rarity;
+import de.batschko.tradeupproject.tables.TradeUpSkins;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -14,11 +15,12 @@ import java.util.List;
  */
 public class CSMoneyUtils {
 
-    /**TODO only working for one collection
+
+    /**
+     * Gets filtered CSMoney-url for {@link TradeUpSkins}.
      *
-     * Gets cs money url filtered for TradeUp-Skins.
-     *
-     * @param tupId the TradeUp id
+     * @param tupId TradeUp id
+     * @return CSMoney-url
      */
     public static String getCSMoneyUrlFiltered(int tupId) {
         final String baseUrl = ("https://cs.money/csgo/trade/");
@@ -49,9 +51,5 @@ public class CSMoneyUtils {
             throw new RuntimeException(e);
         }
     }
-
-
-
-
 
 }
