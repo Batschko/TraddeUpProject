@@ -197,10 +197,10 @@ public class QRTradeUpTable extends QueryRepository {
                 .from(V_FULL_TRADEUP)
                 .where(V_FULL_TRADEUP.ID.eq(id))
                 .and(V_FULL_TRADEUP.CUSTOM.eq((byte)0))
-                .fetchOne();
+                .fetchSingle();
         TradeUpMarkedRecord markedRecord = dsl.newRecord(TRADE_UP_MARKED);
         markedRecord.setTradeUpId(result.get(0, Integer.class));
-        markedRecord.setCustom((byte) 0);
+        markedRecord.setCustom(((byte) (custom?1:0)));
         markedRecord.setStattrak(result.get(1, Byte.class));
         markedRecord.setRarity(result.get(2, Rarity.class));
         markedRecord.setFloatDictId(result.get(3, Integer.class));
