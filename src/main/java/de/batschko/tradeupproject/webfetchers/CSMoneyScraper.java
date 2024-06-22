@@ -3,6 +3,7 @@ package de.batschko.tradeupproject.webfetchers;
 import de.batschko.tradeupproject.db.query.QRCS2Skin;
 import de.batschko.tradeupproject.db.query.QRSkinPrice;
 import de.batschko.tradeupproject.enums.Condition;
+import de.batschko.tradeupproject.tables.CS2Skin;
 import de.batschko.tradeupproject.utils.SkinUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.Record3;
@@ -36,7 +37,12 @@ import java.util.regex.Pattern;
 public class CSMoneyScraper {
 
 
-    public static void updatePrice(Result<Record4<String, String, Double, Double>> nameList) {
+    /**
+     * Update {@link CS2Skin} prices by name.
+     *
+     * @param nameList list of skin names
+     */
+    public static void updateSkinPrice(Result<Record4<String, String, Double, Double>> nameList) {
         WebDriver driver = new ChromeDriver();
         Map<String, String> specialCharsMapping = SkinUtils.getCSMoneyWikiSpecialNames();
         log.info("updating {} names", nameList.size());
@@ -45,8 +51,8 @@ public class CSMoneyScraper {
             loops++;
             String weapon = name.get(0, String.class);
             String title = name.get(1, String.class);
-
             log.info("{} {} ",weapon,title);
+
             final String originalTitle = title;
             String newTitle = specialCharsMapping.get(title);
             if (newTitle != null) {
@@ -61,8 +67,6 @@ public class CSMoneyScraper {
             }
             title = title.replaceAll("['._]", "");
 
-
-
             String urlString = "https://wiki.cs.money/weapons/" + weapon.replace(" ", "-") + "/" + title.replace(" ", "-");
             URL url;
             try {
@@ -70,21 +74,18 @@ public class CSMoneyScraper {
             } catch (MalformedURLException | URISyntaxException e) {
                 throw new RuntimeException(e);
             }
-
             driver.get(url.toString());
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
             if(driver.getTitle().isEmpty()){
                 log.warn("NO URL TITLE   {}",url);
                 continue;
             }
-
             WebElement priceBoxStat = null;
             WebElement priceBox;
             String basicStat;
 
             boolean stattrak = true;
             try {
-
                 wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".yyofkzfzpvevfrzbkbcwiwleal > tr:nth-child(1) > td:nth-child(2)")));
                 priceBoxStat =driver.findElement(By.cssSelector(".yyofkzfzpvevfrzbkbcwiwleal > tr:nth-child(2)"));
                 basicStat = priceBoxStat.findElement(By.cssSelector("td:nth-child(1)")).getText();
@@ -93,29 +94,21 @@ public class CSMoneyScraper {
                         throw new RuntimeException("Error finding StatTrak prices");
                     }
                     stattrak=false;
-
                 }
-
             } catch (Exception e) {
-                // Handle the exception
-                //kein stat
-               // System.out.println("Stat Element not found. Continuing with the program...");
+                // todo check this
                 stattrak=false;
             }
-
-
 
             priceBox = driver.findElement(By.cssSelector(".yyofkzfzpvevfrzbkbcwiwleal > tr:nth-child(1)"));
             basicStat = priceBox.findElement(By.cssSelector("td:nth-child(1)")).getText();
             if (!basicStat.equals("Basic")) {
                 throw new RuntimeException("Error finding Basic prices");
             }
-
             Map<String, Double> priceMap = new HashMap<>();
             Map<String, Double> priceMapStat = new HashMap<>();
 
             List<WebElement> conditionElements = driver.findElements(By.cssSelector("tr.qfcqvyincvwuzealgalydtkcew > th" ));
-
 
             Pattern pattern = Pattern.compile(">(.*)<");
             Matcher matcher;
@@ -134,8 +127,7 @@ public class CSMoneyScraper {
                         priceMapStat.put(cond, priceStat);
                     }
                 } catch (Exception e) {
-                    //TODO
-                   // throw new RuntimeException("todo");
+                    // todo check this
                 }
 
             }
@@ -157,8 +149,6 @@ public class CSMoneyScraper {
                     log.warn("map {} ",priceMap);
                     log.warn("mapStat {} ",priceMapStat);
                 }
-
-
             }
             log.info("loop {}", loops);
         }

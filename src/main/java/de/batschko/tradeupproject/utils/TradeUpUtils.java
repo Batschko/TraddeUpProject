@@ -46,7 +46,7 @@ public class TradeUpUtils {
             if(nameList.size() == lastSize){
                 break;
             }else {
-                CSMoneyScraper.updatePrice(nameList);
+                CSMoneyScraper.updateSkinPrice(nameList);
             }
             lastSize = nameList.size();
         }
