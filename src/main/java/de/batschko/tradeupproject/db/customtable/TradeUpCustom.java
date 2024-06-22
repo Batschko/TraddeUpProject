@@ -4,6 +4,7 @@ import de.batschko.tradeupproject.db.query.*;
 import de.batschko.tradeupproject.enums.Condition;
 import de.batschko.tradeupproject.enums.Rarity;
 import de.batschko.tradeupproject.enums.TradeUpStatus;
+import de.batschko.tradeupproject.tables.TradeUp;
 import de.batschko.tradeupproject.tables.records.StashSkinHolderRecord;
 import de.batschko.tradeupproject.tables.records.TradeUpOutcomeRecord;
 import de.batschko.tradeupproject.tables.records.TradeUpOutcomeSkinsRecord;
@@ -157,9 +158,7 @@ public class TradeUpCustom extends TradeUpRecord {
                     hitChanceSum += chance;
                 }
             }
-
         }
-
 
         //categoryMarker
         if(categoryEven > categoryProfit * 2.5) tupOutcome.setCategoryMarker((byte) 1);
@@ -173,9 +172,6 @@ public class TradeUpCustom extends TradeUpRecord {
         tupOutcome.setSkinAvg(skinAvgPrice);
         tupOutcome.setSkinMin(skinMinPrice);
         tupOutcome.setSkinMax(skinMaxPrice);
-
-
-
 
         //store updated values
         for(Set<TradeUpOutcomeSkinsRecord> outSkins : outSkinsMap.values()){
@@ -193,13 +189,11 @@ public class TradeUpCustom extends TradeUpRecord {
             }
         }
 
-
         if(tupOutcome.getLoss() > tupOutcome.getValue()){
             this.setStatus(TradeUpStatus.WASTED);
             this.store();
             return;
         }
-
 
         if(tupOutcome.getValue() < 0.5 ){
             this.setStatus(TradeUpStatus.WASTED);
@@ -208,11 +202,14 @@ public class TradeUpCustom extends TradeUpRecord {
         }
         this.store();
         log.info("Calculated TradeUp id: "+this.getId());
-
     }
 
 
-    //TODO doc
+    /**
+     * Re-calculates given {@link TradeUp}s.
+     * <p>also creates {@link TradeUpOutcomeSkinsRecord}s and {@link TradeUpOutcomeRecord} </p>
+     *
+     */
     public static void reCalculateUpdatedPrices(List<TradeUpCustom> tupList) {
         log.info("updating tups: {}", tupList.size());
         tupLoop:
@@ -239,16 +236,12 @@ public class TradeUpCustom extends TradeUpRecord {
 
                 totalPrice += collNumber.get(i) * minSkinPriceAvg;
             }
-            // TODO maybe remove if it cant happen
-            if (totalPrice <= 0) throw new RuntimeException("totalPrice is 0");
             TradeUpOutcomeRecord tupOutcome = QRTradeUpGenerated.getTradeUpOutcome(tup.getId());
             if(tupOutcome == null) throw new RuntimeException("tupOutcome is null");
             tupOutcome.setCost(totalPrice*costMultiplier);
 
-
             List<TradeUpOutcomeSkinsRecord> outSkins = QRTradeUpGenerated.getTradeUpOutcomeSkins(tup.getId());
 
-            //TODO only single collection!
             //TODO only single collection!
             double skinPool = 10 * outSkins.size();
             double chance = 10 / skinPool;
@@ -258,7 +251,6 @@ public class TradeUpCustom extends TradeUpRecord {
             double skinMinPrice = Double.MAX_VALUE, skinMaxPrice = Double.MIN_VALUE;
             double categoryEven = 0, categoryProfit = 0;
             for (TradeUpOutcomeSkinsRecord skin : outSkins) {
-
                 double skinPrice = QRSkinPrice.getSkinPrice(skin.getCS2SkinId()) * outSkinMultiplier;
 
                 skinAvgPrice += skinPrice * chance;
@@ -278,7 +270,6 @@ public class TradeUpCustom extends TradeUpRecord {
                 if (skinPrice >= tupOutcome.getCost() * 0.90) {
                     hitChanceSum += chance;
                 }
-
             }
             if (categoryEven > categoryProfit * 2.5) tupOutcome.setCategoryMarker((byte) 1);
             tupOutcome.setOutcome((skinAvgPrice - tupOutcome.getCost()) / tupOutcome.getCost());
@@ -298,7 +289,6 @@ public class TradeUpCustom extends TradeUpRecord {
             }else {
                 QRTradeUpGenerated.updateStatus(tup.getId(), TradeUpStatus.CALCULATED);
             }
-
         }
     }
 
