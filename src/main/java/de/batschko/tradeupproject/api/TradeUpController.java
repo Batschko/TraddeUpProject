@@ -27,7 +27,7 @@ public class TradeUpController {
      *
      * @return {@link JSONArray} TableTradeUps
      */
-    @GetMapping(value = "/", produces = "application/json" )
+    @GetMapping(value = "", produces = "application/json" )
     public String tup() {
         log.info("sending TradeUps");
         return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUps(false)).toString();
