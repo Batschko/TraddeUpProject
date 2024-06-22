@@ -1,7 +1,5 @@
 package de.batschko.tradeupproject.utils;
 
-import de.batschko.tradeupproject.tables.TradeUp;
-import de.batschko.tradeupproject.tables.records.CS2SkinRecord;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.json.JSONArray;

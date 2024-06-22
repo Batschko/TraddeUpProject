@@ -7,8 +7,8 @@ import de.batschko.tradeupproject.tables.*;
 import de.batschko.tradeupproject.tables.records.VOutSkinsRecord;
 import de.batschko.tradeupproject.tables.records.VTradeupskinsRecord;
 import lombok.extern.slf4j.Slf4j;
-import org.jooq.*;
 import org.jooq.Record;
+import org.jooq.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

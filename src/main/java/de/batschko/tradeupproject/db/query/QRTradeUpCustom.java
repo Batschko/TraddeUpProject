@@ -2,19 +2,20 @@ package de.batschko.tradeupproject.db.query;
 
 import de.batschko.tradeupproject.enums.Rarity;
 import de.batschko.tradeupproject.tables.TradeUp;
-
-import static de.batschko.tradeupproject.tables.TradeUpSkins.TRADE_UP_SKINS;
-import static de.batschko.tradeupproject.tables.VFullcs2skin.V_FULLCS2SKIN;
-
 import de.batschko.tradeupproject.tables.TradeUpSkins;
 import de.batschko.tradeupproject.tradeup.TradeUpSettings;
 import de.batschko.tradeupproject.utils.SkinUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.jooq.*;
+import org.jooq.DSLContext;
+import org.jooq.Record1;
+import org.jooq.Row3;
+import org.jooq.SelectConditionStep;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import static de.batschko.tradeupproject.tables.TradeUpSkins.TRADE_UP_SKINS;
+import static de.batschko.tradeupproject.tables.VFullcs2skin.V_FULLCS2SKIN;
 import static org.jooq.impl.DSL.min;
 import static org.jooq.impl.DSL.row;
 

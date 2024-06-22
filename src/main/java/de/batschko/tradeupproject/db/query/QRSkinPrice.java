@@ -2,6 +2,7 @@ package de.batschko.tradeupproject.db.query;
 
 
 import de.batschko.tradeupproject.enums.Condition;
+import de.batschko.tradeupproject.tables.CS2Skin;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.Record4;
@@ -15,7 +16,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static de.batschko.tradeupproject.tables.CS2Skin.C_S2_SKIN;
-import de.batschko.tradeupproject.tables.CS2Skin;
 import static de.batschko.tradeupproject.tables.StashSkinHolder.STASH_SKIN_HOLDER;
 import static org.jooq.impl.DSL.localDateTime;
 

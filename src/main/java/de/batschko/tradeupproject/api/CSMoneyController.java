@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import org.springframework.util.StopWatch;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -17,26 +18,46 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * REST controller related to CSMoney.
+ *
+ * <p>All routes start with <code>/api/csmoney</code>.</p>
+ */
 @Slf4j
 @RestController
+@RequestMapping("/api/csmoney")
 public class CSMoneyController {
 
-
-    @GetMapping(value = "/api/csmoney/{tupId}", produces = "application/json" )
+    /**
+     * Get CSMoneyUrlFiltered for tradeUp id.
+     *
+     * @return url.
+     */
+    @GetMapping(value = "/{tupId}", produces = "application/json" )
     public String csmoneyUrl(@PathVariable int tupId) {
         log.info("sending CSMoney url");
         return CSMoneyUtils.getCSMoneyUrlFiltered(tupId);
     }
 
-    @GetMapping(value = "/api/csmoney/bot/{tupId}", produces = "application/json" )
+    /**
+     * Get CSMoney bot items for tradeUp id.
+     *
+     * @return {@link JSONObject}s < CollectionName, < skinName, List{floats} >.
+     */
+    @GetMapping(value = "/bot/{tupId}", produces = "application/json" )
     public Map<String, List<Double>> csmoneyBotItems(@PathVariable int tupId) {
         log.info("sending CSMoney bot items");
         Map<String, Map<String, List<Double>>> data = CSMoneyWiki.fetchBotItems((byte)0, List.of(tupId));
         return data.entrySet().iterator().next().getValue();
     }
 
-    @GetMapping(value = "/api/csmoney/bot/active", produces = "application/json" )
-    public String csmoneyWatchedBotItemsAmountREal() {
+    /**
+     * Get CSMoney bot items for active tradeUps.
+     *
+     *  @return {@link JSONArray} of {@link JSONObject}s < CollectionName, < skinName, List{floats} > last 2 items are "amountAll", "goodAmountAll"
+     */
+    @GetMapping(value = "/bot/active", produces = "application/json" )
+    public String csmoneyActiveBotItems() {
         log.info("sending CSMoney bot active");
         StopWatch watch = new StopWatch();
         watch.start();
@@ -67,21 +88,16 @@ public class CSMoneyController {
                     }else if(a.getKey().contains(Condition.FT.getText())){
                         if(floats < 0.188)  jsonObject.put("floatGood", ++goodAmount);
                     }
-
                 }
-
             }
             amountAll+=amountTup;
             goodAmountAll+=goodAmount;
-
             jsonObject.put("amount", amountTup);
             jsonObject.put("id", ++id);
-
 
             if(entry.getKey().startsWith("https")){
                 Matcher matcher = pattern.matcher(entry.getKey());
                 matcher.find();
-                //entry key collRarityStat = matcher.group(1) + " - " + matcher.group(2) + " - " +matcher.group(3);
                 String collection = matcher.group(1);
                 String stat = matcher.group(2);
                 String rarity = matcher.group(3);
@@ -89,21 +105,17 @@ public class CSMoneyController {
                 jsonObject.put("rarity", rarity);
                 jsonObject.put("stat", stat);
                 jsonObject.put("data", entry.getValue());
-
                 urlSb.append("rarity=").append(rarity);
                 urlSb.append("&isStatTrak=").append(stat);
                 urlSb.append("&collection=").append(collection);
                 jsonObject.put("url", urlSb.toString());
-
             }else {
-                //TODO
-                new RuntimeException();
+                throw new RuntimeException("error getting bot data");
             }
-
-
             jsonArray.put(jsonObject);
         }
         jsonArray.put(new JSONObject(Map.of("amountAll", amountAll, "goodAmountAll", goodAmountAll)));
         return jsonArray.toString();
     }
+
 }
