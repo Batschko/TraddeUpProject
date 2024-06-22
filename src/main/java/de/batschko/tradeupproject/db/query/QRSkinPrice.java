@@ -150,7 +150,7 @@ public class QRSkinPrice extends QueryRepository{
                 .from(C_S2_SKIN)
                 .where(C_S2_SKIN.ID.eq(cs2skinId))
                 .fetchOneInto(Double.class);
-        if(result == null) throw new RuntimeException("Couldn't get SkinPrice for cs2skinId: "+cs2skinId);
+        if(result == null) result = -1.0;
         return result;
     }
 

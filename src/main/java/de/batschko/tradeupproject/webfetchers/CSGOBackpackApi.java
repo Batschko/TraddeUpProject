@@ -72,7 +72,7 @@ public class CSGOBackpackApi {
     public static void calculateAllTradeUpsBackpackPrice(){
         List<TradeUpCustom> tradeUps = QRTradeUpGenerated.getTradeUpsToCalculate();
         for(TradeUpCustom tup : tradeUps){
-            tup.setCalculation(false);
+            tup.setCalculation();
         }
     }
 

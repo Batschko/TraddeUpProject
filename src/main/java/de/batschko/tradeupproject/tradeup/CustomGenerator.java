@@ -3,6 +3,7 @@ package de.batschko.tradeupproject.tradeup;
 import de.batschko.tradeupproject.db.query.*;
 import de.batschko.tradeupproject.enums.Condition;
 import de.batschko.tradeupproject.enums.Rarity;
+import de.batschko.tradeupproject.enums.TradeUpStatus;
 import de.batschko.tradeupproject.tables.records.StashSkinHolderRecord;
 import de.batschko.tradeupproject.tables.records.TradeUpOutcomeRecord;
 import de.batschko.tradeupproject.tables.records.TradeUpOutcomeSkinsRecord;
@@ -144,7 +145,9 @@ public class CustomGenerator {
                 skin.setChance(chance);
 
                 double skinPrice = QRSkinPrice.getSkinPrice(skin.getCS2SkinId())*outSkinMultiplier;
-
+                if(skinPrice==-1){
+                    throw new RuntimeException("No price for TradeUpOutcomeSkin");
+                }
                 skinAvgPrice += skinPrice * chance;
                 if(skinPrice > skinMaxPrice){
                     skinMaxPrice = skinPrice;

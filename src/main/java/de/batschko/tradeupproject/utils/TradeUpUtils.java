@@ -22,7 +22,7 @@ public class TradeUpUtils {
         List<TradeUpCustom> tradeUps = QRTradeUpGenerated.getTradeUpsToCalculate();
         log.info("calculating tups: {}", tradeUps.size());
         for(TradeUpCustom tup : tradeUps){
-            tup.setCalculation(true);
+            tup.setCalculation();
         }
     }
 

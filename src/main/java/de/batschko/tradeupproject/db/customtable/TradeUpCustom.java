@@ -99,7 +99,7 @@ public class TradeUpCustom extends TradeUpRecord {
      * <p>also creates {@link TradeUpOutcomeSkinsRecord}s and {@link TradeUpOutcomeRecord} </p>
      *
      */
-    public void setCalculation(boolean csMoneyPrice) {
+    public void setCalculation() {
         //Calc step 1
         TradeUpSettings tradeUpSettings = QRGenerationSettings.getTradeUpSettings(this.getGenerationSettingsId());
         List<StashSkinHolderRecord> possibleStashHolder = calcStep1PossibleStashHolder(tradeUpSettings);
@@ -139,6 +139,11 @@ public class TradeUpCustom extends TradeUpRecord {
                 skin.setChance(chance);
 
                 double skinPrice = QRSkinPrice.getSkinPrice(skin.getCS2SkinId())* outSkinMultiplier;
+                if(skinPrice==-1){
+                    this.setStatus(TradeUpStatus.ERROR);
+                    this.store();
+                    return;
+                }
 
                 skinAvgPrice += skinPrice * chance;
                 if(skinPrice > skinMaxPrice){
@@ -181,14 +186,6 @@ public class TradeUpCustom extends TradeUpRecord {
         this.setStatus(TradeUpStatus.CALCULATED);
         this.tupOutcome.store();
 
-        if(!csMoneyPrice){
-            if(skinMaxPrice < this.tupOutcome.getCost() * 1.15){
-                this.setStatus(TradeUpStatus.WASTED);
-                this.store();
-                return;
-            }
-        }
-
         if(tupOutcome.getLoss() > tupOutcome.getValue()){
             this.setStatus(TradeUpStatus.WASTED);
             this.store();
@@ -196,6 +193,11 @@ public class TradeUpCustom extends TradeUpRecord {
         }
 
         if(tupOutcome.getValue() < 0.5 ){
+            this.setStatus(TradeUpStatus.WASTED);
+            this.store();
+            return;
+        }
+        if(tupOutcome.getOutcome() < 0 ){
             this.setStatus(TradeUpStatus.WASTED);
             this.store();
             return;
@@ -252,7 +254,10 @@ public class TradeUpCustom extends TradeUpRecord {
             double categoryEven = 0, categoryProfit = 0;
             for (TradeUpOutcomeSkinsRecord skin : outSkins) {
                 double skinPrice = QRSkinPrice.getSkinPrice(skin.getCS2SkinId()) * outSkinMultiplier;
-
+                if(skinPrice==-1){
+                    QRTradeUpGenerated.updateStatus(tup.getId(), TradeUpStatus.ERROR);
+                    return;
+                }
                 skinAvgPrice += skinPrice * chance;
                 if (skinPrice > skinMaxPrice) {
                     skinMaxPrice = skinPrice;
