@@ -31,7 +31,7 @@ public class CSMoneyController {
     @GetMapping(value = "/api/csmoney/bot/{tupId}", produces = "application/json" )
     public Map<String, List<Double>> csmoneyBotItems(@PathVariable int tupId) {
         log.info("sending CSMoney bot items");
-        Map<String, Map<String, List<Double>>> data = CSMoneyWiki.fetchBotItems(List.of(tupId));
+        Map<String, Map<String, List<Double>>> data = CSMoneyWiki.fetchBotItems((byte)0, List.of(tupId));
         return data.entrySet().iterator().next().getValue();
     }
 
@@ -41,7 +41,7 @@ public class CSMoneyController {
         StopWatch watch = new StopWatch();
         watch.start();
         List<Integer> ids = QRTradeUpTable.getTradeUpsActiveIds();
-        Map<String, Map<String, List<Double>>> botItems = CSMoneyWiki.fetchBotItems(ids);
+        Map<String, Map<String, List<Double>>> botItems = CSMoneyWiki.fetchBotItems((byte)0, ids);
 
         JSONArray jsonArray = new JSONArray();
         String regex = ".*&collection=([^&]*)&isStatTrak=([^&]*)&limit=.*&rarity=([^&]*)&sort";

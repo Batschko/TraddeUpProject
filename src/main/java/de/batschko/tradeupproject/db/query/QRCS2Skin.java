@@ -185,12 +185,13 @@ public class QRCS2Skin extends QueryRepository {
         return id;
     }
 
-    public static Result<Record6<String, String, String, Rarity, Byte, Condition>> getTradeUpSkinInfo(int tupId) {
+    public static Result<Record6<String, String, String, Rarity, Byte, Condition>> getTradeUpSkinInfo(byte custom,int tupId) {
         return dsl.selectDistinct(V_FULLCS2SKIN.WEAPON,V_FULLCS2SKIN.TITLE, V_FULLCS2SKIN.COLL_NAME, V_FULLCS2SKIN.RARITY, V_FULLCS2SKIN.STATTRAK, V_FULLCS2SKIN.CONDITION)
                 .from(TRADE_UP_SKINS)
                 .join(V_FULLCS2SKIN)
                 .on(TRADE_UP_SKINS.C_S2_SKIN_ID.eq(V_FULLCS2SKIN.ID))
-                .where(TRADE_UP_SKINS.TRADE_UP_ID.eq(tupId)).fetch();
+                .where(TRADE_UP_SKINS.TRADE_UP_ID.eq(tupId))
+                .and(TRADE_UP_SKINS.CUSTOM.eq(custom)).fetch();
     }
 
     public static Result<Record3<Integer, Condition, Byte>> getSkinIdsCondStatByName(String weapon, String title){
