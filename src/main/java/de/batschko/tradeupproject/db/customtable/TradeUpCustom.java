@@ -43,7 +43,7 @@ public class TradeUpCustom extends TradeUpRecord {
             if(collNumber.get(i) == 0){
                 continue;
             }
-            double minSkinPriceAvg = QRCS2Skin.getTradeUpSkinsAveragePrice(collectionName, condition, this.getId());
+            double minSkinPriceAvg = QRCS2Skin.getTradeUpSkinsAveragePrice(false, collectionName, condition, this.getId());
 
             if(minSkinPriceAvg <= 0){
                 this.setStatus(TradeUpStatus.WASTED);
@@ -230,7 +230,7 @@ public class TradeUpCustom extends TradeUpRecord {
                 if (collNumber.get(i) == 0) {
                     continue;
                 }
-                double minSkinPriceAvg = QRCS2Skin.getTradeUpSkinsAveragePrice(collectionName, condition, tup.getId());
+                double minSkinPriceAvg = QRCS2Skin.getTradeUpSkinsAveragePrice(false, collectionName, condition, tup.getId());
 
                 if (minSkinPriceAvg <= 0) {
                     QRTradeUp.updateStatus(tup.getId(), TradeUpStatus.WASTED);
