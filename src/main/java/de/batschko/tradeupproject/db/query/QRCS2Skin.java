@@ -3,8 +3,9 @@ package de.batschko.tradeupproject.db.query;
 
 import de.batschko.tradeupproject.enums.Condition;
 import de.batschko.tradeupproject.enums.Rarity;
-import de.batschko.tradeupproject.tables.CS2Skin;
-import de.batschko.tradeupproject.tables.TradeUpSkins;
+import de.batschko.tradeupproject.tables.*;
+import de.batschko.tradeupproject.tables.records.VOutSkinsRecord;
+import de.batschko.tradeupproject.tables.records.VTradeupskinsRecord;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.*;
 import org.jooq.Record;
@@ -27,7 +28,6 @@ import static org.jooq.impl.DSL.avg;
 @Slf4j
 @Repository
 public class QRCS2Skin extends QueryRepository {
-
 
     public QRCS2Skin(DSLContext dslContext) {
         super(dslContext);
@@ -59,7 +59,10 @@ public class QRCS2Skin extends QueryRepository {
     }
 
     /**
-     * TODO
+     * Gets {@link CS2Skin} as {@link VFullcs2skin}.
+     *
+     * @param id skin id
+     * @return Record {@link VFullcs2skin}
      */
     public static Record getFullSkin(int id) {
         return dsl.select()
@@ -67,7 +70,6 @@ public class QRCS2Skin extends QueryRepository {
                 .where(V_FULLCS2SKIN.ID.eq(id))
                 .fetchOne();
     }
-
 
     /**
      * Gets {@link CS2Skin} id by stashHolderId, condition and stattrak.
@@ -89,8 +91,6 @@ public class QRCS2Skin extends QueryRepository {
         return result;
 
     }
-
-
 
     /**
      * Gets average price for {@link TradeUpSkins} by collection name, condition and TradeUp id.
@@ -117,9 +117,6 @@ public class QRCS2Skin extends QueryRepository {
             return result;
     }
 
-
-
-
     /**
      * Remove all skin prices from all {@link CS2Skin}s.
      * <p>->dangerous!<-</p>
@@ -129,6 +126,12 @@ public class QRCS2Skin extends QueryRepository {
     }
 
 
+    /**
+     * Gets {@link TradeUpSkins} as {@link VTradeupskins}.
+     *
+     * @param id tradeUp id
+     * @return Result < Record > {@link VTradeupskinsRecord}
+     */
     public static Result<Record> getTradeUpSkins(int id){
 
         return dsl.select()
@@ -138,7 +141,12 @@ public class QRCS2Skin extends QueryRepository {
                 .fetch();
     }
 
-
+    /**
+     * Gets custom {@link TradeUpSkins} as {@link VTradeupskins}.
+     *
+     * @param id custom tradeUp id
+     * @return Result < Record > {@link VTradeupskinsRecord}
+     */
     public static Result<Record> getTradeUpSkinsCustom(int id){
         return dsl.select()
                 .from(V_FULLCS2SKIN)
@@ -149,6 +157,12 @@ public class QRCS2Skin extends QueryRepository {
                 .fetch();
     }
 
+    /**
+     * Gets custom {@link TradeUpOutcomeSkins} as {@link VOutSkins}.
+     *
+     * @param id custom tradeUp id
+     * @return Result < Record > {@link VOutSkinsRecord}
+     */
     public static Result<Record> getOutSkinsCustom(int id){
         return dsl.select()
                 .from(V_FULLCS2SKIN)
@@ -159,13 +173,12 @@ public class QRCS2Skin extends QueryRepository {
                 .fetch();
     }
 
-    //TODO remove
-    public static void deleteCustomInAndOutSkins(int id){
-        dsl.deleteFrom(TRADE_UP_SKINS).where(TRADE_UP_SKINS.TRADE_UP_ID.eq(id)).and(TRADE_UP_SKINS.CUSTOM.eq((byte) 1)).execute();
-        dsl.deleteFrom(TRADE_UP_OUTCOME_SKINS).where(TRADE_UP_OUTCOME_SKINS.TRADE_UP_ID.eq(id)).and(TRADE_UP_OUTCOME_SKINS.CUSTOM.eq((byte) 1)).execute();
-    }
-
-
+    /**
+     * Gets {@link TradeUpOutcomeSkins} as {@link VOutSkins}.
+     *
+     * @param id tradeUp id
+     * @return Result < Record > {@link VOutSkinsRecord}
+     */
     public static Result<Record> getOutSkins(int id){
         return dsl.select()
                 .from(V_OUT_SKINS)
@@ -174,6 +187,16 @@ public class QRCS2Skin extends QueryRepository {
                 .fetch();
     }
 
+    /**
+     * Get {@link TradeUpOutcomeSkins} id by name cond tup custom.
+     *
+     * @param weapon    weapon
+     * @param title     title
+     * @param condition {@link Condition} condition
+     * @param tupId     tradeUp id
+     * @param custom    custom
+     * @return {@link CS2Skin} id
+     */
     public static int getOutSkinIdByNameCondTup(String weapon, String title, Condition condition, int tupId, boolean custom){
         Integer id =  dsl.select(V_OUT_SKINS.ID)
                 .from(V_OUT_SKINS)
@@ -189,6 +212,14 @@ public class QRCS2Skin extends QueryRepository {
         return id;
     }
 
+    /**
+     * Gets skin-info from {@link TradeUpSkins}.
+     * <p>WEAPON,TITLE, COLL_NAME, RARITY, STATTRAK, CONDITION</p>
+     *
+     * @param custom custom
+     * @param tupId  tradeUp id
+     * @return infos as Result< Record6 > WEAPON,TITLE, COLL_NAME, RARITY, STATTRAK, CONDITION
+     */
     public static Result<Record6<String, String, String, Rarity, Byte, Condition>> getTradeUpSkinInfo(byte custom,int tupId) {
         return dsl.selectDistinct(V_FULLCS2SKIN.WEAPON,V_FULLCS2SKIN.TITLE, V_FULLCS2SKIN.COLL_NAME, V_FULLCS2SKIN.RARITY, V_FULLCS2SKIN.STATTRAK, V_FULLCS2SKIN.CONDITION)
                 .from(TRADE_UP_SKINS)
@@ -198,6 +229,13 @@ public class QRCS2Skin extends QueryRepository {
                 .and(TRADE_UP_SKINS.CUSTOM.eq(custom)).fetch();
     }
 
+    /**
+     * Get {@link CS2Skin} ids,condition,stat by name.
+     *
+     * @param weapon weapon
+     * @param title  title
+     * @return Result < Record3 > ID, CONDITION, STATTRAK
+     */
     public static Result<Record3<Integer, Condition, Byte>> getSkinIdsCondStatByName(String weapon, String title){
         return dsl.select(C_S2_SKIN.ID, C_S2_SKIN.CONDITION, C_S2_SKIN.STATTRAK)
                 .from(STASH_SKIN_HOLDER)
@@ -206,6 +244,16 @@ public class QRCS2Skin extends QueryRepository {
                 .where(STASH_SKIN_HOLDER.WEAPON.eq(weapon))
                 .and(STASH_SKIN_HOLDER.TITLE.eq(title))
                 .fetch();
-
         }
+
+    /**
+     * Delete custom {@link TradeUpSkins} & {@link TradeUpOutcomeSkins} for a custom {@link TradeUp}.
+     *
+     * @param id custom tradeUp id
+     */
+    public static void deleteCustomInAndOutSkins(int id){
+        dsl.deleteFrom(TRADE_UP_SKINS).where(TRADE_UP_SKINS.TRADE_UP_ID.eq(id)).and(TRADE_UP_SKINS.CUSTOM.eq((byte) 1)).execute();
+        dsl.deleteFrom(TRADE_UP_OUTCOME_SKINS).where(TRADE_UP_OUTCOME_SKINS.TRADE_UP_ID.eq(id)).and(TRADE_UP_OUTCOME_SKINS.CUSTOM.eq((byte) 1)).execute();
+    }
+
 }
