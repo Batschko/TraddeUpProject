@@ -130,7 +130,7 @@ public class QRCS2Skin extends QueryRepository {
      * Gets {@link TradeUpSkins} as {@link VTradeupskins}.
      *
      * @param id tradeUp id
-     * @return Result < Record > {@link VTradeupskinsRecord}
+     * @return {@code Result<Record>} {@link VTradeupskinsRecord}
      */
     public static Result<Record> getTradeUpSkins(int id){
 
@@ -145,7 +145,7 @@ public class QRCS2Skin extends QueryRepository {
      * Gets custom {@link TradeUpSkins} as {@link VTradeupskins}.
      *
      * @param id custom tradeUp id
-     * @return Result < Record > {@link VTradeupskinsRecord}
+     * @return {@code Result<Record>} {@link VTradeupskinsRecord}
      */
     public static Result<Record> getTradeUpSkinsCustom(int id){
         return dsl.select()
@@ -177,7 +177,7 @@ public class QRCS2Skin extends QueryRepository {
      * Gets {@link TradeUpOutcomeSkins} as {@link VOutSkins}.
      *
      * @param id tradeUp id
-     * @return Result < Record > {@link VOutSkinsRecord}
+     * @return {@code Result<Record>} {@link VOutSkinsRecord}
      */
     public static Result<Record> getOutSkins(int id){
         return dsl.select()
@@ -218,7 +218,7 @@ public class QRCS2Skin extends QueryRepository {
      *
      * @param custom custom
      * @param tupId  tradeUp id
-     * @return infos as Result< Record6 > WEAPON,TITLE, COLL_NAME, RARITY, STATTRAK, CONDITION
+     * @return infos as {@code Result<Record6>} WEAPON,TITLE, COLL_NAME, RARITY, STATTRAK, CONDITION
      */
     public static Result<Record6<String, String, String, Rarity, Byte, Condition>> getTradeUpSkinInfo(byte custom,int tupId) {
         return dsl.selectDistinct(V_FULLCS2SKIN.WEAPON,V_FULLCS2SKIN.TITLE, V_FULLCS2SKIN.COLL_NAME, V_FULLCS2SKIN.RARITY, V_FULLCS2SKIN.STATTRAK, V_FULLCS2SKIN.CONDITION)
@@ -234,7 +234,7 @@ public class QRCS2Skin extends QueryRepository {
      *
      * @param weapon weapon
      * @param title  title
-     * @return Result < Record3 > ID, CONDITION, STATTRAK
+     * @return {@code Result<Record3>} id,condition,stattrak
      */
     public static Result<Record3<Integer, Condition, Byte>> getSkinIdsCondStatByName(String weapon, String title){
         return dsl.select(C_S2_SKIN.ID, C_S2_SKIN.CONDITION, C_S2_SKIN.STATTRAK)

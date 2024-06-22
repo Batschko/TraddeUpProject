@@ -18,7 +18,7 @@ public class ApiUtils {
     /**
      * Convert {@link Result} of TradeUp to JSON-Array.
      *
-     * @param result Result < Record >
+     * @param result {@code Result<Record>}
      * @return result as JSONArray
      */
     public static JSONArray tradeupResultToJsonArray(Result<Record> result){
@@ -44,7 +44,7 @@ public class ApiUtils {
     /**
      * Convert {@link Result} of CS2Skin to JSON-Array.
      *
-     * @param result Result < Record >
+     * @param result {@code Result<Record>}
      * @return result as JSONArray
      */
     public static JSONArray skinResultToJsonArray(Result<Record> result){

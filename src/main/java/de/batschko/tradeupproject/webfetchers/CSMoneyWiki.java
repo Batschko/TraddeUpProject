@@ -65,7 +65,7 @@ public class CSMoneyWiki {
      *
      * @param custom custom(1) or generated(0) tradeUp
      * @param tupIds list of tradeUp ids
-     * @return map of < CollectionName, map < skinName, List{floats} >
+     * @return map of {@code <CollectionName, map <skinName, List{floats}>}
      */
     public static Map<String, Map<String, List<Double>>> fetchBotItems(byte custom, List<Integer> tupIds){
         //      url,     skinName,   condition, float

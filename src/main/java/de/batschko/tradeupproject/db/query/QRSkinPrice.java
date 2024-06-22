@@ -33,7 +33,7 @@ public class QRSkinPrice extends QueryRepository{
     /**
      * Gets {@link CS2Skin} weapon,title,float_start/end for all {@link CS2Skin}s.
      *
-     * @return Result Record4< WEAPON, TITLE, FLOAT_START, FLOAT_END >
+     * @return {@code Result<Record4>} WEAPON, TITLE, FLOAT_START, FLOAT_END
      */
     public static Result<Record4<String, String, Double, Double>> getSkinPriceList() {
         return dsl.selectDistinct(STASH_SKIN_HOLDER.WEAPON, STASH_SKIN_HOLDER.TITLE, STASH_SKIN_HOLDER.FLOAT_START, STASH_SKIN_HOLDER.FLOAT_END)
@@ -46,7 +46,7 @@ public class QRSkinPrice extends QueryRepository{
     /**
      * Gets {@link CS2Skin} weapon,title,float_start/end where the skin price is older than 24h.
      *
-     * @return Result Record4< WEAPON, TITLE, FLOAT_START, FLOAT_END >
+     * @return {@code Result<Record4>} WEAPON, TITLE, FLOAT_START, FLOAT_END
      */
     public static Result<Record4<String, String, Double, Double>> getSkinPriceListByDate() {
         final int minusHours = 24;
@@ -80,7 +80,7 @@ public class QRSkinPrice extends QueryRepository{
     /**
      * Gets {@link CS2Skin} weapon,title,float_start/end where the skin price is missing.
      *
-     * @return Result Record4< WEAPON, TITLE, FLOAT_START, FLOAT_END >
+     * @return {@code Result<Record4>} WEAPON, TITLE, FLOAT_START, FLOAT_END
      */
     public static Result<Record4<String, String, Double, Double>> getSkinPriceListMissing() {
         return dsl.selectDistinct(STASH_SKIN_HOLDER.WEAPON, STASH_SKIN_HOLDER.TITLE, STASH_SKIN_HOLDER.FLOAT_START, STASH_SKIN_HOLDER.FLOAT_END)
