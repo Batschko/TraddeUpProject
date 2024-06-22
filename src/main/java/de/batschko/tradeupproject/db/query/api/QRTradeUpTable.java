@@ -4,7 +4,6 @@ import de.batschko.tradeupproject.db.query.QueryRepository;
 import de.batschko.tradeupproject.enums.Condition;
 import de.batschko.tradeupproject.enums.Rarity;
 import de.batschko.tradeupproject.enums.TradeUpStatus;
-import de.batschko.tradeupproject.tables.Collection;
 import de.batschko.tradeupproject.tables.TradeUp;
 import de.batschko.tradeupproject.tables.TradeUpMade;
 import de.batschko.tradeupproject.tables.TradeUpMarked;
@@ -56,6 +55,12 @@ public class QRTradeUpTable extends QueryRepository {
                 .fetch();
     }
 
+    /**
+     * Get {@link TradeUp} ids for TradeUps marked as active.
+     *
+     * @param custom custom
+     * @return list of tradeUp ids
+     */
     public static List<Integer> getTradeUpsActiveIds(boolean custom){
         return  dsl.select(TRADE_UP_MARKED.TRADE_UP_ID)
                 .from(TRADE_UP_MARKED)
@@ -64,7 +69,12 @@ public class QRTradeUpTable extends QueryRepository {
                 .fetchInto(Integer.class);
     }
 
-
+    /**
+     * Get TableTradeUps that are marked.
+     *
+     * @param custom custom
+     * @return {@code Result<Record>} all {@link TradeUp} & {@link TradeUpMarked} fields
+     */
     public static Result<Record> getTradeUpsMarked(boolean custom){
         return dsl.select(V_FULL_TRADEUP.fields()).select(TRADE_UP_MARKED.MARKED, TRADE_UP_MARKED.WATCH, TRADE_UP_MARKED.ACTIVE)
                 .from(V_FULL_TRADEUP)
@@ -74,6 +84,12 @@ public class QRTradeUpTable extends QueryRepository {
                 .fetch();
     }
 
+    /**
+     * Get TableTradeUps that are watched.
+     *
+     * @param custom custom
+     * @return {@code Result<Record>} all {@link TradeUp} & {@link TradeUpMarked} fields
+     */
     public static Result<Record> getTradeUpsWatched(boolean custom){
         return dsl.select(V_FULL_TRADEUP.fields()).select(TRADE_UP_MARKED.MARKED, TRADE_UP_MARKED.WATCH, TRADE_UP_MARKED.ACTIVE)
                 .from(V_FULL_TRADEUP)
@@ -84,6 +100,12 @@ public class QRTradeUpTable extends QueryRepository {
                 .fetch();
     }
 
+    /**
+     * Get TableTradeUps that are active.
+     *
+     * @param custom custom
+     * @return {@code Result<Record>} all {@link TradeUp} & {@link TradeUpMarked} fields
+     */
     public static Result<Record> getTradeUpsActive(boolean custom){
         return dsl.select(V_FULL_TRADEUP.fields()).select(TRADE_UP_MARKED.MARKED, TRADE_UP_MARKED.WATCH, TRADE_UP_MARKED.ACTIVE)
                 .from(V_FULL_TRADEUP)
@@ -94,6 +116,11 @@ public class QRTradeUpTable extends QueryRepository {
                 .fetch();
     }
 
+    /**
+     * Get {@link TradeUpMade}s as {@link JSONObject}.
+     * <p>JSONObject -> "tups": jsonArray(TradeUps), "profit": profit</p>
+     * @return {@link TradeUpMade}s as {@link JSONObject} -> "tups": jsonArray(TradeUps), "profit": profit
+     */
     public static JSONObject getTradeUpsMade(){
         Result<Record> a =  dsl.select(TRADE_UP_MADE.fields()).select(V_FULLCS2SKIN.IMAGE_URL)
                 .from(TRADE_UP_MADE)
@@ -112,7 +139,6 @@ public class QRTradeUpTable extends QueryRepository {
             if(jsonObject.has("rarity"))jsonObject.put("rarity", jsonObject.getEnum(Rarity.class,"rarity"));
             jsonObject.put("modified_date", jsonObject.get("modified_date").toString());
 
-
             jsonArray.put(jsonObject);
             profit += jsonObject.getDouble("profit");
         }
@@ -123,6 +149,11 @@ public class QRTradeUpTable extends QueryRepository {
         return jsonObject;
     }
 
+    /**
+     * Get grouped {@link TradeUpMade}s data.
+     * <p>tupmade id, tup id, stat, rarity, gsettings, sum profit, made count, avg profit</p>
+     * @return {@link JSONArray} of {@link JSONObject}s -> madeTup id, tup id, stat, rarity, gsettings, sum profit, made count, avg profit
+     */
     public static JSONArray getTradeUpsMadeGrouped(){
         Result<Record8<Integer, Integer, Byte, Rarity, String, BigDecimal, Integer, BigDecimal>> a =  dsl.select(TRADE_UP_MADE.ID, TRADE_UP_MADE.TRADE_UP_ID, TRADE_UP_MADE.STATTRAK,
                         TRADE_UP_MADE.RARITY, TRADE_UP_MADE.GENERATION_SETTINGS,
@@ -133,22 +164,24 @@ public class QRTradeUpTable extends QueryRepository {
         List<Map<String, Object>> maps = a.intoMaps();
         // Convert list of maps to JSON array
         JSONArray jsonArray = new JSONArray();
-
         for (Map<String, Object> map : maps) {
             JSONObject jsonObject = new JSONObject();
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 jsonObject.put(entry.getKey(), entry.getValue());
             }
             if(jsonObject.has("rarity"))jsonObject.put("rarity", jsonObject.getEnum(Rarity.class,"rarity"));
-
             jsonArray.put(jsonObject);
         }
-
-
         return jsonArray;
     }
 
-    public static void markTradeUp(int id, boolean custom){
+    /**
+     * Toggle mark for a {@link TradeUp}.
+     *
+     * @param id     tradeUp id
+     * @param custom custom
+     */
+    public static void toggleMarkTradeUp(int id, boolean custom){
         //check if tup is already marked
         Record exists =  dsl.select()
                 .from(TRADE_UP_MARKED)
@@ -157,7 +190,7 @@ public class QRTradeUpTable extends QueryRepository {
                 .fetchOne();
 
         if(exists!=null){
-            dsl.delete(TRADE_UP_MARKED).where(TRADE_UP_MARKED.TRADE_UP_ID.eq(id)).execute();
+            dsl.delete(TRADE_UP_MARKED).where(TRADE_UP_MARKED.TRADE_UP_ID.eq(id)).and(TRADE_UP_MARKED.CUSTOM.eq((byte) (custom?1:0))).execute();
             return;
         }
         Record5<Integer, Byte, Rarity, Integer, String> result =  dsl.select(V_FULL_TRADEUP.ID, V_FULL_TRADEUP.STATTRAK, V_FULL_TRADEUP.RARITY, V_FULL_TRADEUP.FLOAT_DICT_ID, V_FULL_TRADEUP.SETTINGS)
@@ -175,7 +208,13 @@ public class QRTradeUpTable extends QueryRepository {
         markedRecord.store();
     }
 
-    public static void setWatch(int id, boolean custom){
+    /**
+     * Toggle {@link TradeUpMarked} watched.
+     *
+     * @param id     tradeUp id
+     * @param custom custom
+     */
+    public static void toggleWatch(int id, boolean custom){
         //check if tup is already marked
         Record exists =  dsl.select()
                 .from(TRADE_UP_MARKED)
@@ -191,7 +230,13 @@ public class QRTradeUpTable extends QueryRepository {
         }
     }
 
-    public static void setActive(int id, boolean custom){
+    /**
+     * Toggle {@link TradeUpMarked} active.
+     *
+     * @param id     tradeUp id
+     * @param custom custom
+     */
+    public static void toggleActive(int id, boolean custom){
         //check if tup is already active
         Record exists =  dsl.select()
                 .from(TRADE_UP_MARKED)
@@ -207,6 +252,23 @@ public class QRTradeUpTable extends QueryRepository {
         }
     }
 
+
+    /**
+     * Save {@link TradeUpMade} to database.
+     *
+     * @param custom      custom
+     * @param tradeUpId   tradeUp id
+     * @param stattrak    stattrak
+     * @param rarity      rarity
+     * @param floatDictId float dict id
+     * @param gsettings   gsettings
+     * @param cs2skinId   skin id
+     * @param skinName    skin name
+     * @param cond        cond
+     * @param cost        cost
+     * @param price       price
+     * @return 1 if saved successfully, else 0
+     */
     public static int saveMadeTradeUp(byte custom, int tradeUpId, byte stattrak, Rarity rarity, int floatDictId, String gsettings, int cs2skinId, String skinName, Condition cond, double cost, double price){
         TradeUpMadeRecord record = dsl.newRecord(TRADE_UP_MADE);
         record.setTradeUpId(tradeUpId);

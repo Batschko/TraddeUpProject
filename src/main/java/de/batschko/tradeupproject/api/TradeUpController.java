@@ -31,7 +31,7 @@ public class TradeUpController {
     public String tupMarkedPatch(@PathVariable int tupId) {
         log.info("marking TradeUp");
         log.info("sending TradeUps");
-        QRTradeUpTable.markTradeUp(tupId, false);
+        QRTradeUpTable.toggleMarkTradeUp(tupId, false);
         return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUps(false)).toString();
     }
 
@@ -45,7 +45,7 @@ public class TradeUpController {
     public String tupWatchPatch(@PathVariable int tupId) {
         log.info("marking TradeUp as watched");
         log.info("sending TradeUps");
-        QRTradeUpTable.setWatch(tupId, false);
+        QRTradeUpTable.toggleWatch(tupId, false);
         return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUpsMarked(false)).toString();
     }
 
@@ -59,7 +59,7 @@ public class TradeUpController {
     public String tupActivePatch(@PathVariable int tupId) {
         log.info("marking TradeUp active");
         log.info("sending TradeUpsWatched");
-        QRTradeUpTable.setActive(tupId, false);
+        QRTradeUpTable.toggleActive(tupId, false);
         return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUpsWatched(false)).toString();
     }
 
