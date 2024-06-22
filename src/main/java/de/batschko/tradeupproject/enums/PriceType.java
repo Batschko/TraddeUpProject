@@ -4,6 +4,7 @@ package de.batschko.tradeupproject.enums;
 /**
  * Enum to handle skin-price type
  */
+@Deprecated
 public enum PriceType {
 
     FN_STAT,
