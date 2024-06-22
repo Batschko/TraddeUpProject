@@ -1,10 +1,14 @@
 package de.batschko.tradeupproject.utils;
 
 import de.batschko.tradeupproject.db.customtable.CS2SkinCustom;
+import de.batschko.tradeupproject.db.query.QRSkinPrice;
 import de.batschko.tradeupproject.db.query.QRStashHolder;
 import de.batschko.tradeupproject.enums.Condition;
 import de.batschko.tradeupproject.enums.Rarity;
+import de.batschko.tradeupproject.tables.CS2Skin;
 import de.batschko.tradeupproject.tables.StashSkinHolder;
+import de.batschko.tradeupproject.webfetchers.CSMoneyScraper;
+import de.batschko.tradeupproject.webfetchers.CSMoneyWiki;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.Record4;
@@ -24,7 +28,7 @@ import static de.batschko.tradeupproject.tables.StashSkinHolder.STASH_SKIN_HOLDE
 
 
 /**
- * Utility methods and classes for Skins
+ * Utility methods and classes related to {@link CS2Skin}
  */
 @Slf4j
 public class SkinUtils {
@@ -33,11 +37,11 @@ public class SkinUtils {
     /**
      * Get full skin name from details
      *
-     * @param stattrak  the stattrak
-     * @param weapon    the weapon
-     * @param title     the title
-     * @param condition the condition
-     * @return the string
+     * @param stattrak  stattrak
+     * @param weapon    weapon
+     * @param title     title
+     * @param condition condition
+     * @return full skin name
      */
     private static String getFullSkinName(byte stattrak, String weapon, String title, Condition condition){
         String fullName = "";
@@ -121,6 +125,52 @@ public class SkinUtils {
         return readSpecialNameFile(fileName, reverse);
     }
 
+    /**
+     * Update {@link CS2Skin} prices which are missing.
+     */
+    public static void priceUpdateMissing(){
+        fullPriceUpdate(false);
+    }
+
+    /**
+     * Update {@link CS2Skin} prices which are older than 24h.
+     */
+    public static void priceUpdateByDate(){
+        fullPriceUpdate(true);
+    }
+
+    private static void fullPriceUpdate(boolean byDate){
+        int lastSize = 0;
+        while (true){
+            Result<Record4<String, String, Double, Double>> nameList;
+            if(byDate) nameList = QRSkinPrice.getSkinPriceListByDate();
+            else nameList = QRSkinPrice.getSkinPriceListMissing();
+
+            if(nameList.size() == lastSize){
+                break;
+            }else {
+                CSMoneyScraper.updateSkinPrice(nameList);
+            }
+            lastSize = nameList.size();
+        }
+        List<Integer> ids;
+        if(byDate) ids = QRSkinPrice.getSkinPriceListByDateId();
+        else ids = QRSkinPrice.getSkinPriceListMissingIds();
+
+        log.info("\n\n\nget remaining by CSMoney Bot");
+        log.info("updating {} names", ids.size());
+        int loop = 1;
+        for(int id : ids){
+            log.info("loop: "+loop++);
+            CSMoneyWiki.updateSkinPrice(id);
+            try {
+                Thread.sleep(3500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     private static Map<String,String> readSpecialNameFile(String fileName, boolean reverse){
         Map<String, String> map = new HashMap<>();
         try {
@@ -142,6 +192,7 @@ public class SkinUtils {
         }
         return map;
     }
+
 
 
     /*-------------*/
