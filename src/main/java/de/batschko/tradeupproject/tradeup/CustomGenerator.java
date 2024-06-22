@@ -112,8 +112,7 @@ public class CustomGenerator {
                 skinPool+= (collNumber.get(collIndex) * entry.getValue().size());
             }
         }
-        // TODO maybe remove if it cant happen
-        if(skinPool < 1) throw new RuntimeException("skinPool is 0");
+
 
         double hitChanceSum = 0;
         double skinAvgPrice =0;
@@ -121,7 +120,7 @@ public class CustomGenerator {
         double categoryEven = 0, categoryProfit = 0;
         for(Map.Entry<Integer, Set<TradeUpOutcomeSkinsRecord>> entry: outcomeCS2SkinsMap.entrySet()){
             double chance;
-            //passiert das überhaupt?
+
             if(outcomeCS2SkinsMap.size()==1){
                 //single collection
                 chance = 10 / skinPool;
