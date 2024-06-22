@@ -37,7 +37,6 @@ public class QRUtils extends QueryRepository {
         super(dslContext);
     }
 
-
     /**
      * Gets float dictionary map by id.
      *
@@ -63,9 +62,10 @@ public class QRUtils extends QueryRepository {
      * Gets {@link TradeUpSkins} as {@link SkinUtils.SkinFullName}.
      *
      * @param tupId tradeup id
+     * @param custom custom
      * @return list of {@link SkinUtils.SkinFullName}
      */
-    public static List<SkinUtils.SkinFullName> getTradeUpSkins(int tupId) {
+    public static List<SkinUtils.SkinFullName> getTradeUpSkins(int tupId,byte custom) {
         Result<Record5<Integer, Byte, String, String, Condition>> result = dsl.select(
                         C_S2_SKIN.ID, C_S2_SKIN.STATTRAK, STASH_SKIN_HOLDER.WEAPON,
                         STASH_SKIN_HOLDER.TITLE, C_S2_SKIN.CONDITION)
@@ -75,6 +75,7 @@ public class QRUtils extends QueryRepository {
                 .join(STASH_SKIN_HOLDER)
                 .on(STASH_SKIN_HOLDER.STASH_ID.eq(C_S2_SKIN.STASH_ID))
                 .where(TRADE_UP_SKINS.TRADE_UP_ID.eq(tupId))
+                .and(TRADE_UP_SKINS.CUSTOM.eq(custom))
                 .fetch();
         List<SkinUtils.SkinFullName> resultList = new ArrayList<>();
         result.forEach(record -> {
@@ -114,9 +115,10 @@ public class QRUtils extends QueryRepository {
      * Gets {@link TradeUpOutcomeSkins} as {@link SkinUtils.SkinFullName}.
      *
      * @param tupId tradeup id
+     * @param custom custom
      * @return list of {@link SkinUtils.SkinFullName}
      */
-    public static List<SkinUtils.SkinFullName> getTradeUpOutcomeSkins(int tupId) {
+    public static List<SkinUtils.SkinFullName> getTradeUpOutcomeSkins(int tupId, byte custom) {
         Result<Record5<Integer, Byte, String, String, Condition>> result = dsl.select(
                         C_S2_SKIN.ID, C_S2_SKIN.STATTRAK, STASH_SKIN_HOLDER.WEAPON,
                         STASH_SKIN_HOLDER.TITLE, C_S2_SKIN.CONDITION)
@@ -126,6 +128,7 @@ public class QRUtils extends QueryRepository {
                 .join(STASH_SKIN_HOLDER)
                 .on(STASH_SKIN_HOLDER.STASH_ID.eq(C_S2_SKIN.STASH_ID))
                 .where(TRADE_UP_OUTCOME_SKINS.TRADE_UP_ID.eq(tupId))
+                .and(TRADE_UP_OUTCOME_SKINS.CUSTOM.eq(custom))
                 .fetch();
         List<SkinUtils.SkinFullName> resultList = new ArrayList<>();
         result.forEach(record -> {
@@ -149,8 +152,6 @@ public class QRUtils extends QueryRepository {
         return dsl.newRecord(TRADE_UP_OUTCOME);
     }
 
-
-
     /**
      * Creates empty {@link TradeUpOutcomeSkinsRecord}.
      *
@@ -161,13 +162,5 @@ public class QRUtils extends QueryRepository {
     }
 
 
-
-  /*  public static TradeUpOutcomeSkinsCustomRecord createRecordTradeUpOutcomeSkinsCustom(){
-        return dsl.newRecord(TRADE_UP_OUTCOME_SKINS_CUSTOM);
-    }*/
-
-       /* public static TradeUpOutcomeCustomRecord createRecordTradeUpOutcomeCustome(){
-        return dsl.newRecord(TRADE_UP_OUTCOME_CUSTOM);
-    }*/
 }
 

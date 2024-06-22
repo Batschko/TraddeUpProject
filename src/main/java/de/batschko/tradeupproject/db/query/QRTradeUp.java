@@ -30,7 +30,7 @@ import static org.jooq.impl.DSL.row;
 
 /**
  * Database access related to generated {@link TradeUp}
- * ! all methods filter for custom = false !
+ * <p> ! all methods filter for custom = false ! </p>
  */
 @Repository
 @Slf4j
@@ -166,7 +166,7 @@ public class QRTradeUp extends QueryRepository{
         return dsl.select()
                 .from(V_TUPNSETTINGGS)
                 .leftJoin(TRADE_UP_SKINS)
-                .on(V_TUPNSETTINGGS.ID.eq(TRADE_UP_SKINS.TRADE_UP_ID))
+                .on(V_TUPNSETTINGGS.ID.eq(TRADE_UP_SKINS.TRADE_UP_ID).and(V_TUPNSETTINGGS.CUSTOM.eq(TRADE_UP_SKINS.CUSTOM)))
                 .where(TRADE_UP_SKINS.TRADE_UP_ID.isNull())
                 .and(V_TUPNSETTINGGS.CUSTOM.eq((byte) 0));
     }

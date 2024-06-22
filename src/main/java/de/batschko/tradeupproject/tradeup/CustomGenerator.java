@@ -13,15 +13,32 @@ import org.json.JSONObject;
 
 import java.util.*;
 
+
+/**
+ * Class to generate custom TradeUps.
+ */
 public class CustomGenerator {
 
     private static final double costMultiplier = 1.08;
     private static final double outSkinMultiplier = 0.9;
 
+    /**
+     * Calculate custom TradeUp-data from {@link JSONObject}.
+     *
+     * @param jsonObject jsonObject
+     * @return TradeUp-data as JSONObject
+     */
      public static JSONObject calculateTup(JSONObject jsonObject){
         return calculateTup(jsonObject, false);
     }
 
+    /**
+     * Calculate custom TradeUp-data from {@link JSONObject}.
+     *
+     * @param jsonObject jsonObject
+     * @param save       save to database or not
+     * @return TradeUp-data as JSONObject
+     */
     public static JSONObject calculateTup(JSONObject jsonObject, boolean save){
         JSONObject row1 = jsonObject.getJSONObject("row1");
         JSONObject row2 = jsonObject.getJSONObject("row2");
@@ -39,12 +56,10 @@ public class CustomGenerator {
             conditionList.add(Condition.valueOf(row3.getString("cond")));
         }
         CollectionConditionDistribution collCondDistri = new CollectionConditionDistribution(collNumber, conditionList);
-
         TradeUpSettings settings = new TradeUpSettings(collectionList,collCondDistri,condTarget);
 
         int tupId=666666;
         QRCustomTradeUp.createTradeUpSkinsCustom(tupId,settings, rarity , stat? (byte) 1: 0);
-
 
         double totalPrice = 0;
         double floatSum = 0;
@@ -53,21 +68,19 @@ public class CustomGenerator {
         Map<Condition,Double> floatDictMap = QRUtils.getFloatDictMap(2);
         List<StashSkinHolderRecord> possibleStashHolder = new ArrayList<>();
 
-
         for(int i=0; i<collectionList.size(); i++){
             String collectionName = collectionList.get(i);
             Condition condition = conditionList.get(i);
             if(collNumber.get(i) == 0){
                 continue;
             }
-            double minSkinPriceAvg = QRCS2Skin.getTradeUpSkinsAveragePrice(collectionName, condition, tupId);
+            double minSkinPriceAvg = QRCS2Skin.getTradeUpSkinsAveragePrice(true ,collectionName, condition, tupId);
 
             totalPrice+= collNumber.get(i) * minSkinPriceAvg;
             floatSum+= collNumber.get(i) * floatDictMap.get(condition);
             possibleStashHolder.addAll(QRStashHolder.getByCollectionRarity(collectionName, Rarity.increase(rarity)));
         }
        // this.setFloatSumNeeded(floatSum);
-
 
         if(possibleStashHolder.isEmpty()) throw new RuntimeException("possibleStashHolder is empty");
 
@@ -97,7 +110,6 @@ public class CustomGenerator {
             }else {
                 outcomeCS2SkinsMap.get(stashHolder.getCollectionId()).add(out_skin);
             }
-
            // checkFloatMarker(magic_float);
         }
 
@@ -112,7 +124,6 @@ public class CustomGenerator {
                 skinPool+= (collNumber.get(collIndex) * entry.getValue().size());
             }
         }
-
 
         double hitChanceSum = 0;
         double skinAvgPrice =0;
@@ -154,8 +165,6 @@ public class CustomGenerator {
             }
 
         }
-
-
 
         //categoryMarker
         if(categoryEven > categoryProfit * 2.5) tupOutcome.setCategoryMarker((byte) 1);

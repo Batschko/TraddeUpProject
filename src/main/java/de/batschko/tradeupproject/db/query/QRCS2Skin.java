@@ -91,6 +91,7 @@ public class QRCS2Skin extends QueryRepository {
     }
 
 
+
     /**
      * Gets average price for {@link TradeUpSkins} by collection name, condition and TradeUp id.
      *
@@ -99,12 +100,12 @@ public class QRCS2Skin extends QueryRepository {
      * @param tupId     tradeUp id
      * @return avg price or -3 if no records are found
      */
-    public static double getTradeUpSkinsAveragePrice(String collName, Condition condition, int tupId) {
+    public static double getTradeUpSkinsAveragePrice(boolean custom, String collName, Condition condition, int tupId) {
 
             Double result = dsl.select(avg(V_FULLCS2SKIN.PRICE))
                     .from(V_FULLCS2SKIN)
                     .join(TRADE_UP_SKINS)
-                    .on(TRADE_UP_SKINS.C_S2_SKIN_ID.eq(V_FULLCS2SKIN.ID))
+                    .on(TRADE_UP_SKINS.C_S2_SKIN_ID.eq(V_FULLCS2SKIN.ID).and(TRADE_UP_SKINS.CUSTOM.eq((byte) (custom?1:0))))
                     .where(V_FULLCS2SKIN.COLL_NAME.eq(collName))
                     .and(V_FULLCS2SKIN.CONDITION.eq(condition))
                     .and(TRADE_UP_SKINS.TRADE_UP_ID.eq(tupId))
@@ -133,6 +134,7 @@ public class QRCS2Skin extends QueryRepository {
         return dsl.select()
                 .from(V_TRADEUPSKINS)
                 .where(V_TRADEUPSKINS.TRADE_UP_ID.eq(id))
+                .and(V_TRADEUPSKINS.CUSTOM.eq((byte) 0))
                 .fetch();
     }
 
@@ -168,13 +170,15 @@ public class QRCS2Skin extends QueryRepository {
         return dsl.select()
                 .from(V_OUT_SKINS)
                 .where(V_OUT_SKINS.TRADE_UP_ID.eq(id))
+                .and(V_OUT_SKINS.CUSTOM.eq((byte) 0))
                 .fetch();
     }
 
-    public static int getOutSkinIdByNameCondTup(String weapon, String title, Condition condition, int tupId){
+    public static int getOutSkinIdByNameCondTup(String weapon, String title, Condition condition, int tupId, boolean custom){
         Integer id =  dsl.select(V_OUT_SKINS.ID)
                 .from(V_OUT_SKINS)
                 .where(V_OUT_SKINS.TRADE_UP_ID.eq(tupId))
+                .and(V_OUT_SKINS.CUSTOM.eq((byte) (custom ? 1:0)))
                 .and(V_OUT_SKINS.WEAPON.eq(weapon))
                 .and(V_OUT_SKINS.TITLE.eq(title))
                 .and(V_OUT_SKINS.CONDITION.eq(condition))
