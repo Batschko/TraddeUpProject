@@ -197,13 +197,11 @@ public class CustomGenerator {
         }
         if(tupOutcomeObject.has("rarity"))tupOutcomeObject.put("rarity", tupOutcomeObject.getEnum(Rarity.class,"rarity"));
 
-
         JSONObject returnVal = new JSONObject();
         returnVal.put("tupskins",tupskins);
         returnVal.put("outskins",outskins);
         returnVal.put("outcome",tupOutcomeObject);
 
-        System.out.println(returnVal);
 
         return returnVal;
     }
