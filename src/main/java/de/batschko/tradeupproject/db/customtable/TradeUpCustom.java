@@ -4,11 +4,13 @@ import de.batschko.tradeupproject.db.query.*;
 import de.batschko.tradeupproject.enums.Condition;
 import de.batschko.tradeupproject.enums.Rarity;
 import de.batschko.tradeupproject.enums.TradeUpStatus;
+import de.batschko.tradeupproject.tables.TradeUp;
 import de.batschko.tradeupproject.tables.records.StashSkinHolderRecord;
 import de.batschko.tradeupproject.tables.records.TradeUpOutcomeRecord;
 import de.batschko.tradeupproject.tables.records.TradeUpOutcomeSkinsRecord;
 import de.batschko.tradeupproject.tables.records.TradeUpRecord;
 import de.batschko.tradeupproject.tradeup.TradeUpSettings;
+import lombok.extern.slf4j.Slf4j;
 import org.jooq.impl.UpdatableRecordImpl;
 
 import java.util.*;
@@ -17,18 +19,18 @@ import java.util.*;
  * Class to extend {@link TradeUpRecord}.
  *
  */
+@Slf4j
 public class TradeUpCustom extends TradeUpRecord {
 
     //used for calculation
     private TradeUpOutcomeRecord tupOutcome;
-
-    //TODO add method Set Wasted or Delete
+    private static final double costMultiplier = 1.08;
+    private static final double outSkinMultiplier = 0.9;
 
 
     private List<StashSkinHolderRecord> calcStep1PossibleStashHolder(TradeUpSettings tradeUpSettings){
         double totalPrice = 0;
         double floatSum = 0;
-        double amountSoldSum = 0;
         List<String> collList = tradeUpSettings.getCollectionList();
         List<Condition> condList = tradeUpSettings.getConditionList();
         List<Integer> collNumber = tradeUpSettings.getCollNumber();
@@ -42,27 +44,28 @@ public class TradeUpCustom extends TradeUpRecord {
             if(collNumber.get(i) == 0){
                 continue;
             }
-            double minSkinPriceAvg = QRCS2Skin.getTradeUpSkinsAveragePrice(collectionName, condition, this.getId());
-            double amountSoldAvg = QRCS2Skin.getTradeUpSkinAverageAmountSold(collectionName, condition, this.getId());
-            if(amountSoldAvg <= 0 || minSkinPriceAvg <= 0){
+            double minSkinPriceAvg = QRCS2Skin.getTradeUpSkinsAveragePrice(false, collectionName, condition, this.getId());
+
+            if(minSkinPriceAvg <= 0){
                 this.setStatus(TradeUpStatus.WASTED);
                 this.store();
                 return null;
             }
-            amountSoldSum += amountSoldAvg;
+
             totalPrice+= collNumber.get(i) * minSkinPriceAvg;
             floatSum+= collNumber.get(i) * floatDictMap.get(condition);
             possibleStashHolder.addAll(QRStashHolder.getByCollectionRarity(collectionName, Rarity.increase(this.getRarity())));
         }
         this.setFloatSumNeeded(floatSum);
-        // TODO maybe remove if it cant happen
-        if(totalPrice <= 0) throw new RuntimeException("totalPrice is 0");
+
         if(possibleStashHolder.isEmpty()) throw new RuntimeException("possibleStashHolder is empty");
 
         this.tupOutcome = QRUtils.createRecordTradeUpOutcome();
+        this.tupOutcome.setCustom((byte) 0);
         this.tupOutcome.setTradeupId(this.getId());
-        this.tupOutcome.setCost(totalPrice);
-        this.tupOutcome.setAmountSoldAvg(amountSoldSum / collList.size());
+        this.tupOutcome.setCost(totalPrice*costMultiplier);
+
+
         return possibleStashHolder;
     }
 
@@ -75,6 +78,7 @@ public class TradeUpCustom extends TradeUpRecord {
             Condition resultingCondition =  Condition.getConditionByFloat(magic_float);
             int cs2SkinId = QRCS2Skin.getByStashHolderConditionStattrak(stashHolder.getStashId(), resultingCondition, this.getStattrak());
             TradeUpOutcomeSkinsRecord out_skin = QRUtils.createRecordTradeUpOutcomeSkins();
+            out_skin.setCustom((byte) 0);
             out_skin.setCS2SkinId(cs2SkinId);
             out_skin.setTradeUpId(this.getId());
             out_skin.setSkinFloat(magic_float);
@@ -115,17 +119,14 @@ public class TradeUpCustom extends TradeUpRecord {
                 skinPool+= (collNumber.get(collIndex) * entry.getValue().size());
             }
         }
-        // TODO maybe remove if it cant happen
-        if(skinPool < 1) throw new RuntimeException("skinPool is 0");
 
-        double chanceSum = 0;
         double hitChanceSum = 0;
-        double skinAvgPrice =0;
+        double skinAvgPrice = 0;
         double skinMinPrice = Double.MAX_VALUE, skinMaxPrice = Double.MIN_VALUE;
         double categoryEven = 0, categoryProfit = 0;
         for(Map.Entry<Integer, Set<TradeUpOutcomeSkinsRecord>> entry: outSkinsMap.entrySet()){
-            double chance = 0;
-            //passiert das überhaupt?
+            double chance;
+
             if(outSkinsMap.size()==1){
                 //single collection
                 chance = 10 / skinPool;
@@ -136,8 +137,14 @@ public class TradeUpCustom extends TradeUpRecord {
             }
             for(TradeUpOutcomeSkinsRecord skin : entry.getValue()){
                 skin.setChance(chance);
-                chanceSum += chance;
-                double skinPrice = QRSkinPrice.getSkinPrice(skin.getCS2SkinId());
+
+                double skinPrice = QRSkinPrice.getSkinPrice(skin.getCS2SkinId())* outSkinMultiplier;
+                if(skinPrice==-1){
+                    this.setStatus(TradeUpStatus.ERROR);
+                    this.store();
+                    return;
+                }
+
                 skinAvgPrice += skinPrice * chance;
                 if(skinPrice > skinMaxPrice){
                     skinMaxPrice = skinPrice;
@@ -156,14 +163,11 @@ public class TradeUpCustom extends TradeUpRecord {
                     hitChanceSum += chance;
                 }
             }
-
         }
-
-
 
         //categoryMarker
         if(categoryEven > categoryProfit * 2.5) tupOutcome.setCategoryMarker((byte) 1);
-        tupOutcome.setOutcome(skinAvgPrice / this.tupOutcome.getCost());
+        tupOutcome.setOutcome((skinAvgPrice - this.tupOutcome.getCost()) / this.tupOutcome.getCost());
         tupOutcome.setChanceValue(skinAvgPrice - this.tupOutcome.getCost());
         tupOutcome.setLoss(this.tupOutcome.getCost() - skinMinPrice);
         tupOutcome.setHitChance(hitChanceSum);
@@ -174,39 +178,124 @@ public class TradeUpCustom extends TradeUpRecord {
         tupOutcome.setSkinMin(skinMinPrice);
         tupOutcome.setSkinMax(skinMaxPrice);
 
-        if(chanceSum <= .98){
-            throw new RuntimeException("look at this set wasted?");
-        }
-        if(skinMaxPrice < this.tupOutcome.getCost() * 1.15){
-            this.setStatus(TradeUpStatus.WASTED);
-            this.store();
-            return;
-        }
-        if(tupOutcome.getLoss() > tupOutcome.getValue()){
-            this.setStatus(TradeUpStatus.WASTED);
-            this.store();
-            return;
-        }
-        if(tupOutcome.getValue() < 1 || tupOutcome.getValue() < this.tupOutcome.getCost() * 0.75){
-            this.setStatus(TradeUpStatus.WASTED);
-            this.store();
-            return;
-        }
-
         //store updated values
         for(Set<TradeUpOutcomeSkinsRecord> outSkins : outSkinsMap.values()){
             outSkins.forEach(UpdatableRecordImpl::store);
         }
 
         this.setStatus(TradeUpStatus.CALCULATED);
-        this.store();
         this.tupOutcome.store();
-        System.out.println("Calculated TradeUp id: "+this.getId());
 
+        if(tupOutcome.getLoss() > tupOutcome.getValue()){
+            this.setStatus(TradeUpStatus.WASTED);
+            this.store();
+            return;
+        }
+
+        if(tupOutcome.getValue() < 0.5 ){
+            this.setStatus(TradeUpStatus.WASTED);
+            this.store();
+            return;
+        }
+        if(tupOutcome.getOutcome() < 0 ){
+            this.setStatus(TradeUpStatus.WASTED);
+            this.store();
+            return;
+        }
+        this.store();
+        log.info("Calculated TradeUp id: "+this.getId());
     }
 
 
+    /**
+     * Re-calculates given {@link TradeUp}s.
+     * <p>also creates {@link TradeUpOutcomeSkinsRecord}s and {@link TradeUpOutcomeRecord} </p>
+     *
+     */
+    public static void reCalculateUpdatedPrices(List<TradeUpCustom> tupList) {
+        log.info("updating tups: {}", tupList.size());
+        tupLoop:
+        for (TradeUpCustom tup : tupList) {
+            QRTradeUpGenerated.updateTradeUpSkins(tup.getId());
+            TradeUpSettings settings = QRGenerationSettings.getTradeUpSettings(tup.getGenerationSettingsId());
+            double totalPrice = 0;
 
+            List<String> collList = settings.getCollectionList();
+            List<Condition> condList = settings.getConditionList();
+            List<Integer> collNumber = settings.getCollNumber();
+            for (int i = 0; i < collList.size(); i++) {
+                String collectionName = collList.get(i);
+                Condition condition = condList.get(i);
+                if (collNumber.get(i) == 0) {
+                    continue;
+                }
+                double minSkinPriceAvg = QRCS2Skin.getTradeUpSkinsAveragePrice(false, collectionName, condition, tup.getId());
+
+                if (minSkinPriceAvg <= 0) {
+                    QRTradeUpGenerated.updateStatus(tup.getId(), TradeUpStatus.WASTED);
+                    continue tupLoop;
+                }
+
+                totalPrice += collNumber.get(i) * minSkinPriceAvg;
+            }
+            TradeUpOutcomeRecord tupOutcome = QRTradeUpGenerated.getTradeUpOutcome(tup.getId());
+            if(tupOutcome == null) throw new RuntimeException("tupOutcome is null");
+            tupOutcome.setCost(totalPrice*costMultiplier);
+
+            List<TradeUpOutcomeSkinsRecord> outSkins = QRTradeUpGenerated.getTradeUpOutcomeSkins(tup.getId());
+
+            //TODO only single collection!
+            double skinPool = 10 * outSkins.size();
+            double chance = 10 / skinPool;
+
+            double hitChanceSum = 0;
+            double skinAvgPrice = 0;
+            double skinMinPrice = Double.MAX_VALUE, skinMaxPrice = Double.MIN_VALUE;
+            double categoryEven = 0, categoryProfit = 0;
+            for (TradeUpOutcomeSkinsRecord skin : outSkins) {
+                double skinPrice = QRSkinPrice.getSkinPrice(skin.getCS2SkinId()) * outSkinMultiplier;
+                if(skinPrice==-1){
+                    QRTradeUpGenerated.updateStatus(tup.getId(), TradeUpStatus.ERROR);
+                    return;
+                }
+                skinAvgPrice += skinPrice * chance;
+                if (skinPrice > skinMaxPrice) {
+                    skinMaxPrice = skinPrice;
+                }
+                if (skinPrice < skinMinPrice) {
+                    skinMinPrice = skinPrice;
+                }
+                //categoryMarker
+                if (skinPrice > tupOutcome.getCost() * 1.15) {
+                    categoryProfit += chance;
+                } else if (skinPrice >= tupOutcome.getCost() * 0.85 && skinPrice <= tupOutcome.getCost() * 1.15) {
+                    categoryEven += chance;
+                }
+                //hitChance
+                if (skinPrice >= tupOutcome.getCost() * 0.90) {
+                    hitChanceSum += chance;
+                }
+            }
+            if (categoryEven > categoryProfit * 2.5) tupOutcome.setCategoryMarker((byte) 1);
+            tupOutcome.setOutcome((skinAvgPrice - tupOutcome.getCost()) / tupOutcome.getCost());
+            tupOutcome.setChanceValue(skinAvgPrice - tupOutcome.getCost());
+            tupOutcome.setLoss(tupOutcome.getCost() - skinMinPrice);
+            tupOutcome.setHitChance(hitChanceSum);
+            tupOutcome.setValue(skinMaxPrice - tupOutcome.getCost());
+            tupOutcome.setRepeatFactor(tupOutcome.getValue() / tupOutcome.getLoss());
+            tupOutcome.setRepeatFactorChance(skinAvgPrice / tupOutcome.getLoss());
+            tupOutcome.setSkinAvg(skinAvgPrice);
+            tupOutcome.setSkinMin(skinMinPrice);
+            tupOutcome.setSkinMax(skinMaxPrice);
+            tupOutcome.store();
+
+            if(tupOutcome.getOutcome()<0){
+                QRTradeUpGenerated.updateStatus(tup.getId(), TradeUpStatus.WASTED);
+            }else {
+                QRTradeUpGenerated.updateStatus(tup.getId(), TradeUpStatus.CALCULATED);
+            }
+        }
+    }
 
 
     private void checkFloatMarker(double skinFloat){

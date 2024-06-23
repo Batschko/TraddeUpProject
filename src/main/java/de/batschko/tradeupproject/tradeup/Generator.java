@@ -2,7 +2,7 @@ package de.batschko.tradeupproject.tradeup;
 
 import de.batschko.tradeupproject.db.query.QRCollection;
 import de.batschko.tradeupproject.db.query.QRGenerationSettings;
-import de.batschko.tradeupproject.db.query.QRTradeUp;
+import de.batschko.tradeupproject.db.query.QRTradeUpGenerated;
 import de.batschko.tradeupproject.enums.Condition;
 import de.batschko.tradeupproject.enums.Rarity;
 import de.batschko.tradeupproject.enums.TradeUpStatus;
@@ -43,13 +43,14 @@ public class Generator {
      * @param stattrak    stattrak as byte
      * @param rarity      {@link Rarity}.
      * @param floatDictId float dict id
+     * @param collCount collection count
      */
     public static void generateTradeUp(TradeUpSettings tSettings,
-                                       byte stattrak, Rarity rarity, int floatDictId) {
+                                       byte stattrak, Rarity rarity, int floatDictId, byte collCount) {
         TradeUpStatus status = TradeUpStatus.NOT_CALCULATED;
-        int tradeUpSettingsId = QRGenerationSettings.saveIfNotExists(tSettings.serialize());
-        byte collCount = (byte) tSettings.getCollectionList().size();
-        QRTradeUp.saveRecord(stattrak, rarity, tSettings.condTarget, collCount, status, floatDictId, tradeUpSettingsId);
+        int tradeUpSettingsId = QRGenerationSettings.saveIfNotExists(tSettings.serialize(),false);
+
+        QRTradeUpGenerated.saveRecord(stattrak, rarity, tSettings.condTarget, collCount, status, floatDictId, tradeUpSettingsId);
     }
 
 
@@ -70,13 +71,19 @@ public class Generator {
         }
         if (rarities == null) throw new RuntimeException("Can't generate tradeUp, PossibleTradeUpRarityList is null");
 
+        byte collCount = (byte) tSettings.getCollectionList().size();
+        if(collCount == 2){
+            if(tSettings.getCollectionList().getFirst().equals(tSettings.getCollectionList().getLast())){
+                collCount = 1;
+            }
+        }
         for (Rarity rarity : rarities) {
             // only stattrak for cases
             if (tSettings.hasCollection()) {
-                generateTradeUp(tSettings, (byte) 0, rarity, floatDictId);
+                generateTradeUp(tSettings, (byte) 0, rarity, floatDictId, collCount);
             } else {
-                generateTradeUp(tSettings, (byte) 0, rarity, floatDictId);
-                generateTradeUp(tSettings, (byte) 1, rarity, floatDictId);
+                generateTradeUp(tSettings, (byte) 0, rarity, floatDictId, collCount);
+                generateTradeUp(tSettings, (byte) 1, rarity, floatDictId, collCount);
             }
         }
     }

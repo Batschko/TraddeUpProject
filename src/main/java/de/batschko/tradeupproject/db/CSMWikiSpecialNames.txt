@@ -1,0 +1,14 @@
+Re.built,re-built
+Black & Tan,black-tan
+Flame Jörmungandr,flame-jormungandr
+Emerald Jörmungandr,emerald-jormungandr
+Astral Jörmungandr,astral-Jormungandr
+Gamma Doppler,gamma-doppler-phase-2
+Mjölnir,Mjolnir
+CAUTION!,caution
+Ol' Rusty,ol-rusty
+Death's Head,deaths-head
+Chantico's Fire,chanticos-fire
+Elite 1.6,elite-1.6
+Minotaur's Labyrinth,minotaurs-labyrinth
+Pandora's Box,pandoras-box

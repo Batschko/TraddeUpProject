@@ -5,15 +5,16 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-CREATE TABLE IF NOT EXISTS `trade_up_outcome_skins` (
-  `trade_up_id` int(11) NOT NULL,
-  `c_s2_skin_id` int(11) NOT NULL,
-  `chance` float NOT NULL,
-  `skin_float` float NOT NULL,
-  PRIMARY KEY (`trade_up_id`,`c_s2_skin_id`),
-  CONSTRAINT `FK_outcome_c_s2_skin` FOREIGN KEY (`c_s2_skin_id`) REFERENCES `c_s2_skin` (`id`) ,
-  CONSTRAINT `FK_outcome_trade_up` FOREIGN KEY (`trade_up_id`) REFERENCES `trade_up` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+CREATE TABLE IF NOT EXISTS `c_s2_skin` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `stash_id` int(11) NOT NULL,
+  `modified_date` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `stattrak` tinyint(1) NOT NULL,
+  `condition` varchar(20) NOT NULL,
+  `price` float DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `c_s2_skin_unique` (`stash_id`,`stattrak`,`condition`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=8274 DEFAULT CHARSET=latin1;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;

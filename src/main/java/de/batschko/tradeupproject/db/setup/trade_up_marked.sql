@@ -5,12 +5,21 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-CREATE TABLE IF NOT EXISTS `classification` (
+CREATE TABLE IF NOT EXISTS `trade_up_marked` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `modified_date` datetime DEFAULT NOW() ON UPDATE NOW(),
-  `data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`data`)),
+  `modified_date` timestamp NULL DEFAULT current_timestamp(),
+  `custom` tinyint(4) NOT NULL,
+  `trade_up_id` int(11) NOT NULL,
+  `stattrak` tinyint(4) NOT NULL,
+  `rarity` varchar(32) NOT NULL,
+  `float_dict_id` int(11) NOT NULL,
+  `generation_settings` varchar(500) NOT NULL,
+  `watch` tinyint(4) NOT NULL DEFAULT 0,
+  `active` tinyint(4) NOT NULL DEFAULT 0,
+  `test` tinyint(4) NOT NULL DEFAULT 0,
+  `marked` tinyint(4) GENERATED ALWAYS AS (1) VIRTUAL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=139 DEFAULT CHARSET=latin1;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;

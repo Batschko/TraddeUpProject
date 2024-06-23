@@ -1,20 +1,18 @@
 package de.batschko.tradeupproject.utils;
 
 import de.batschko.tradeupproject.db.customtable.CS2SkinCustom;
-import de.batschko.tradeupproject.db.query.QRCS2Skin;
 import de.batschko.tradeupproject.db.query.QRSkinPrice;
 import de.batschko.tradeupproject.db.query.QRStashHolder;
 import de.batschko.tradeupproject.enums.Condition;
-import de.batschko.tradeupproject.enums.PriceType;
 import de.batschko.tradeupproject.enums.Rarity;
+import de.batschko.tradeupproject.tables.CS2Skin;
 import de.batschko.tradeupproject.tables.StashSkinHolder;
-import de.batschko.tradeupproject.webfetchers.CSGOBackpackApi;
+import de.batschko.tradeupproject.webfetchers.CSMoneyScraper;
+import de.batschko.tradeupproject.webfetchers.CSMoneyWiki;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.Record4;
 import org.jooq.Result;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -30,7 +28,7 @@ import static de.batschko.tradeupproject.tables.StashSkinHolder.STASH_SKIN_HOLDE
 
 
 /**
- * Utility methods and classes for Skins
+ * Utility methods and classes related to {@link CS2Skin}
  */
 @Slf4j
 public class SkinUtils {
@@ -39,11 +37,11 @@ public class SkinUtils {
     /**
      * Get full skin name from details
      *
-     * @param stattrak  the stattrak
-     * @param weapon    the weapon
-     * @param title     the title
-     * @param condition the condition
-     * @return the string
+     * @param stattrak  stattrak
+     * @param weapon    weapon
+     * @param title     title
+     * @param condition condition
+     * @return full skin name
      */
     private static String getFullSkinName(byte stattrak, String weapon, String title, Condition condition){
         String fullName = "";
@@ -102,8 +100,79 @@ public class SkinUtils {
      * @return the map with special names mapped to normalized names based on reverse
      */
     public static Map<String,String> getSpecialSkinNamesMap(boolean reverse){
-        Map<String, String> map = new HashMap<>();
         String fileName = "src/main/java/de/batschko/tradeupproject/db/SkinSpecialNames.txt";
+        return readSpecialNameFile(fileName, reverse);
+    }
+
+    /**
+     * Get special CSMoneyWiki names as map.
+     * <p>Default wrapper for {@link #getCSMoneyWikiSpecialNames(boolean)} reverse: false</p>
+     * @return the map with special names mapped to normalized names
+     */
+    public static Map<String,String> getCSMoneyWikiSpecialNames(){
+        String fileName = "src/main/java/de/batschko/tradeupproject/db/CSMWikiSpecialNames.txt";
+        return readSpecialNameFile(fileName, false);
+    }
+
+    /**
+     * Get special CSMoneyWiki names as map.
+     * Default key=special name value=normalized name
+     * @param reverse reverse key an values
+     * @return the map with special names mapped to normalized names based on reverse
+     */
+    public static Map<String,String> getCSMoneyWikiSpecialNames(boolean reverse){
+        String fileName = "src/main/java/de/batschko/tradeupproject/db/CSMWikiSpecialNames.txt";
+        return readSpecialNameFile(fileName, reverse);
+    }
+
+    /**
+     * Update {@link CS2Skin} prices which are missing.
+     */
+    public static void priceUpdateMissing(){
+        fullPriceUpdate(false);
+    }
+
+    /**
+     * Update {@link CS2Skin} prices which are older than 24h.
+     */
+    public static void priceUpdateByDate(){
+        fullPriceUpdate(true);
+    }
+
+    private static void fullPriceUpdate(boolean byDate){
+        int lastSize = 0;
+        while (true){
+            Result<Record4<String, String, Double, Double>> nameList;
+            if(byDate) nameList = QRSkinPrice.getSkinPriceListByDate();
+            else nameList = QRSkinPrice.getSkinPriceListMissing();
+
+            if(nameList.size() == lastSize){
+                break;
+            }else {
+                CSMoneyScraper.updateSkinPrice(nameList);
+            }
+            lastSize = nameList.size();
+        }
+        List<Integer> ids;
+        if(byDate) ids = QRSkinPrice.getSkinPriceListByDateId();
+        else ids = QRSkinPrice.getSkinPriceListMissingIds();
+
+        log.info("\n\n\nget remaining by CSMoney Bot");
+        log.info("updating {} names", ids.size());
+        int loop = 1;
+        for(int id : ids){
+            log.info("loop: "+loop++);
+            CSMoneyWiki.updateSkinPrice(id);
+            try {
+                Thread.sleep(3500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private static Map<String,String> readSpecialNameFile(String fileName, boolean reverse){
+        Map<String, String> map = new HashMap<>();
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName, StandardCharsets.UTF_8));
             String line;
@@ -125,103 +194,6 @@ public class SkinUtils {
     }
 
 
-    /**
-     * Sets skin prices with limit.
-     *<p>switch between 'percent20InsteadOfPlus' to get a higher api request limit</p>
-     * @param limit                  the limit
-     * @param time                   the time for median
-     * @param percent20InsteadOfPlus use %20 instead of plus in url
-     */
-    public static void setSkinPrices(int limit, int time, boolean percent20InsteadOfPlus) {
-        List<SkinFullName> skins = QRCS2Skin.getSkinsWithoutPrice(limit, false);
-        for(SkinFullName skin: skins){
-            setSkinPrice(skin, false, time, percent20InsteadOfPlus);
-        }
-    }
-
-    /**
-     * Sets skin prices for skins with special chars.
-     *<p>switch between 'percent20InsteadOfPlus' to get a higher api request limit</p>
-     * @param time                   the time for median
-     * @param percent20InsteadOfPlus use %20 instead of plus in url
-     */
-    public static void setSkinPricesSpecialChars(int time, boolean percent20InsteadOfPlus) {
-        List<SkinFullName> skins = QRCS2Skin.getSkinsWithoutPrice(Integer.MAX_VALUE, true);
-        for(SkinFullName skin: skins){
-            setSkinPrice(skin, true, time, percent20InsteadOfPlus);
-        }
-    }
-
-    /**
-     * Sets skin price/amountSold and saves to db.
-     * <p>price/amount cases: success -> [price,amount], no data in time -> [price,-1], no data in 180 days [-2,-2] </p>
-     *<p>switch between 'percent20InsteadOfPlus' to get a higher api request limit</p>
-     * @param skin                   the skin as {@link SkinFullName}
-     * @param withSpecialChars       true to set prices for skins with special chars
-     * @param time                   the time for median
-     * @param percent20InsteadOfPlus use %20 instead of plus in url
-     */
-    public static void setSkinPrice(SkinFullName skin, boolean withSpecialChars, int time, boolean percent20InsteadOfPlus) {
-        double medianPrice = -1;
-        int amountSold = 0;
-        int backpackTime = 0;
-
-        PriceType priceType = PriceType.getPriceType(skin.getCondition(), skin.getStattrak());
-        String data;
-        if(withSpecialChars){
-            Map<String, String> specialCharsMapping = getSpecialSkinNamesMap(true);
-            String newTitle = specialCharsMapping.get(skin.getTitle());
-            data = CSGOBackpackApi.fetchSkinPriceData(skin.getFullNameSpecialChars(newTitle), time, percent20InsteadOfPlus);
-        }else {
-            data = CSGOBackpackApi.fetchSkinPriceData(skin.getFullName(), time, percent20InsteadOfPlus);
-        }
-
-        JSONParser parse = new JSONParser();
-        JSONObject jsonObject;
-        try{
-            jsonObject = (JSONObject) parse.parse(data);
-        }catch (Exception ParseException){
-            throw new RuntimeException("couldn't parse to JSONObject, data ->"+data+"\n for skin: "+skin.getFullName());
-        }
-
-
-        boolean success = Boolean.parseBoolean(String.valueOf(jsonObject.get("success")));
-        if (!success) {
-            log.debug("success: false for skin -> {}", skin.getFullName());
-            String reason = (String) jsonObject.get("reason");
-            if (reason != null && reason.contains("exceeded maximum number of requests")) {
-                throw new RuntimeException("exceeded maximum number of requests");
-            }else{
-                //no price data for last 180 days
-                int skinPriceId = QRSkinPrice.save(priceType, -2, -2);
-                log.debug("No Data in 180 days, saving skin -> {} price: {}  {}", skin.getFullName(),-2,-2);
-                QRCS2Skin.updatePrice(skin.getId(), skinPriceId);
-                return;
-            }
-        }
-        String medianPriceS = (String) jsonObject.get("median_price");
-        String amountSoldS = (String) jsonObject.get("amount_sold");
-        String bpTimeS = (String) jsonObject.get("time");
-        if (medianPriceS != null && amountSoldS != null) {
-            try {
-                medianPrice = Double.parseDouble(medianPriceS);
-                amountSold = Integer.parseInt(amountSoldS);
-                backpackTime = Integer.parseInt(bpTimeS);
-            } catch (NumberFormatException e) {
-                log.warn("Couldn't convert price or amount from jsonObject: {}", jsonObject);
-            }
-        }else {
-            log.error("Couldn't read price or amount from jsonObject:  {}", jsonObject);
-        }
-
-        if(time != backpackTime){
-            amountSold=-1;
-        }
-
-        int skinPriceId = QRSkinPrice.save(priceType, medianPrice, amountSold);
-        log.info("Saving SkinPrice -> {} price,amount: {}, {}", skin.getFullName(), medianPrice, amountSold );
-        QRCS2Skin.updatePrice(skin.getId(), skinPriceId);
-    }
 
     /*-------------*/
     /*   CLASSES   */

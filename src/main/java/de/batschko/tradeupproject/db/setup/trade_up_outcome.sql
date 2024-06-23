@@ -6,6 +6,7 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 CREATE TABLE IF NOT EXISTS `trade_up_outcome` (
+  `custom` tinyint(4) NOT NULL,
   `tradeup_id` int(11) NOT NULL,
   `cost` float NOT NULL,
   `skin_min` float NOT NULL,
@@ -19,10 +20,11 @@ CREATE TABLE IF NOT EXISTS `trade_up_outcome` (
   `hit_chance` float NOT NULL,
   `float_marker` tinyint(1) DEFAULT NULL,
   `outcome` float NOT NULL,
-  `amount_sold_avg` float NOT NULL,
+  `amount_sold_avg` float DEFAULT NULL,
   `category_marker` tinyint(1) DEFAULT NULL,
-  PRIMARY KEY (`tradeup_id`),
-  CONSTRAINT `FK_trade_up_outcome_trade_up` FOREIGN KEY (`tradeup_id`) REFERENCES `trade_up` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  PRIMARY KEY (`tradeup_id`,`custom`) USING BTREE,
+  KEY `FK_trade_up_outcome_trade_up` (`custom`,`tradeup_id`),
+  CONSTRAINT `FK_trade_up_outcome_trade_up` FOREIGN KEY (`custom`, `tradeup_id`) REFERENCES `trade_up` (`custom`, `id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

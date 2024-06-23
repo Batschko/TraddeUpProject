@@ -5,13 +5,11 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-CREATE TABLE IF NOT EXISTS `skin_price` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `modified_date` datetime DEFAULT NOW() ON UPDATE NOW(),
-  `price_type` VARCHAR(10) NOT NULL,
-  `price` float DEFAULT NULL,
-  `amount_sold` int DEFAULT NULL,
-  PRIMARY KEY (`id`)
+CREATE TABLE IF NOT EXISTS `id_sequence` (
+  `table_name` varchar(50) NOT NULL,
+  `custom` tinyint(4) NOT NULL,
+  `max_id` int(11) NOT NULL,
+  PRIMARY KEY (`table_name`,`custom`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

@@ -5,13 +5,10 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-CREATE TABLE IF NOT EXISTS `trade_up_skins` (
-  `trade_up_id` int(11) NOT NULL,
-  `c_s2_skin_id` int(11) NOT NULL,
-  PRIMARY KEY (`trade_up_id`,`c_s2_skin_id`),
-  CONSTRAINT `FK__c_s2_skin` FOREIGN KEY (`c_s2_skin_id`) REFERENCES `c_s2_skin` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `FK__trade_up` FOREIGN KEY (`trade_up_id`) REFERENCES `trade_up` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+DROP TABLE IF EXISTS `v_tupnsettinggs`;
+CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `v_tupnsettinggs` AS SELECT `t`.`custom` AS `custom`,`t`.`id` AS `id`,`t`.`stattrak` AS `stattrak`,`t`.`rarity` AS `rarity`,`g`.`settings` AS `settings`
+FROM `trade_up` `t` join `generation_settings` `g` 
+on`t`.`generation_settings_id` = `g`.`id` AND `t`.`custom` = `g`.`custom` ;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;

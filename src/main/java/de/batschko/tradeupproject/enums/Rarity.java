@@ -17,7 +17,7 @@ public enum Rarity {
     RED ("Covert"),
     PINK ("Classified"),
     PURPLE ("Restricted"),
-    BLUE ("Mil-Spec"),
+    BLUE ("Mil-Spec Grade"),
     LIGHT_BLUE ("Industrial Grade"),
     GRAY ("Consumer Grade");
 

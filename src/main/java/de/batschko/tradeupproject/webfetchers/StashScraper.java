@@ -190,12 +190,10 @@ public class StashScraper {
         for (Integer collId : caseCollUrls.keySet()) {
             List<String> urls = caseCollUrls.get(collId);
             try {
-                //TODO gett first weg
                 doc = Jsoup.connect(urls.getFirst()).get();
             } catch (IOException e) {
                 throw new RuntimeException("getCasesOrCollsWithItemUrls error loading url doc"+urls.getFirst()+"\n -->"+e);
             }
-
             Rarity max_rarity = Rarity.validateRarity(doc.select("div.well.result-box.nomargin a > div > p").first().text().trim());
 
             // Iterate over the elements of the url list
@@ -208,7 +206,6 @@ public class StashScraper {
             }
             //min rarity
             holderList.getLast().setBottom((byte) 1);
-
         }
         renameStashSkinHolderWithSpecialChars(holderList);
         return holderList;
