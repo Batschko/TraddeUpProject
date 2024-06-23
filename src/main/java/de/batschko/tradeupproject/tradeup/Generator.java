@@ -46,17 +46,15 @@ public class Generator {
      * @param collCount collection count
      */
     public static void generateTradeUp(TradeUpSettings tSettings,
-                                       byte stattrak, Rarity rarity, int floatDictId, byte collCount) {
+                                       byte stattrak, Rarity rarity, int floatDictId, byte collCount, int tradeUpSettingsId) {
         TradeUpStatus status = TradeUpStatus.NOT_CALCULATED;
-        int tradeUpSettingsId = QRGenerationSettings.saveIfNotExists(tSettings.serialize(),false);
-
         QRTradeUpGenerated.saveRecord(stattrak, rarity, tSettings.condTarget, collCount, status, floatDictId, tradeUpSettingsId);
     }
 
 
     //Wrapper to set Rarities, Stattrak and FloatDict
-    private static void generateTradeUpWrapper(TradeUpSettings tSettings,
-                                               int floatDictId) {
+    public static void generateTradeUpWrapper(TradeUpSettings tSettings,
+                                              int floatDictId) {
         // rarities to use as TradeUpSkins -> rarityTarget-1
         List<Rarity> rarities = null;
         int old_length = Integer.MAX_VALUE;
@@ -77,13 +75,14 @@ public class Generator {
                 collCount = 1;
             }
         }
+        int tradeUpSettingsId = QRGenerationSettings.saveIfNotExists(tSettings.serialize(),false);
         for (Rarity rarity : rarities) {
             // only stattrak for cases
             if (tSettings.hasCollection()) {
-                generateTradeUp(tSettings, (byte) 0, rarity, floatDictId, collCount);
+                generateTradeUp(tSettings, (byte) 0, rarity, floatDictId, collCount, tradeUpSettingsId);
             } else {
-                generateTradeUp(tSettings, (byte) 0, rarity, floatDictId, collCount);
-                generateTradeUp(tSettings, (byte) 1, rarity, floatDictId, collCount);
+                generateTradeUp(tSettings, (byte) 0, rarity, floatDictId, collCount, tradeUpSettingsId);
+                generateTradeUp(tSettings, (byte) 1, rarity, floatDictId, collCount, tradeUpSettingsId);
             }
         }
     }
