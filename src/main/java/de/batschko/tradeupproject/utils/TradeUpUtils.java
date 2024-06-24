@@ -75,7 +75,7 @@ public class TradeUpUtils {
 
 
     /**
-     * Re-Calculates all TradeUps using CSMoney price.
+     * Re-Calculates all TradeUps.
      * <p>Use this after updating {@link CS2Skin} prices</p>
      */
     public static void reCalculateTradeUps() {
@@ -83,6 +83,14 @@ public class TradeUpUtils {
         TradeUpCustom.reCalculateUpdatedPrices(tupList);
     }
 
+    /**
+     * Re-Calculates only calculated TradeUps.
+     * <p>Use this after updating {@link CS2Skin} prices</p>
+     */
+    public static void reCalculateTradeUpsOnlyCalculated() {
+        List<TradeUpCustom> tupList = QRTradeUpGenerated.getTradeUpListCalculated();
+        TradeUpCustom.reCalculateUpdatedPrices(tupList);
+    }
 
 
     /**

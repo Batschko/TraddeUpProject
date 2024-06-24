@@ -68,6 +68,19 @@ public class QRTradeUpGenerated extends QueryRepository{
     }
 
     /**
+     * Get all calculated {@link TradeUp}s.
+     *
+     * @return list of {@link TradeUpCustom}
+     */
+    public static List<TradeUpCustom> getTradeUpListCalculated(){
+        return dsl.select()
+                .from(TRADE_UP)
+                .where(TRADE_UP.CUSTOM.eq((byte) 0))
+                .and(TRADE_UP.STATUS.eq(TradeUpStatus.CALCULATED))
+                .fetchInto(TradeUpCustom.class);
+    }
+
+    /**
      * Creates empty {@link TradeUpRecord}.
      *
      * @return  {@link TradeUpRecord}
