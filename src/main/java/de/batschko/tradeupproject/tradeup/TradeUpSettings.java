@@ -99,10 +99,11 @@ public class TradeUpSettings extends CollectionConditionDistribution {
      * @return true if a collection in collectionList
      */
     public boolean hasCollection(){
+        boolean hasColl = false;
         for(String coll : collectionList){
-            if(!QRCollection.isCase(coll)) return true;
+            if(!QRCollection.isCase(coll)) hasColl = true;
         }
-        return false;
+        return hasColl;
     }
 
     /**
