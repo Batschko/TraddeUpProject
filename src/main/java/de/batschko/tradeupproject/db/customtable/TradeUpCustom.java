@@ -47,7 +47,7 @@ public class TradeUpCustom extends TradeUpRecord {
             double minSkinPriceAvg = QRCS2Skin.getTradeUpSkinsAveragePrice(false, collectionName, condition, this.getId());
 
             if(minSkinPriceAvg <= 0){
-                this.setStatus(TradeUpStatus.WASTED);
+                this.setStatus(TradeUpStatus.ERROR);
                 this.store();
                 return null;
             }
@@ -58,7 +58,12 @@ public class TradeUpCustom extends TradeUpRecord {
         }
         this.setFloatSumNeeded(floatSum);
 
-        if(possibleStashHolder.isEmpty()) throw new RuntimeException("possibleStashHolder is empty");
+        if(possibleStashHolder.isEmpty()) {
+          //  throw new RuntimeException("possibleStashHolder is empty");
+            this.setStatus(TradeUpStatus.ERROR);
+            this.store();
+            return null;
+        }
 
         this.tupOutcome = QRUtils.createRecordTradeUpOutcome();
         this.tupOutcome.setCustom((byte) 0);
@@ -106,6 +111,13 @@ public class TradeUpCustom extends TradeUpRecord {
         if(possibleStashHolder == null) return;
         //Calc step 2
         Map<Integer, Set<TradeUpOutcomeSkinsRecord>> outSkinsMap = calcStep2outcomeSkins(possibleStashHolder);
+        if(this.getCollectionCount()==2){
+            if(outSkinsMap.size()!=2){
+                this.setStatus(TradeUpStatus.ERROR);
+                this.store();
+                return;
+            }
+        }
         //Calc step 3
         List<Integer> collNumber = tradeUpSettings.getCollNumber();
         double skinPool = 0;
@@ -232,7 +244,7 @@ public class TradeUpCustom extends TradeUpRecord {
                 double minSkinPriceAvg = QRCS2Skin.getTradeUpSkinsAveragePrice(false, collectionName, condition, tup.getId());
 
                 if (minSkinPriceAvg <= 0) {
-                    QRTradeUpGenerated.updateStatus(tup.getId(), TradeUpStatus.WASTED);
+                    QRTradeUpGenerated.updateStatus(tup.getId(), TradeUpStatus.ERROR);
                     continue tupLoop;
                 }
 
