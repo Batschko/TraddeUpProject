@@ -3,6 +3,7 @@ package de.batschko.tradeupproject.utils;
 import de.batschko.tradeupproject.db.customtable.CS2SkinCustom;
 import de.batschko.tradeupproject.db.query.QRSkinPrice;
 import de.batschko.tradeupproject.db.query.QRStashHolder;
+import de.batschko.tradeupproject.db.query.QRTradeUpGenerated;
 import de.batschko.tradeupproject.enums.Condition;
 import de.batschko.tradeupproject.enums.Rarity;
 import de.batschko.tradeupproject.tables.CS2Skin;
@@ -191,6 +192,14 @@ public class SkinUtils {
             throw new RuntimeException("couldn't read file: "+fileName);
         }
         return map;
+    }
+
+    public static void createTradeUpSkins() {
+        QRTradeUpGenerated.createTradeUpSkins();
+    }
+
+    public static void createTradeUpSkins(int limit) {
+        QRTradeUpGenerated.createTradeUpSkins(limit);
     }
 
 
