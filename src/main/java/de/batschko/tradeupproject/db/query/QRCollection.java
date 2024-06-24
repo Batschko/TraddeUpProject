@@ -6,7 +6,14 @@ import de.batschko.tradeupproject.tables.records.CollectionRecord;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static de.batschko.tradeupproject.tables.Collection.COLLECTION;
 
@@ -83,4 +90,25 @@ public class QRCollection extends QueryRepository {
         }
     }
 
+    /**
+     * Returns list of unwanted collection names.
+     *
+     * @return list of unwanted collection names
+     */
+    public static List<String> getCollectionsUnwanted() {
+        final String fileName = "src/main/java/de/batschko/tradeupproject/db/CollectionsUnwanted.txt";
+        List<String> names = new ArrayList<>();
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName, StandardCharsets.UTF_8));
+            String line;
+            while ((line = bufferedReader.readLine()) != null)
+            {
+                names.add(line);
+            }
+            bufferedReader.close();
+        } catch (IOException e) {
+            throw new RuntimeException("couldn't read file: "+fileName);
+        }
+        return names;
+    }
 }

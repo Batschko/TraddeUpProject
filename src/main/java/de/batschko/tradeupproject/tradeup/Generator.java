@@ -109,10 +109,10 @@ public class Generator {
 
 
     private static void removeUnwantedColls(List<String> collNames) {
-        collNames.remove("eSports 2013 Case");
-        collNames.remove("CS:GO Weapon Case");
-        collNames.remove("Operation Bravo Case");
-        collNames.remove("Blacksite");
+        List<String> unwantedColls = QRCollection.getCollectionsUnwanted();
+        for(String coll: unwantedColls){
+            collNames.remove(coll);
+        }
     }
 
 
