@@ -36,4 +36,12 @@ public class TradeUpUtils {
     }
 
 
+
+    /**
+     * <p>creates all TradeUpSkins for existing TradeUps</p>
+     */
+    public static void createTradeUpSkins() {
+        QRTradeUpGenerated.createTradeUpSkins();
+    }
+
 }

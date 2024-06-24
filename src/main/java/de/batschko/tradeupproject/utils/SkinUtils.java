@@ -194,14 +194,6 @@ public class SkinUtils {
         return map;
     }
 
-    public static void createTradeUpSkins() {
-        QRTradeUpGenerated.createTradeUpSkins();
-    }
-
-    public static void createTradeUpSkins(int limit) {
-        QRTradeUpGenerated.createTradeUpSkins(limit);
-    }
-
 
 
     /*-------------*/
