@@ -2,16 +2,13 @@ package de.batschko.tradeupproject.db.query;
 
 import de.batschko.tradeupproject.enums.Condition;
 import de.batschko.tradeupproject.enums.Rarity;
-import de.batschko.tradeupproject.tables.TradeUpOutcomeSkins;
-import de.batschko.tradeupproject.tables.TradeUpSkins;
+import de.batschko.tradeupproject.tables.*;
 import de.batschko.tradeupproject.tables.records.TradeUpOutcomeRecord;
 import de.batschko.tradeupproject.tables.records.TradeUpOutcomeSkinsRecord;
 import de.batschko.tradeupproject.tradeup.TradeUpSettings;
 import de.batschko.tradeupproject.utils.SkinUtils;
-import org.jooq.DSLContext;
+import org.jooq.*;
 import org.jooq.Record;
-import org.jooq.Record5;
-import org.jooq.Result;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -19,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static de.batschko.tradeupproject.Tables.*;
 import static de.batschko.tradeupproject.tables.CS2Skin.C_S2_SKIN;
 import static de.batschko.tradeupproject.tables.FloatDictionary.FLOAT_DICTIONARY;
 import static de.batschko.tradeupproject.tables.StashSkinHolder.STASH_SKIN_HOLDER;
@@ -26,6 +24,7 @@ import static de.batschko.tradeupproject.tables.TradeUpOutcome.TRADE_UP_OUTCOME;
 import static de.batschko.tradeupproject.tables.TradeUpOutcomeSkins.TRADE_UP_OUTCOME_SKINS;
 import static de.batschko.tradeupproject.tables.TradeUpSkins.TRADE_UP_SKINS;
 import static de.batschko.tradeupproject.tables.VTupnsettinggs.V_TUPNSETTINGGS;
+import static org.jooq.impl.DSL.select;
 
 /**
  * Database access for utility methods.
@@ -162,5 +161,30 @@ public class QRUtils extends QueryRepository {
     }
 
 
+    /**
+     * Link {@link TradeUpMade} & {@link TradeUpMarked} tradeUp ids to current {@link TradeUp}s.
+     */
+    public static void linkMadeMarkedTradeUpIds(){
+        dsl.update(TRADE_UP_MADE).set(TRADE_UP_MADE.TRADE_UP_ID, select(TRADE_UP.ID)
+                .from(TRADE_UP)
+                .join(GENERATION_SETTINGS).on(TRADE_UP.GENERATION_SETTINGS_ID.eq(GENERATION_SETTINGS.ID).and(TRADE_UP.CUSTOM.eq(GENERATION_SETTINGS.CUSTOM)))
+                .where(TRADE_UP_MADE.CUSTOM.eq(TRADE_UP.CUSTOM))
+                .and(TRADE_UP_MADE.STATTRAK.eq(TRADE_UP.STATTRAK))
+                .and(TRADE_UP_MADE.RARITY.eq(TRADE_UP.RARITY))
+                .and(TRADE_UP_MADE.FLOAT_DICT_ID.eq(TRADE_UP.FLOAT_DICT_ID))
+                .and(TRADE_UP_MADE.GENERATION_SETTINGS.eq(GENERATION_SETTINGS.SETTINGS)))
+                .execute();
+
+       dsl.update(TRADE_UP_MARKED).set(TRADE_UP_MARKED.TRADE_UP_ID, select(TRADE_UP.ID)
+                .from(TRADE_UP)
+                .join(GENERATION_SETTINGS).on(TRADE_UP.GENERATION_SETTINGS_ID.eq(GENERATION_SETTINGS.ID).and(TRADE_UP.CUSTOM.eq(GENERATION_SETTINGS.CUSTOM)))
+                .where(TRADE_UP_MARKED.CUSTOM.eq(TRADE_UP.CUSTOM))
+                .and(TRADE_UP_MARKED.STATTRAK.eq(TRADE_UP.STATTRAK))
+                .and(TRADE_UP_MARKED.RARITY.eq(TRADE_UP.RARITY))
+                .and(TRADE_UP_MARKED.FLOAT_DICT_ID.eq(TRADE_UP.FLOAT_DICT_ID))
+                .and(TRADE_UP_MARKED.GENERATION_SETTINGS.eq(GENERATION_SETTINGS.SETTINGS)))
+                .execute();
+
+    }
 }
 
