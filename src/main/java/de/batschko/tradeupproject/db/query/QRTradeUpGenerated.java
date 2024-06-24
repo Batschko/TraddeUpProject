@@ -16,6 +16,7 @@ import org.jooq.Record;
 import org.jooq.*;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static de.batschko.tradeupproject.tables.TradeUp.TRADE_UP;
@@ -84,7 +85,7 @@ public class QRTradeUpGenerated extends QueryRepository{
      * @param collCount         collection count
      * @param status            status {@link TradeUpStatus}
      * @param floatDictId       float dict id
-     * @param tradeUpSettingsId tradeup settings id
+     * @param tradeUpSettingsId tradeUp settings id
      */
     public static void saveRecord(byte stattrak, Rarity rarity, Condition condTarget, byte collCount, TradeUpStatus status, int floatDictId, int tradeUpSettingsId){
         TradeUpRecord tup = dsl.newRecord(TRADE_UP);
@@ -99,11 +100,10 @@ public class QRTradeUpGenerated extends QueryRepository{
         tup.store();
     }
 
-
     /**
      * Get {@link TradeUp} by id.
      *
-     * @param tupId tradeup id
+     * @param tupId tradeUp id
      * @return {@link TradeUpCustom}
      */
     public static TradeUpCustom getTradeUp(int tupId){
@@ -131,7 +131,6 @@ public class QRTradeUpGenerated extends QueryRepository{
                 .fetchInto(TradeUpCustom.class);
     }
 
-
     /**
      * Create {@link TradeUpSkins}.
      * <p>creates all TradeUpSkins for existing TradeUps</p>
@@ -151,6 +150,29 @@ public class QRTradeUpGenerated extends QueryRepository{
         processCreateTradeUpSkins(tupAndSettings);
     }
 
+    /**
+     * Create {@link Record}(TradeUpAndSettings) sub-lists to use for threads.
+     *
+     * @param parts parts, number of sub-lists
+     * @return the list of sub-lists
+     */
+    public static List<List<Record>> createTradeUpSkinsWithThreadsSubLists(int parts){
+        Result<Record> tupAndSettings = getTradeUpAndSettingsBuilder().fetch();
+        List<List<Record>> subResults = new ArrayList<>();
+        int chunkSize = (int) Math.ceil((double) tupAndSettings.size() / parts);
+        for (int i = 0; i < tupAndSettings.size(); i += chunkSize) {
+            subResults.add(tupAndSettings.subList(i, Math.min(tupAndSettings.size(), i + chunkSize)));
+        }
+        return subResults;
+    }
+
+    /**
+     * Thread method to create {@link TradeUpSkins}.
+     */
+    public static int createTradeUpSkinsThread(Iterable<Record> tupAndSettings){
+        return processCreateTradeUpSkins(tupAndSettings);
+    }
+
     private static SelectConditionStep<Record> getTradeUpAndSettingsBuilder(){
         return dsl.select()
                 .from(V_TUPNSETTINGGS)
@@ -159,7 +181,6 @@ public class QRTradeUpGenerated extends QueryRepository{
                 .where(TRADE_UP_SKINS.TRADE_UP_ID.isNull())
                 .and(V_TUPNSETTINGGS.CUSTOM.eq((byte) 0));
     }
-
 
     /**
      * Update {@link TradeUpSkins}.
@@ -173,7 +194,6 @@ public class QRTradeUpGenerated extends QueryRepository{
         processCreateTradeUpSkins(tupAndSettings);
     }
 
-
     /**
      * Get {@link TradeUpOutcomeRecord}.
      *
@@ -183,7 +203,6 @@ public class QRTradeUpGenerated extends QueryRepository{
     public static TradeUpOutcomeRecord getTradeUpOutcome(int tupId){
         return dsl.select().from(TRADE_UP_OUTCOME).where(TRADE_UP_OUTCOME.TRADEUP_ID.eq(tupId)).and(TRADE_UP_OUTCOME.CUSTOM.eq((byte) 0)).fetchOneInto(TradeUpOutcomeRecord.class);
     }
-
 
     /**
      * Get list of {@link TradeUpOutcomeSkinsRecord}.
@@ -195,7 +214,7 @@ public class QRTradeUpGenerated extends QueryRepository{
         return dsl.select().from(TRADE_UP_OUTCOME_SKINS).where(TRADE_UP_OUTCOME_SKINS.TRADE_UP_ID.eq(tupId)).and(TRADE_UP_OUTCOME_SKINS.CUSTOM.eq((byte) 0)).fetchInto(TradeUpOutcomeSkinsRecord.class);
     }
     
-    private static void processCreateTradeUpSkins(Result<Record> tupAndSettings){
+    private static int processCreateTradeUpSkins(Iterable<Record> tupAndSettings){
         for(Record tupAndS: tupAndSettings){
             byte stat = tupAndS.get("stattrak", Byte.class);
             Rarity rarity = tupAndS.get("rarity", Rarity.class);
@@ -239,6 +258,7 @@ public class QRTradeUpGenerated extends QueryRepository{
                 }
             }
         }
+        return 1;
     }
 
 

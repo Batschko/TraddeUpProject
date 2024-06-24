@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,8 +28,7 @@ public class Utils {
             output.write(text);
             output.close();
         } catch (IOException e) {
-            log.warn("An error occurred.");
-            e.printStackTrace();
+            log.error("Error writing test file"+e.getMessage());
         }
     }
 
@@ -44,8 +44,31 @@ public class Utils {
             output.write(String.join("\n", text));
             output.close();
         } catch (IOException e) {
-            log.warn("An error occurred.");
-            e.printStackTrace();
+            log.error("Error writing test file"+e.getMessage());
         }
+    }
+
+    /**
+     * Splits a list into multiple parts.
+     *
+     * @param <T> the type of elements in the list
+     * @param list the list to be split
+     * @param parts the number of parts to split the list into
+     * @return a list of sublists
+     * @throws IllegalArgumentException if parts is less than or equal to 0 or greater than the size of the list
+     */
+    public static <T> List<List<T>> splitList(List<T> list, int parts) {
+        if (parts <= 0 || parts > list.size()) {
+            throw new IllegalArgumentException("Invalid number of parts: " + parts);
+        }
+
+        List<List<T>> subLists = new ArrayList<>();
+        int chunkSize = (int) Math.ceil((double) list.size() / parts);
+
+        for (int i = 0; i < list.size(); i += chunkSize) {
+            subLists.add(new ArrayList<>(list.subList(i, Math.min(list.size(), i + chunkSize))));
+        }
+
+        return subLists;
     }
 }
