@@ -5,7 +5,6 @@ import de.batschko.tradeupproject.db.query.QRTradeUpGenerated;
 import de.batschko.tradeupproject.tables.CS2Skin;
 import de.batschko.tradeupproject.tables.TradeUp;
 import de.batschko.tradeupproject.tables.TradeUpSkins;
-import de.batschko.tradeupproject.tradeup.TradeUpSettings;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.Record;
 
@@ -91,7 +90,6 @@ public class TradeUpUtils {
         List<TradeUpCustom> tupList = QRTradeUpGenerated.getTradeUpListCalculated();
         TradeUpCustom.reCalculateUpdatedPrices(tupList);
     }
-
 
     /**
      * Create {@link TradeUpSkins}.

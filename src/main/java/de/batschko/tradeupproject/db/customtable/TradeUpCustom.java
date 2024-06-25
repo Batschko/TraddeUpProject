@@ -11,6 +11,7 @@ import de.batschko.tradeupproject.tables.records.TradeUpOutcomeSkinsRecord;
 import de.batschko.tradeupproject.tables.records.TradeUpRecord;
 import de.batschko.tradeupproject.tradeup.TradeUpSettings;
 import lombok.extern.slf4j.Slf4j;
+import org.jooq.Record;
 import org.jooq.impl.UpdatableRecordImpl;
 
 import java.util.*;
@@ -171,7 +172,7 @@ public class TradeUpCustom extends TradeUpRecord {
                     categoryEven += chance;
                 }
                 //hitChance
-                if(skinPrice >= this.tupOutcome.getCost() * 0.85){
+                if(skinPrice >= this.tupOutcome.getCost()*0.9){
                     hitChanceSum += chance;
                 }
             }
@@ -255,16 +256,25 @@ public class TradeUpCustom extends TradeUpRecord {
             tupOutcome.setCost(totalPrice*costMultiplier);
 
             List<TradeUpOutcomeSkinsRecord> outSkins = QRTradeUpGenerated.getTradeUpOutcomeSkins(tup.getId());
-
-            //TODO only single collection!
-            double skinPool = 10 * outSkins.size();
-            double chance = 10 / skinPool;
+            Set<String> outCollections = new HashSet<>();
+            for (TradeUpOutcomeSkinsRecord skin : outSkins) {
+                String coll_name = QRCS2Skin.getFullSkin(skin.getCS2SkinId()).getValue("coll_name", String.class);
+                outCollections.add(coll_name);
+            }
+            if(tup.getCollectionCount()==2){
+                if(outCollections.size()!=2){
+                    QRTradeUpGenerated.updateStatus(tup.getId(), TradeUpStatus.ERROR);
+                    return;
+                }
+            }
 
             double hitChanceSum = 0;
             double skinAvgPrice = 0;
             double skinMinPrice = Double.MAX_VALUE, skinMaxPrice = Double.MIN_VALUE;
             double categoryEven = 0, categoryProfit = 0;
             for (TradeUpOutcomeSkinsRecord skin : outSkins) {
+                double chance = skin.getChance();
+
                 double skinPrice = QRSkinPrice.getSkinPrice(skin.getCS2SkinId()) * outSkinMultiplier;
                 if(skinPrice==-1){
                     QRTradeUpGenerated.updateStatus(tup.getId(), TradeUpStatus.ERROR);
@@ -284,7 +294,7 @@ public class TradeUpCustom extends TradeUpRecord {
                     categoryEven += chance;
                 }
                 //hitChance
-                if (skinPrice >= tupOutcome.getCost() * 0.90) {
+                if (skinPrice >= tupOutcome.getCost()*0.9) {
                     hitChanceSum += chance;
                 }
             }
