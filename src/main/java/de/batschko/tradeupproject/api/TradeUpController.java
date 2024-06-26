@@ -30,7 +30,7 @@ public class TradeUpController {
     @GetMapping(value = "", produces = "application/json" )
     public String tup() {
         log.info("sending TradeUps");
-        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUps(false)).toString();
+        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUps()).toString();
     }
 
     /**
@@ -41,7 +41,7 @@ public class TradeUpController {
     @GetMapping(value = "/marked", produces = "application/json" )
     public String tupMarked() {
         log.info("sending TradeUpsMarked");
-        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUpsMarked(false)).toString();
+        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUpsMarked()).toString();
     }
 
     /**
@@ -54,7 +54,7 @@ public class TradeUpController {
         log.info("marking TradeUp");
         log.info("sending TradeUps");
         QRTradeUpTable.toggleMarkTradeUp(tupId, false);
-        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUps(false)).toString();
+        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUps()).toString();
     }
 
     /**
@@ -65,7 +65,7 @@ public class TradeUpController {
     @GetMapping(value = "/watched", produces = "application/json" )
     public String tupWatched() {
         log.info("sending TradeUpsWatched");
-        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUpsWatched(false)).toString();
+        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUpsWatched()).toString();
     }
 
     /**
@@ -78,7 +78,7 @@ public class TradeUpController {
         log.info("marking TradeUp as watched");
         log.info("sending TradeUps");
         QRTradeUpTable.toggleWatch(tupId, false);
-        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUpsMarked(false)).toString();
+        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUpsMarked()).toString();
     }
 
     /**
@@ -89,7 +89,7 @@ public class TradeUpController {
     @GetMapping(value = "/active", produces = "application/json" )
     public String tupActive() {
         log.info("sending TradeUpsActive");
-        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUpsActive(false)).toString();
+        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUpsActive()).toString();
     }
 
     /**
@@ -102,7 +102,7 @@ public class TradeUpController {
         log.info("marking TradeUp active");
         log.info("sending TradeUpsWatched");
         QRTradeUpTable.toggleActive(tupId, false);
-        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUpsWatched(false)).toString();
+        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUpsWatched()).toString();
     }
 
     /**

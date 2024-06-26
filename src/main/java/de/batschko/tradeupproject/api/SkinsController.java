@@ -32,7 +32,7 @@ public class SkinsController {
     @GetMapping(value = "/tupskins/{tupId}", produces = "application/json" )
     public String tupSkins(@PathVariable int tupId) {
         log.info("sending TradeUpSkins");
-        Result<Record> result = QRCS2Skin.getTradeUpSkins(tupId);
+        Result<Record> result = QRCS2Skin.getTradeUpSkins(tupId, (byte) 0);
         return ApiUtils.skinResultToJsonArray(result).toString();
     }
 
@@ -56,7 +56,7 @@ public class SkinsController {
     @GetMapping(value = "/outskins/{tupId}", produces = "application/json" )
     public String outSkins(@PathVariable int tupId) {
         log.info("sending OutSkins");
-        Result<Record> result = QRCS2Skin.getOutSkins(tupId);
+        Result<Record> result = QRCS2Skin.getOutSkins(tupId, (byte) 0);
         return ApiUtils.skinResultToJsonArray(result).toString();
     }
 

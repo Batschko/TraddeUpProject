@@ -132,12 +132,12 @@ public class QRCS2Skin extends QueryRepository {
      * @param id tradeUp id
      * @return {@code Result<Record>} {@link VTradeupskinsRecord}
      */
-    public static Result<Record> getTradeUpSkins(int id){
+    public static Result<Record> getTradeUpSkins(int id, byte custom){
 
         return dsl.select()
                 .from(V_TRADEUPSKINS)
                 .where(V_TRADEUPSKINS.TRADE_UP_ID.eq(id))
-                .and(V_TRADEUPSKINS.CUSTOM.eq((byte) 0))
+                .and(V_TRADEUPSKINS.CUSTOM.eq(custom))
                 .fetch();
     }
 
@@ -179,11 +179,11 @@ public class QRCS2Skin extends QueryRepository {
      * @param id tradeUp id
      * @return {@code Result<Record>} {@link VOutSkinsRecord}
      */
-    public static Result<Record> getOutSkins(int id){
+    public static Result<Record> getOutSkins(int id, byte custom){
         return dsl.select()
                 .from(V_OUT_SKINS)
                 .where(V_OUT_SKINS.TRADE_UP_ID.eq(id))
-                .and(V_OUT_SKINS.CUSTOM.eq((byte) 0))
+                .and(V_OUT_SKINS.CUSTOM.eq(custom))
                 .fetch();
     }
 

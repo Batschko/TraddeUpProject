@@ -44,7 +44,7 @@ public class QRTradeUpTable extends QueryRepository {
      *
      * @return {@code Result<Record>} all {@link TradeUp} & {@link TradeUpMarked} fields
      */
-    public static Result<Record> getTradeUps(boolean custom){
+    public static Result<Record> getTradeUps(){
         return dsl.select(V_FULL_TRADEUP.fields()).select(TRADE_UP_MARKED.MARKED, TRADE_UP_MARKED.WATCH, TRADE_UP_MARKED.ACTIVE)
                 .from(V_FULL_TRADEUP)
                 .leftJoin(TRADE_UP_MARKED)
@@ -72,47 +72,41 @@ public class QRTradeUpTable extends QueryRepository {
     /**
      * Get TableTradeUps that are marked.
      *
-     * @param custom custom
      * @return {@code Result<Record>} all {@link TradeUp} & {@link TradeUpMarked} fields
      */
-    public static Result<Record> getTradeUpsMarked(boolean custom){
+    public static Result<Record> getTradeUpsMarked(){
         return dsl.select(V_FULL_TRADEUP.fields()).select(TRADE_UP_MARKED.MARKED, TRADE_UP_MARKED.WATCH, TRADE_UP_MARKED.ACTIVE)
                 .from(V_FULL_TRADEUP)
                 .join(TRADE_UP_MARKED)
                 .on(V_FULL_TRADEUP.ID.eq(TRADE_UP_MARKED.TRADE_UP_ID)).and(V_FULL_TRADEUP.CUSTOM.eq(TRADE_UP_MARKED.CUSTOM))
-                .where(V_FULL_TRADEUP.CUSTOM.eq((byte) (custom?1:0)))
                 .fetch();
     }
 
     /**
      * Get TableTradeUps that are watched.
      *
-     * @param custom custom
      * @return {@code Result<Record>} all {@link TradeUp} & {@link TradeUpMarked} fields
      */
-    public static Result<Record> getTradeUpsWatched(boolean custom){
+    public static Result<Record> getTradeUpsWatched(){
         return dsl.select(V_FULL_TRADEUP.fields()).select(TRADE_UP_MARKED.MARKED, TRADE_UP_MARKED.WATCH, TRADE_UP_MARKED.ACTIVE)
                 .from(V_FULL_TRADEUP)
                 .join(TRADE_UP_MARKED)
                 .on(V_FULL_TRADEUP.ID.eq(TRADE_UP_MARKED.TRADE_UP_ID)).and(V_FULL_TRADEUP.CUSTOM.eq(TRADE_UP_MARKED.CUSTOM))
                 .and(TRADE_UP_MARKED.WATCH.eq((byte)1))
-                .and(TRADE_UP_MARKED.CUSTOM.eq((byte) (custom?1:0)))
                 .fetch();
     }
 
     /**
      * Get TableTradeUps that are active.
      *
-     * @param custom custom
      * @return {@code Result<Record>} all {@link TradeUp} & {@link TradeUpMarked} fields
      */
-    public static Result<Record> getTradeUpsActive(boolean custom){
+    public static Result<Record> getTradeUpsActive(){
         return dsl.select(V_FULL_TRADEUP.fields()).select(TRADE_UP_MARKED.MARKED, TRADE_UP_MARKED.WATCH, TRADE_UP_MARKED.ACTIVE)
                 .from(V_FULL_TRADEUP)
                 .join(TRADE_UP_MARKED)
                 .on(V_FULL_TRADEUP.ID.eq(TRADE_UP_MARKED.TRADE_UP_ID)).and(V_FULL_TRADEUP.CUSTOM.eq(TRADE_UP_MARKED.CUSTOM))
                 .where(TRADE_UP_MARKED.ACTIVE.eq((byte)1))
-                .and(TRADE_UP_MARKED.CUSTOM.eq((byte) (custom?1:0)))
                 .fetch();
     }
 
@@ -196,7 +190,7 @@ public class QRTradeUpTable extends QueryRepository {
         Record5<Integer, Byte, Rarity, Integer, String> result =  dsl.select(V_FULL_TRADEUP.ID, V_FULL_TRADEUP.STATTRAK, V_FULL_TRADEUP.RARITY, V_FULL_TRADEUP.FLOAT_DICT_ID, V_FULL_TRADEUP.SETTINGS)
                 .from(V_FULL_TRADEUP)
                 .where(V_FULL_TRADEUP.ID.eq(id))
-                .and(V_FULL_TRADEUP.CUSTOM.eq((byte)0))
+                .and(V_FULL_TRADEUP.CUSTOM.eq((byte)(custom?1:0)))
                 .fetchSingle();
         TradeUpMarkedRecord markedRecord = dsl.newRecord(TRADE_UP_MARKED);
         markedRecord.setTradeUpId(result.get(0, Integer.class));
@@ -215,7 +209,7 @@ public class QRTradeUpTable extends QueryRepository {
      * @param custom custom
      */
     public static void toggleWatch(int id, boolean custom){
-        //check if tup is already marked
+        //check if tup is already watched
         Record exists =  dsl.select()
                 .from(TRADE_UP_MARKED)
                 .where(TRADE_UP_MARKED.TRADE_UP_ID.eq(id))
