@@ -50,8 +50,11 @@ public class QRTradeUpTable extends QueryRepository {
                 .leftJoin(TRADE_UP_MARKED)
                 .on(V_FULL_TRADEUP.ID.eq(TRADE_UP_MARKED.TRADE_UP_ID))
                 .where(V_FULL_TRADEUP.STATUS.eq(TradeUpStatus.CALCULATED))
-                .and(V_FULL_TRADEUP.OUTCOME.gt(0.0))
-                .and(V_FULL_TRADEUP.CUSTOM.eq((byte) (custom?1:0)))
+                .and(V_FULL_TRADEUP.COST.lt(20.0))
+                .and(V_FULL_TRADEUP.OUTCOME.ge(0.02))
+                .and(V_FULL_TRADEUP.SKIN_MAX.lt(V_FULL_TRADEUP.COST.mul(15)))
+                .and(V_FULL_TRADEUP.CHANCE_VALUE.gt(0.1))
+                .and(V_FULL_TRADEUP.HIT_CHANCE.ge(0.5))
                 .fetch();
     }
 
