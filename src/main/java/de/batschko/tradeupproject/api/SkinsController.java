@@ -37,6 +37,18 @@ public class SkinsController {
     }
 
     /**
+     * Get custom TradeUpSkins.
+     *
+     * @return {@link JSONArray} of {@link TradeUpSkins}s as {@link JSONObject}s.
+     */
+    @GetMapping(value = "/tupskins/custom/{tupId}", produces = "application/json" )
+    public String tupSkinsCustom(@PathVariable int tupId) {
+        log.info("sending TradeUpSkins");
+        Result<Record> result = QRCS2Skin.getTradeUpSkins(tupId, (byte) 1);
+        return ApiUtils.skinResultToJsonArray(result).toString();
+    }
+
+    /**
      * Get TradeUpOutcomeSkins.
      *
      * @return {@link JSONArray} of {@link TradeUpOutcomeSkins}s as {@link JSONObject}s.
@@ -45,6 +57,18 @@ public class SkinsController {
     public String outSkins(@PathVariable int tupId) {
         log.info("sending OutSkins");
         Result<Record> result = QRCS2Skin.getOutSkins(tupId);
+        return ApiUtils.skinResultToJsonArray(result).toString();
+    }
+
+    /**
+     * Get custom TradeUpOutcomeSkins.
+     *
+     * @return {@link JSONArray} of {@link TradeUpOutcomeSkins}s as {@link JSONObject}s.
+     */
+    @GetMapping(value = "/outskins/custom/{tupId}", produces = "application/json" )
+    public String outSkinsCustom(@PathVariable int tupId) {
+        log.info("sending OutSkins");
+        Result<Record> result = QRCS2Skin.getOutSkins(tupId, (byte) 1);
         return ApiUtils.skinResultToJsonArray(result).toString();
     }
 }
