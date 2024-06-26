@@ -186,5 +186,42 @@ public class QRUtils extends QueryRepository {
                 .execute();
 
     }
+
+    /**
+     * Update id sequence for custom TradeUp.
+     *
+     * @param number number to add/sub
+     */
+    public static void updateIdSequenceCustomTradeUp(int number){
+        dsl.update(ID_SEQUENCE).set(ID_SEQUENCE.MAX_ID, ID_SEQUENCE.MAX_ID.add(number))
+                .where(ID_SEQUENCE.TABLE_NAME.eq("trade_up"))
+                .and(ID_SEQUENCE.CUSTOM.eq((byte) 1))
+                .execute();
+    }
+
+    /**
+     * Update id sequence for custom GenerationSettings.
+     *
+     * @param number number to add/sub
+     */
+    public static void updateIdSequenceCustomGenerationSettings(int number){
+        dsl.update(ID_SEQUENCE).set(ID_SEQUENCE.MAX_ID, ID_SEQUENCE.MAX_ID.sub(number))
+                .where(ID_SEQUENCE.TABLE_NAME.eq("generation_settings"))
+                .and(ID_SEQUENCE.CUSTOM.eq((byte) 1))
+                .execute();
+    }
+
+    /**
+     * Get next custom TradeUp id.
+     *
+     * @return tradeUp id
+     */
+    public static int getNextCustomTradeUpId(){
+        return (dsl.select(ID_SEQUENCE.MAX_ID).from(ID_SEQUENCE)
+                .where(ID_SEQUENCE.TABLE_NAME.eq("trade_up"))
+                .and(ID_SEQUENCE.CUSTOM.eq((byte) 1)).fetchSingleInto(Integer.class))+1;
+    }
+
+
 }
 
