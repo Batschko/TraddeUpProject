@@ -54,7 +54,7 @@ public class TradeUpController {
         log.info("marking TradeUp");
         log.info("sending TradeUps");
         QRTradeUpTable.toggleMarkTradeUp(tupId, false);
-        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUpsMarked(false)).toString();
+        return ApiUtils.tradeupResultToJsonArray(QRTradeUpTable.getTradeUps(false)).toString();
     }
 
     /**
