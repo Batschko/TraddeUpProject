@@ -76,6 +76,21 @@ public class TradeUpSettings extends CollectionConditionDistribution {
     }
 
     /**
+     * Get collection count.
+     *
+     * @return collection count
+     */
+    public byte getCollectionCount(){
+        byte collCount = (byte) collectionList.size();
+        if(collCount == 2){
+            if(collectionList.getFirst().equals(collectionList.getLast())){
+               return 1;
+            }
+        }
+        return collCount;
+    }
+
+    /**
      * Create list of {@link SkinUtils.TradeUpSkinInfo}.
      * <p>(DTOs to find tradeup skins)</p>
      * @param rarity   rarity {@link Rarity}

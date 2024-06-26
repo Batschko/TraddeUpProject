@@ -97,12 +97,7 @@ public class Generator {
         }
         if (rarities == null) throw new RuntimeException("Can't generate tradeUp, PossibleTradeUpRarityList is null");
 
-        byte collCount = (byte) tSettings.getCollectionList().size();
-        if(collCount == 2){
-            if(tSettings.getCollectionList().getFirst().equals(tSettings.getCollectionList().getLast())){
-                collCount = 1;
-            }
-        }
+        byte collCount = tSettings.getCollectionCount();
         int tradeUpSettingsId = QRGenerationSettings.saveIfNotExists(tSettings.serialize(),false);
         for (Rarity rarity : rarities) {
             // only stattrak for cases
