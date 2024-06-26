@@ -83,19 +83,18 @@ public class Generator {
     //Wrapper to set Rarities, Stattrak and FloatDict
     private static void generateTradeUpWrapper(TradeUpSettings tSettings,
                                               int floatDictId) {
-        // rarities to use as TradeUpSkins -> rarityTarget-1
-        List<Rarity> rarities = null;
-        int old_length = Integer.MAX_VALUE;
-        //only use the lowest common Rarity
-        for (String collName : tSettings.collectionList) {
-            List<Rarity> rar = Rarity.getPossibleTradeUpRarities(collName);
-            if (rar.size() < old_length) {
-                rarities = rar;
-                old_length = rar.size();
-            }
-
+        //rarities to use as TradeUpSkins (rarityTarget-1)
+        //only use the common Rarities
+        List<List<Rarity>> rarLists = new ArrayList<>();
+        for (String collName : tSettings.getCollectionList()) {
+            rarLists.add(Rarity.getPossibleTradeUpRarities(collName));
         }
-        if (rarities == null) throw new RuntimeException("Can't generate tradeUp, PossibleTradeUpRarityList is null");
+        List<Rarity> rarities = new ArrayList<>(rarLists.getFirst());
+        for (int i=1; i < rarLists.size(); i++) {
+            rarities.retainAll(rarLists.get(i));
+        }
+
+        if (rarities.isEmpty()) throw new RuntimeException("Can't generate tradeUp, PossibleTradeUpRarityList is null");
 
         byte collCount = tSettings.getCollectionCount();
         int tradeUpSettingsId = QRGenerationSettings.saveIfNotExists(tSettings.serialize(),false);
@@ -109,7 +108,6 @@ public class Generator {
             }
         }
     }
-
 
     private static List<CollectionConditionDistribution> collectionDistributionSingle(Condition c1, Condition c2) {
         List<CollectionConditionDistribution> collectionDistribution = new ArrayList<>();
