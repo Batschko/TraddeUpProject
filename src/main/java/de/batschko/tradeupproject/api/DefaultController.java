@@ -46,7 +46,8 @@ public class DefaultController {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        JSONObject jsonObject = CustomGenerator.calculateTup(json);
+
+        JSONObject jsonObject = CustomGenerator.calculateTup(json, json.getBoolean("saveTup"));
 
         return jsonObject.toString();
     }
