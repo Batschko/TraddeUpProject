@@ -1,6 +1,7 @@
 package de.batschko.tradeupproject.tradeup;
 
 import de.batschko.tradeupproject.db.query.*;
+import de.batschko.tradeupproject.db.query.api.QRTradeUpTable;
 import de.batschko.tradeupproject.enums.Condition;
 import de.batschko.tradeupproject.enums.Rarity;
 import de.batschko.tradeupproject.enums.TradeUpStatus;
@@ -41,6 +42,7 @@ public class CustomGenerator {
      * @return TradeUp-data as JSONObject
      */
     public static JSONObject calculateTup(JSONObject jsonObject, boolean save){
+        int floatDictId = 2;//todo dynamic float dict
         JSONObject row1 = jsonObject.getJSONObject("row1");
         JSONObject row2 = jsonObject.getJSONObject("row2");
         JSONObject row3 = jsonObject.getJSONObject("row3");
@@ -56,19 +58,30 @@ public class CustomGenerator {
             collNumber.add(row3.getInt("count"));
             conditionList.add(Condition.valueOf(row3.getString("cond")));
         }
+        //SAVE TRADE_UP
         CollectionConditionDistribution collCondDistri = new CollectionConditionDistribution(collNumber, conditionList);
         TradeUpSettings settings = new TradeUpSettings(collectionList,collCondDistri,condTarget);
+        int tupId;
+        if(save){
+            tupId = QRUtils.getNextCustomTradeUpId();
+            int settingsId = QRGenerationSettings.saveIfNotExists(settings.serialize(), true);
+            byte collCount = settings.getCollectionCount();
+            QRTradeUpCustom.createTradeUpCustom(rarity, stat, collCount, condTarget, floatDictId, settingsId);
+        }else {
+            tupId = QRTradeUpCustom.getDummyId();
+        }
 
-        int tupId=666666;
+
+        //CREATE TRADE_UP_SKINS
         QRTradeUpCustom.createTradeUpSkinsCustom(tupId,settings, rarity , stat? (byte) 1: 0);
-
         double totalPrice = 0;
         double floatSum = 0;
         double amountSoldSum = 0;
         //todo dynamic float dict
-        Map<Condition,Double> floatDictMap = QRUtils.getFloatDictMap(2);
-        List<StashSkinHolderRecord> possibleStashHolder = new ArrayList<>();
+        Map<Condition,Double> floatDictMap = QRUtils.getFloatDictMap(floatDictId);
 
+        //CREATE POSSIBLE STASH_HOLDER
+        List<StashSkinHolderRecord> possibleStashHolder = new ArrayList<>();
         for(int i=0; i<collectionList.size(); i++){
             String collectionName = collectionList.get(i);
             Condition condition = conditionList.get(i);
@@ -81,17 +94,16 @@ public class CustomGenerator {
             floatSum+= collNumber.get(i) * floatDictMap.get(condition);
             possibleStashHolder.addAll(QRStashHolder.getByCollectionRarity(collectionName, Rarity.increase(rarity)));
         }
-       // this.setFloatSumNeeded(floatSum);
 
         if(possibleStashHolder.isEmpty()) throw new RuntimeException("possibleStashHolder is empty");
+        QRTradeUpCustom.setFloatSum(tupId, floatSum);
 
         TradeUpOutcomeRecord tupOutcome = QRUtils.createRecordTradeUpOutcome();
         tupOutcome.setCustom((byte) 1);
         tupOutcome.setCost(totalPrice*costMultiplier);
         tupOutcome.setAmountSoldAvg(amountSoldSum);
 
-       // return possibleStashHolder;
-
+        //CREATE OUTCOME_SKINS
         Map<Integer, Set<TradeUpOutcomeSkinsRecord>> outcomeCS2SkinsMap = new HashMap<>();
         for(StashSkinHolderRecord stashHolder : possibleStashHolder){
             double x = stashHolder.getFloatEnd() - stashHolder.getFloatStart();
@@ -111,9 +123,9 @@ public class CustomGenerator {
             }else {
                 outcomeCS2SkinsMap.get(stashHolder.getCollectionId()).add(out_skin);
             }
-           // checkFloatMarker(magic_float);
         }
 
+        //CALCULATE
         double skinPool = 0;
         if(outcomeCS2SkinsMap.size()==1){
             //single collection
@@ -127,12 +139,11 @@ public class CustomGenerator {
         }
 
         double hitChanceSum = 0;
-        double skinAvgPrice =0;
+        double skinAvgPrice = 0;
         double skinMinPrice = Double.MAX_VALUE, skinMaxPrice = Double.MIN_VALUE;
         double categoryEven = 0, categoryProfit = 0;
         for(Map.Entry<Integer, Set<TradeUpOutcomeSkinsRecord>> entry: outcomeCS2SkinsMap.entrySet()){
             double chance;
-
             if(outcomeCS2SkinsMap.size()==1){
                 //single collection
                 chance = 10 / skinPool;
@@ -166,7 +177,6 @@ public class CustomGenerator {
                     hitChanceSum += chance;
                 }
             }
-
         }
 
         //categoryMarker
@@ -182,18 +192,26 @@ public class CustomGenerator {
         tupOutcome.setSkinMin(skinMinPrice);
         tupOutcome.setSkinMax(skinMaxPrice);
 
-
         for(Set<TradeUpOutcomeSkinsRecord> outSkins : outcomeCS2SkinsMap.values()){
             outSkins.forEach(UpdatableRecordImpl::store);
         }
 
-        //TODO
-        JSONArray tupskins = ApiUtils.skinResultToJsonArray(QRCS2Skin.getTradeUpSkinsCustom(tupId));
-        JSONArray outskins = ApiUtils.skinResultToJsonArray(QRCS2Skin.getOutSkinsCustom(tupId));
-        QRCS2Skin.deleteCustomInAndOutSkins(tupId);
+        JSONArray tupSkins = ApiUtils.skinResultToJsonArray(QRCS2Skin.getTradeUpSkinsCustom(tupId));
+        JSONArray outSkins = ApiUtils.skinResultToJsonArray(QRCS2Skin.getOutSkinsCustom(tupId));
 
+        if(save){
+            tupOutcome.setTradeupId(tupId);
+            tupOutcome.store();
+            QRTradeUpTable.toggleMarkTradeUp(tupId, true);
+            QRTradeUpTable.toggleWatch(tupId, true);
+        }else {
+            QRCS2Skin.deleteCustomInAndOutSkins(tupId);
+            QRTradeUpCustom.delete(tupId);
+            QRUtils.updateIdSequenceCustomTradeUp(-1);
+        }
+
+        //JSON
         Map<String, Object> tupOutcomeMap = tupOutcome.intoMap();
-
         JSONObject tupOutcomeObject = new JSONObject();
         for (Map.Entry<String, Object> entry : tupOutcomeMap.entrySet()) {
             tupOutcomeObject.put(entry.getKey(), entry.getValue());
@@ -201,10 +219,9 @@ public class CustomGenerator {
         if(tupOutcomeObject.has("rarity"))tupOutcomeObject.put("rarity", tupOutcomeObject.getEnum(Rarity.class,"rarity"));
 
         JSONObject returnVal = new JSONObject();
-        returnVal.put("tupskins",tupskins);
-        returnVal.put("outskins",outskins);
+        returnVal.put("tupskins",tupSkins);
+        returnVal.put("outskins",outSkins);
         returnVal.put("outcome",tupOutcomeObject);
-
 
         return returnVal;
     }
