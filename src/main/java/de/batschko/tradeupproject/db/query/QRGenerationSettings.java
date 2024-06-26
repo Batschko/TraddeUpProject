@@ -23,13 +23,14 @@ public class QRGenerationSettings extends QueryRepository {
     /**
      * Get {@link TradeUpSettings} by id.
      *
-     * @param tradeUpSettingsId tradeup settings id
+     * @param tradeUpSettingsId tradeUp settings id
      * @return {@link TradeUpSettings}
      */
-    public static TradeUpSettings getTradeUpSettings(int tradeUpSettingsId) {
+    public static TradeUpSettings getTradeUpSettings(int tradeUpSettingsId, boolean custom) {
             String result = dsl.select(GENERATION_SETTINGS.SETTINGS)
                     .from(GENERATION_SETTINGS)
                     .where(GENERATION_SETTINGS.ID.eq(tradeUpSettingsId))
+                    .and(GENERATION_SETTINGS.CUSTOM.eq((byte) (custom ? 1:0)))
                     .fetchOneInto(String.class);
             if(result == null) throw new RuntimeException("Couldn't query TradeUpSettings with id: " + tradeUpSettingsId);
 

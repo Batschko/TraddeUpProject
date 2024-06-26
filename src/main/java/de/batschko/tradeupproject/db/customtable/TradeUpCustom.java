@@ -104,7 +104,7 @@ public class TradeUpCustom extends TradeUpRecord {
      */
     public void setCalculation() {
         //Calc step 1
-        TradeUpSettings tradeUpSettings = QRGenerationSettings.getTradeUpSettings(this.getGenerationSettingsId());
+        TradeUpSettings tradeUpSettings = QRGenerationSettings.getTradeUpSettings(this.getGenerationSettingsId(), false);
         List<StashSkinHolderRecord> possibleStashHolder = calcStep1PossibleStashHolder(tradeUpSettings);
         if(possibleStashHolder == null) return;
         //Calc step 2
@@ -226,7 +226,7 @@ public class TradeUpCustom extends TradeUpRecord {
         tupLoop:
         for (TradeUpCustom tup : tupList) {
             QRTradeUpGenerated.updateTradeUpSkins(tup.getId());
-            TradeUpSettings settings = QRGenerationSettings.getTradeUpSettings(tup.getGenerationSettingsId());
+            TradeUpSettings settings = QRGenerationSettings.getTradeUpSettings(tup.getGenerationSettingsId(), false);
             double totalPrice = 0;
 
             List<String> collList = settings.getCollectionList();
